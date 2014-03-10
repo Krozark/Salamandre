@@ -2,48 +2,12 @@ set(INCROOT ${PROJECT_SOURCE_DIR}/include/Salamandre)
 set(SRCROOT ${PROJECT_SOURCE_DIR}/src/Salamandre)
 
 
-#ROOT files
-set(ROOT_SRC
-)
-set(ROOT_HEADER
-)
-set(ROOT_FILES
-    ${ROOT_HEADER}
-    ${ROOT_SRC}
-)
-
-#client sub dir
-set(CLIENT_HEADER
-)
-set(CLIENT_SRC
-)
-set(CLIENT_FILES
-    ${CLIENT_HEADER}
-    ${CLIENT_SRC}
-)
-
-
-#server sub dir
-set(SERVER_HEADER
-)
-set(SERVER_SRC
-)
-set(SERVER_FILES
-    ${SERVER_HEADER}
-    ${SERVER_SRC}
-)
 
 #FILES
-set(FILES_HEADER
-    ${ROOT_HEADER}
-    ${CLIENT_HEADER}
-    ${SERVER_HEADER}
-)
-set(FILES_SRC
-    ${ROOT_SRC}
-    ${CLIENT_SRC}
-    ${SERVER_SRC}
-)
+set(FILES_HEADER)
+set(FILES_SRC)
+
+add_subdirectory(fiche)
 
 #SHARED lib
 add_library(salamandre SHARED ${FILES_HEADER} ${FILES_SRC})

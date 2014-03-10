@@ -20,3 +20,4 @@ Makefile
 *.cmake
 install_manifest.txt
 doc/html
+build/
