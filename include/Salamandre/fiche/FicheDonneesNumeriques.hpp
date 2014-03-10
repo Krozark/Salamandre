@@ -1,7 +1,7 @@
 #ifndef SALAMANDRE_FICHEDONNEESNUMERIQUES_HPP
 #define SALAMANDRE_FICHEDONNEESNUMERIQUES_HPP
 
-#include <salamandre/fiche/Fiche.hpp>
+#include <Salamandre/fiche/Fiche.hpp>
 
 namespace salamandre
 {

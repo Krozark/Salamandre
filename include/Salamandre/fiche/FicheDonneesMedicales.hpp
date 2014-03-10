@@ -1,7 +1,7 @@
 #ifndef SALAMANDRE_FICHEDONNEESMEDICALES_HPP
 #define SALAMANDRE_FICHEDONNEESMEDICALES_HPP
 
-#include <salamandre/fiche/Fiche.hpp>
+#include <Salamandre/fiche/Fiche.hpp>
 
 namespace salamandre
 {

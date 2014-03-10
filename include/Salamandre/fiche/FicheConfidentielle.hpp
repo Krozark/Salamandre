@@ -1,7 +1,7 @@
 #ifndef SALAMANDRE_FICHECONFIDENTIELLE_HPP
 #define SALAMANDRE_FICHECONFIDENTIELLE_HPP
 
-#include <salamandre/fiche/Fiche.hpp>
+#include <Salamandre/fiche/Fiche.hpp>
 
 namespace salamandre
 {

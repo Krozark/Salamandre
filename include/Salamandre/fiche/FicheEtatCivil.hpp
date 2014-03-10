@@ -1,7 +1,7 @@
 #ifndef SALAMANDRE_FICHEETATCIVIL_HPP
 #define SALAMANDRE_FICHEETATCIVIL_HPP
 
-#include <salamandre/fiche/Fiche.hpp>
+#include <Salamandre/fiche/Fiche.hpp>
 
 namespace salamandre
 {
