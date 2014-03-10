@@ -8,6 +8,7 @@ set(FILES_HEADER)
 set(FILES_SRC)
 
 add_subdirectory(fiche)
+add_subdirectory(crypt)
 
 #SHARED lib
 add_library(salamandre SHARED ${FILES_HEADER} ${FILES_SRC})
