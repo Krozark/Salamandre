@@ -11,3 +11,12 @@
 *.lai
 *.la
 *.a
+*.exe
+*.vim
+
+CMakeCache.txt
+CMakeFiles
+Makefile
+*.cmake
+install_manifest.txt
+doc/html

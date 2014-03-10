@@ -1,0 +1,10 @@
+install: 
+
+language: cpp
+
+compiler: gcc
+
+script : cmake . 
+        && make
+        && sudo make install
+        && sudo make uninstall
