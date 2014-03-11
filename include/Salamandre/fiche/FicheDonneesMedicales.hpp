@@ -11,9 +11,11 @@ namespace salamandre
     class FicheDonneesMedicales : public Fiche
     {
         public:
-            FicheDonneesMedicales();
+            FicheDonneesMedicales(const unsigned int cli_id);
             FicheDonneesMedicales(const FicheDonneesMedicales&) = delete;
             FicheDonneesMedicales& operator=(const FicheDonneesMedicales&) = delete;
+
+            virtual std::string getFilePath()const;
 
         protected:
 

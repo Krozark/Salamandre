@@ -3,7 +3,12 @@
 namespace salamandre
 {
     
-    FicheDonneesMedicales::FicheDonneesMedicales()
+    FicheDonneesMedicales::FicheDonneesMedicales(const unsigned int cli_id) : Fiche(cli_id)
     {
+    }
+
+    std::string FicheDonneesMedicales::getFilePath()const 
+    {
+        return getDirPath()+"FMT";
     }
 }

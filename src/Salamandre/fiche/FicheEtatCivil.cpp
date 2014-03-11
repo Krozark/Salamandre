@@ -3,7 +3,12 @@
 namespace salamandre
 {
     
-    FicheEtatCivil::FicheEtatCivil()
+    FicheEtatCivil::FicheEtatCivil(const unsigned int cli_id) : Fiche(cli_id)
     {
+    }
+
+    std::string FicheEtatCivil::getFilePath() const
+    {
+        return getDirPath()+"FEC";
     }
 }

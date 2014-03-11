@@ -12,10 +12,12 @@ l’adresse, . . . , et surtout, un numero d’identification)
     class FicheEtatCivil : public Fiche
     {
         public:
-            FicheEtatCivil();
+            FicheEtatCivil(const unsigned int cli_id);
             FicheEtatCivil(const FicheEtatCivil&) = delete;
             FicheEtatCivil& operator=(const FicheEtatCivil&) = delete;
 
+            virtual std::string getFilePath()const;
+        
         protected:
 
         private:

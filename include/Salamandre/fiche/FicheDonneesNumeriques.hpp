@@ -11,9 +11,11 @@ namespace salamandre
     class FicheDonneesNumeriques : public Fiche
     {
         public:
-            FicheDonneesNumeriques();
+            FicheDonneesNumeriques(const unsigned int cli_id);
             FicheDonneesNumeriques(const FicheDonneesNumeriques&) = delete;
             FicheDonneesNumeriques& operator=(const FicheDonneesNumeriques&) = delete;
+
+            virtual std::string getFilePath()const;
 
         protected:
 

@@ -12,9 +12,11 @@ medical prises par le medecin. La fiche comporte une zone de texte et le numero 
     class FicheConfidentielle : public Fiche
     {
         public:
-            FicheConfidentielle();
+            FicheConfidentielle(const unsigned int cli_id);
             FicheConfidentielle(const FicheConfidentielle&) = delete;
             FicheConfidentielle& operator=(const FicheConfidentielle&) = delete;
+
+            virtual std::string getFilePath()const;
 
         protected:
 

@@ -3,7 +3,12 @@
 namespace salamandre
 {
     
-    FicheConfidentielle::FicheConfidentielle()
+    FicheConfidentielle::FicheConfidentielle(const unsigned int cli_id) : Fiche(cli_id)
     {
+    }
+    
+    std::string FicheConfidentielle::getFilePath()const
+    {
+        return getDirPath()+"FCT";
     }
 }
