@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 2.8.8)
 
 # define a macro that helps defining an option
 macro(set_option var default type docstring)
@@ -17,39 +17,45 @@ set(VERSION_MINOR 1)
 set(VERSION_PATCH 0)
 
 
-# add the  header path
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-
 # add an option for choosing the build type (shared or static)
 #set_option(BUILD_SHARED_LIBS FALSE BOOL "TRUE to build as shared libraries, FALSE to build it as static libraries")
-
-# add an option for building the examples
-set_option(BUILD_TESTS FALSE BOOL "TRUE to build the examples, FALSE to ignore them")
 
 # add an option for building the API documentation
 set_option(BUILD_DOC TRUE BOOL "TRUE to generate the API documentation, FALSE to ignore it")
 
 
+
+############ QT ####################
+# Appeler automatique le moc quand nécessaire
+SET(CMAKE_AUTOMOC ON)
+# Les fichiers générés par le moc sont générés dans le dossier bin, dire à CMake de toujours 	
+# inclure les entêtes de ce dossier
+SET(CMAKE_INCLUDE_CURRENT_DIR ON)
+# Le module QtWidgets trouve ses propres dépendances
+FIND_PACKAGE(Qt5Widgets REQUIRED)
+FIND_PACKAGE(Qt5OpenGL REQUIRED)
+######### END Qt ##########################
+
+# add the  header path
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_BINARY_DIR})
+
+
+find_library(CRYPTO_LIB cryptopp)
+set(LIBS ${CRYPTO_LIB})
+
 #set(includepath "-I${CMAKE_CURRENT_SOURCE_DIR}/include")
 set(DEFINES "")
-set(LIBS "-lcrypto++")
 set(WARNING "-Wall")
 set(FLAGS "-o3 -std=c++0x")
-set(CMAKE_CXX_FLAGS "${DEFINES} ${WARNING} ${FLAGS} ${LIBS}")
+set(CMAKE_CXX_FLAGS "${DEFINES} ${WARNING} ${FLAGS}")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(LIB_INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 
 # add the subdirectories
 add_subdirectory(src/Salamandre)
-add_subdirectory(bin)
-#build exemples
-if(BUILD_TESTS)
-    add_subdirectory(tests)
-    #add_executable(toDo main.cc)
-
-endif()
 #build doc
 if(BUILD_DOC)
     add_subdirectory(doc)

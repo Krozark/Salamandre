@@ -1,4 +1,4 @@
-#include "graphicsscene.hpp"
+#include <Salamandre/viewer/shared/graphicsscene.hpp>
 
 #include <QDebug>
 #include <QGraphicsRectItem>

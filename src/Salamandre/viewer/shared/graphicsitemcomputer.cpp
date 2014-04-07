@@ -1,4 +1,4 @@
-#include "graphicsitemcomputer.hpp"
+#include <Salamandre/viewer/shared/graphicsitemcomputer.hpp>
 
 #include <QDebug>
 #include <QCursor>

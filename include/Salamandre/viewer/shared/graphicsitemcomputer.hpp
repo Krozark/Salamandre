@@ -1,7 +1,7 @@
 #ifndef GRAPHICSITEMCOMPUTER_HPP
 #define GRAPHICSITEMCOMPUTER_HPP
 
-#include "graphicsitemlink.hpp"
+#include <Salamandre/viewer/shared/graphicsitemlink.hpp>
 
 #include <QGraphicsRectItem>
 #include <QGraphicsSceneMouseEvent>

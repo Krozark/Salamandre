@@ -7,7 +7,8 @@
   * \brief      Classe de la fenêtre principale
   */
 
-#include "mainwindow.hpp"
+#include <Salamandre/viewer/gui/mainwindow.hpp>
+
 #include "ui_mainwindow.h"
 
 #include <QPixmap>

@@ -1,8 +1,8 @@
 #ifndef GRAPHICSSCENE_HPP
 #define GRAPHICSSCENE_HPP
 
-#include "graphicsitemcomputer.hpp"
-#include "graphicsitemlink.hpp"
+#include <Salamandre/viewer/shared/graphicsitemcomputer.hpp>
+#include <Salamandre/viewer/shared/graphicsitemlink.hpp>
 
 #include <QGraphicsScene>
 #include <QGraphicsSceneEvent>

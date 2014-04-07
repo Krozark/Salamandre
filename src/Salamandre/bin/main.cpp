@@ -1,4 +1,4 @@
-#include "gui/mainwindow.hpp"
+#include <Salamandre/viewer/gui/mainwindow.hpp>
 
 #include <QApplication>
 

@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
-#include "shared/graphicsscene.hpp"
+#include <Salamandre/viewer/shared/graphicsscene.hpp>
 
 #include <QMainWindow>
 
