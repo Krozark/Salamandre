@@ -4,7 +4,8 @@ set(SRCROOT ${PROJECT_SOURCE_DIR}/src/Salamandre/viewer)
 QT5_WRAP_UI(UIS_HDRS
     gui/mainwindow.ui
 )
-
+QT5_ADD_RESOURCES(UI_RESOURCES ${CMAKE_PROJECT_NAME}.qrc)
+message("blabla ${UI_RESSOURCES}")
 add_subdirectory(gui)
 add_subdirectory(shared)
 
@@ -18,4 +19,4 @@ list(APPEND FILES_SRC
 )
 set(FILES_SRC "${FILES_SRC}" PARENT_SCOPE)
 
-SET(QtApp_RCCS ${CMAKE_PROJECT_NAME}.qrc)
+

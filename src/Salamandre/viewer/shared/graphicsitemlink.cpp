@@ -1,4 +1,4 @@
-#include "graphicsitemlink.hpp"
+#include <Salamandre/viewer/shared/graphicsitemlink.hpp>
 
 #include <QDebug>
 #include <QStyleOptionGraphicsItem>
