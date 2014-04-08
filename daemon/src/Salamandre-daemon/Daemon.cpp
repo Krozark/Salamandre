@@ -1,5 +1,5 @@
 #include <Salamandre-daemon/Daemon.hpp>
-#include <Socket/server/server.hpp>
+#include <Socket/server/Server.hpp>
 
 namespace salamandre
 {

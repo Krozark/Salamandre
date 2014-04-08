@@ -1,6 +1,8 @@
 #ifndef SALAMANDRE_DAEMON_HPP
 #define SALAMANDRE_DAEMON_HPP
 
+#include <Socket/server/Server.hpp>
+
 namespace salamandre
 {
     class Daemon
@@ -18,6 +20,8 @@ namespace salamandre
         private:
             const int gui_port;
             const int port;
+
+            ntw::srv::Server ntw_server;
     };
 }
 #endif
