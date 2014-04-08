@@ -20,3 +20,6 @@ LIBS += -lcryptopp
 SOURCES += main.cpp
 
 HEADERS  +=
+
+RESOURCES += \
+    Viewer.qrc
