@@ -15,8 +15,12 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void init();
 private:
     Ui::MainWindow *ui;
+
+    QString currentUserId;
+    QString currentUserPass;
 };
 
 #endif // MAINWINDOW_HPP
