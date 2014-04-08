@@ -1,9 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>gui/icons/salamandre.png</file>
-        <file>gui/icons/graphics/monitor.png</file>
-        <file>gui/icons/graphics/boot.png</file>
-        <file>gui/icons/graphics/reboot.png</file>
-        <file>gui/icons/graphics/stop.png</file>
-    </qresource>
-</RCC>
