@@ -25,7 +25,8 @@ set_option(BUILD_DOC TRUE BOOL "TRUE to generate the API documentation, FALSE to
 
 find_library(SOCKET_LIB socket)
 find_library(ORM_LIB orm)
-set(LIBS ${SOCKET_LIB} ${ORM_LIB})
+find_library(SQLITE_LIB sqlite3)
+set(LIBS ${SOCKET_LIB} ${ORM_LIB} ${SQLITE_LIB})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(DEFINES "")
