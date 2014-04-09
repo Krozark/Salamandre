@@ -12,7 +12,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QString idMedecin, QString passMedecin, QWidget *parent = 0);
     ~MainWindow();
 
     void init();
@@ -21,6 +21,10 @@ private:
 
     QString currentUserId;
     QString currentUserPass;
+
+    QString idMedecin, passMedecin;
+
+    void startDownloadClientData(int clientNumber = -1);
 };
 
 #endif // MAINWINDOW_HPP

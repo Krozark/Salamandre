@@ -10,14 +10,15 @@ int main(int argc, char *argv[])
 
     connexionDialog *coDialog = new connexionDialog(nullptr);
     int res = coDialog->exec();
-    delete coDialog;
 
     if(res == QDialog::Rejected){
         return -1;
     }
 
-    MainWindow w;
+    MainWindow w(coDialog->getIdMedecin(), coDialog->getPassMedecin());
     w.show();
+
+    delete coDialog;
 
     return a.exec();
 }
