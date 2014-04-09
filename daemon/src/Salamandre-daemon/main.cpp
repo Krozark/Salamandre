@@ -39,6 +39,7 @@ int main(int argc,char* argv[])
     std::cout<<"Daemon start on:"
         <<"\n\tgui port : "<<gui_port
         <<"\n\tfile server port : "<<server_port
+        <<"\nPress ^C to exit"
         <<std::endl;
     std::signal(SIGINT, stop_server_handler);
 
