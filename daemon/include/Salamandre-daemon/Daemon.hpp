@@ -3,8 +3,15 @@
 
 #include <Socket/server/Server.hpp>
 
+/**
+ * \brief namespace for the project
+ */
 namespace salamandre
 {
+    /***
+     * \brief This is the main class for the daemon.
+     * contain all the socket servers, and deal with them.
+     */
     class Daemon
     {
         public:
@@ -18,32 +25,26 @@ namespace salamandre
             Daemon& operator=(const Daemon&) = delete;
 
 
+            /**
+             * \brief start the socket servers
+             */
             void start();
 
+            /**
+             * \brief wait until stop is call
+             */
             void wait();
 
+            /**
+             * \brief stop the server
+             * Note : use it in a signal handler
+             */
             void stop();
 
-            /**
-             * \brief store all the callback ids for the gui
-             */
-            enum funcGui {
-                newFile = 1, ///< to call whene the gui add files to save
-                sync ///< to call whene un sync is need
-            };
-
-            /**
-             * \brief store the callback ids for external calls (with other Daemons)
-             */
-            enum funcExternal {
-                thisIsMyInfos = 1, ///< recv infos of an othen Daemon (listen on broadcast)
-                lostData, ///< is call whene a Daemon need to rebuild all his (listen on broadcast) datas                
-                sendDatas, ///< recv files to save
-            };
 
         private:
-            ntw::srv::Server gui_server;
-            ntw::srv::Server file_server;
+            ntw::srv::Server gui_server; ///< the gui socket listener
+            ntw::srv::Server file_server; ///< the external daemon socket listener
 
             //void on_new_file_client(ntw::srv::Server& self,ntw::srv::Client& client);
     };
