@@ -26,9 +26,9 @@ int main(int argc,char* argv[])
     {
         std::cout<<"Usage is:\n\t"<<argv[0]<<"<gui port> <server port>"<<std::endl;
         if(argc <= GUI_PORT)
-            std::cout<<"Use "<<gui_port<<"as default gui port"<<std::endl;
+            std::cout<<"Use "<<gui_port<<" as default gui port"<<std::endl;
         if(argc <= SERVER_PORT)
-            std::cout<<"Use "<<server_port<<"as default server port"<<std::endl;
+            std::cout<<"Use "<<server_port<<" as default server port"<<std::endl;
     }
     if(argc > GUI_PORT)
         gui_port = atoi(argv[GUI_PORT]);
