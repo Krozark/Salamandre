@@ -16,6 +16,5 @@ public:
 };
 
 
-#include <Salamandre-stats/node.tpl>
 
 #endif // NODE_HPP
