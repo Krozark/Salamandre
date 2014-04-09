@@ -17,11 +17,35 @@ namespace salamandre
             Daemon(const Daemon&) = delete;
             Daemon& operator=(const Daemon&) = delete;
 
-        private:
-            const int gui_port;
-            const int port;
 
-            ntw::srv::Server ntw_server;
+            void start();
+
+            void wait();
+
+            void stop();
+
+            /**
+             * \brief store all the callback ids for the gui
+             */
+            enum funcGui {
+                newFile = 1, ///< to call whene the gui add files to save
+                sync ///< to call whene un sync is need
+            };
+
+            /**
+             * \brief store the callback ids for external calls (with other Daemons)
+             */
+            enum funcExternal {
+                thisIsMyInfos = 1, ///< recv infos of an othen Daemon (listen on broadcast)
+                lostData, ///< is call whene a Daemon need to rebuild all his (listen on broadcast) datas                
+                sendDatas, ///< recv files to save
+            };
+
+        private:
+            ntw::srv::Server gui_server;
+            ntw::srv::Server file_server;
+
+            //void on_new_file_client(ntw::srv::Server& self,ntw::srv::Client& client);
     };
 }
 #endif

@@ -4,9 +4,13 @@ set(SRCROOT ${PROJECT_SOURCE_DIR}/src/${CMAKE_PROJECT_NAME})
 #ROOT files
 set(ROOT_SRC
     ${SRCROOT}/Daemon.cpp
+    ${SRCROOT}/GuiFunctions.cpp
+    ${SRCROOT}/ServerFunctions.cpp
 )
 set(ROOT_HEADER
     ${INCROOT}/Daemon.hpp
+    ${INCROOT}/GuiFunctions.hpp
+    ${INCROOT}/ServerFunctions.hpp
 )
 set(ROOT_FILES
     ${ROOT_HEADER}
