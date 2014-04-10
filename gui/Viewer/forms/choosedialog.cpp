@@ -111,3 +111,24 @@ void chooseDialog::on_lineEdit_clientNumber_textChanged(const QString &arg1)
 {
     this->ui->buttonBox->setEnabled(!arg1.isEmpty());
 }
+
+void chooseDialog::on_radioButton_newClientData_clicked()
+{
+    this->ui->listView_availablePatient->setEnabled(false);
+    this->ui->lineEdit_newClientData->setEnabled(true);
+    this->ui->lineEdit_getDataClient->setEnabled(false);
+}
+
+void chooseDialog::on_radioButton_getDataClient_clicked()
+{
+    this->ui->listView_availablePatient->setEnabled(false);
+    this->ui->lineEdit_getDataClient->setEnabled(true);
+    this->ui->lineEdit_newClientData->setEnabled(false);
+}
+
+void chooseDialog::on_radioButton_availablePatient_clicked()
+{
+    this->ui->listView_availablePatient->setEnabled(true);
+    this->ui->lineEdit_getDataClient->setEnabled(false);
+    this->ui->lineEdit_newClientData->setEnabled(false);
+}

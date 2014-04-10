@@ -37,6 +37,12 @@ private slots:
     void on_radioButton_createClientFiles_clicked();
     void on_lineEdit_clientNumber_textChanged(const QString &arg1);
 
+    void on_radioButton_newClientData_clicked();
+
+    void on_radioButton_getDataClient_clicked();
+
+    void on_radioButton_availablePatient_clicked();
+
 private:
     Ui::chooseDialog *ui;
     QStandardItemModel *model;
