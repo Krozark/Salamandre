@@ -5,6 +5,7 @@ set(SRCROOT ${PROJECT_SOURCE_DIR}/src/${CMAKE_PROJECT_NAME})
 set(ROOT_SRC
 	${SRCROOT}/stats.cpp
         ${SRCROOT}/node.cpp
+        ${SRCROOT}/test.cpp
 )
 set(ROOT_HEADER
 	${INCROOT}/stats.hpp
@@ -35,6 +36,8 @@ INSTALL(TARGETS ${CMAKE_PROJECT_NAME}
     DESTINATION lib
 )
 
+add_executable(test ${SRCROOT}/test.cpp)
+target_link_libraries(test ${LIBS} orm Salamandre-stats)
 
 #static lib
 add_library(${CMAKE_PROJECT_NAME}-static STATIC ${FILES_HEADER} ${FILES_SRC})
