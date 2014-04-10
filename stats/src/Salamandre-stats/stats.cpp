@@ -15,7 +15,7 @@ void Stats::add_node(std::string host, int port)
 {
     Node node;
     //std::list<Cache<Node>::type_ptr> results;
-    Node::query().filter(Node::_host, "exact", host).filter(port, "exact", Node::_port).get(node);
+    Node::query().filter(host, "exact", Node::_host).filter(port, "exact", Node::_port).get(node);
     node.host = host;
     node.port = port;
     node.last_seen_time = time(NULL);
@@ -25,7 +25,7 @@ void Stats::add_node(std::string host, int port)
 void Stats::delete_node(std::string host, int port)
 {
     Node node;
-    Node::query().filter(Node::_host, "exact", host).filter(port, "exact", Node::_port).get(node);
+    Node::query().filter(host, "exact", Node::_host).filter(port, "exact", Node::_port).get(node);
     node.del();
 }
 

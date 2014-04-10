@@ -14,6 +14,7 @@ int main()
 {
     Stats stats_module = Stats();
     stats_module.setup();
+    //orm::Tables::create();
     stats_module.add_node(std::string("test"), 1234);
 
     orm::Bdd::Default.disconnect();
