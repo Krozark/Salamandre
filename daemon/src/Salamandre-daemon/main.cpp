@@ -24,7 +24,7 @@ int main(int argc,char* argv[])
 
     if(argc < NB_ARGS)
     {
-        std::cout<<"Usage is:\n\t"<<argv[0]<<"<gui port> <server port>"<<std::endl;
+        std::cout<<"Usage is:\n\t"<<argv[0]<<" <gui port> <server port>"<<std::endl;
         if(argc <= GUI_PORT)
             std::cout<<"Use "<<gui_port<<" as default gui port"<<std::endl;
         if(argc <= SERVER_PORT)

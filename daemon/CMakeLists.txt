@@ -23,6 +23,9 @@ set(VERSION_PATCH 0)
 # add an option for building the API documentation
 set_option(BUILD_DOC TRUE BOOL "TRUE to generate the API documentation, FALSE to ignore it")
 
+# add an option for building the API examples
+set_option(BUILD_EXAMPLES TRUE BOOL "TRUE to generate the exmamples, FALSE to ignore it")
+
 find_library(SOCKET_LIB socket)
 set(LIBS ${SOCKET_LIB})
 
@@ -35,10 +38,13 @@ set(CMAKE_CXX_FLAGS "${DEFINES} ${WARNING} ${FLAGS}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(LIB_INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
 # add the subdirectories
 add_subdirectory(src/${CMAKE_PROJECT_NAME})
+if(BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()
 #build doc
 if(BUILD_DOC)
     add_subdirectory(doc)
