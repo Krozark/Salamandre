@@ -2,6 +2,7 @@
 #define CHOOSEDIALOG_HPP
 
 #include <QDialog>
+#include <QStandardItemModel>
 
 namespace Ui {
 class chooseDialog;
@@ -19,7 +20,12 @@ public:
         NEW_CLIENT_DATA
     };
 
-    explicit chooseDialog(QWidget *parent = 0);
+    enum TypeChoice{
+        NEW_MEDECIN = 0,
+        MEDECIN_ALREADY_EXIST
+    };
+
+    explicit chooseDialog(TypeChoice type = NEW_MEDECIN, QString idMedecin = "", QWidget *parent = 0);
     ~chooseDialog();
 
     Choice getChoice();
@@ -33,6 +39,7 @@ private slots:
 
 private:
     Ui::chooseDialog *ui;
+    QStandardItemModel *model;
 };
 
 #endif // CHOOSEDIALOG_HPP

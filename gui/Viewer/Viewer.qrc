@@ -3,5 +3,6 @@
         <file>icons/sexe/male.png</file>
         <file>icons/sexe/female.png</file>
         <file>icons/salamandre.png</file>
+        <file>icons/controls/update.png</file>
     </qresource>
 </RCC>

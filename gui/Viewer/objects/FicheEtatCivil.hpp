@@ -17,6 +17,7 @@ l’adresse, . . . , et surtout, un numero d’identification)
             FicheEtatCivil& operator=(const FicheEtatCivil&) = delete;
 
             virtual std::string getFilePath()const;
+            const static std::string fileName;
         
         protected:
 

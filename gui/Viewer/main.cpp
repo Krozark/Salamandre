@@ -3,10 +3,16 @@
 
 #include <QApplication>
 #include <QDebug>
+#include <QDir>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    QDir dir(QCoreApplication::applicationDirPath()+"/save");
+    if(!dir.exists()){
+        dir.mkdir(dir.path());
+    }
 
     connexionDialog *coDialog = new connexionDialog(nullptr);
     int res = coDialog->exec();

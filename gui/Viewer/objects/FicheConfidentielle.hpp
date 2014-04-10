@@ -17,6 +17,7 @@ medical prises par le medecin. La fiche comporte une zone de texte et le numero 
             FicheConfidentielle& operator=(const FicheConfidentielle&) = delete;
 
             virtual std::string getFilePath()const;
+            const static std::string fileName;
 
         protected:
 
