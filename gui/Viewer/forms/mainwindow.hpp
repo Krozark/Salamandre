@@ -19,12 +19,11 @@ public:
 private:
     Ui::MainWindow *ui;
 
-    QString currentUserId;
-    QString currentUserPass;
-
+    QString currentIdPatient;
     QString idMedecin, passMedecin;
 
     void startDownloadClientData(int clientNumber = -1);
+    void createNewClientData();
 };
 
 #endif // MAINWINDOW_HPP

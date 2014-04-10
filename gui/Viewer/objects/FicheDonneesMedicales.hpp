@@ -16,6 +16,7 @@ namespace salamandre
             FicheDonneesMedicales& operator=(const FicheDonneesMedicales&) = delete;
 
             virtual std::string getFilePath()const;
+            const static std::string fileName;
 
         protected:
 

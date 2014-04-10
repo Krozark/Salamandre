@@ -16,6 +16,7 @@ namespace salamandre
             FicheDonneesNumeriques& operator=(const FicheDonneesNumeriques&) = delete;
 
             virtual std::string getFilePath()const;
+            const static std::string fileName;
 
         protected:
 

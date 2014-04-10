@@ -2,6 +2,7 @@
 
 namespace salamandre
 {
+    const std::string FicheDonneesMedicales::fileName = "FMT";
     
     FicheDonneesMedicales::FicheDonneesMedicales(const unsigned int cli_id) : Fiche(cli_id)
     {
@@ -9,6 +10,6 @@ namespace salamandre
 
     std::string FicheDonneesMedicales::getFilePath()const 
     {
-        return getDirPath()+"FMT";
+        return getDirPath()+fileName;
     }
 }

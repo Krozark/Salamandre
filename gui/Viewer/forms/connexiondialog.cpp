@@ -2,6 +2,7 @@
 #include <ui_connexiondialog.h>
 
 #include <crypto++/default.h>
+#include <QDir>
 
 connexionDialog::connexionDialog(QWidget *parent) :
     QDialog(parent),
@@ -9,6 +10,7 @@ connexionDialog::connexionDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->isNew = false;
     this->ui->pushButton_next->setVisible(false);
     this->ui->stackedWidget->setCurrentIndex(0);
     this->checkToEnableConnection();
@@ -17,6 +19,18 @@ connexionDialog::connexionDialog(QWidget *parent) :
 connexionDialog::~connexionDialog()
 {
     delete ui;
+}
+
+void connexionDialog::accept()
+{
+    if(this->isNew){
+        QDir dir(QCoreApplication::applicationDirPath()+"/save/"+this->getIdMedecin());
+        if(!dir.exists()){
+            dir.mkdir(dir.path());
+        }
+    }
+
+    QDialog::accept();
 }
 
 QString connexionDialog::getIdMedecin()
@@ -53,6 +67,7 @@ void connexionDialog::on_pushButton_next_clicked()
 
 void connexionDialog::on_pushButton_connectionNewMedecin_clicked()
 {
+    this->isNew = true;
     this->accept();
 }
 
