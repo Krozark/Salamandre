@@ -1,6 +1,8 @@
 #ifndef CONNEXIONDIALOG_HPP
 #define CONNEXIONDIALOG_HPP
 
+#include <objects/doctor.hpp>
+
 #include <QDialog>
 
 namespace Ui {
@@ -15,11 +17,13 @@ public:
     explicit connexionDialog(QWidget *parent = 0);
     ~connexionDialog();
 
-    QString getIdMedecin();
-    QString getPassMedecin();
+    Doctor *getDoctor();
+    QString getIdDoctor();
+    QString getPassDoctor();
 
     void checkToEnableConnection();
     void accept();
+    void reject();
 
 private slots:
     void on_pushButton_connection_clicked();
@@ -34,6 +38,7 @@ private:
     Ui::connexionDialog *ui;
 
     bool isNew;
+    Doctor *doctor;
 };
 
 #endif // CONNEXIONDIALOG_HPP

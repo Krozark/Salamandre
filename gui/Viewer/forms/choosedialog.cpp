@@ -10,25 +10,26 @@
 #include <QMessageBox>
 #include <QDebug>
 
-chooseDialog::chooseDialog(TypeChoice type, QString idMedecin, QWidget *parent) :
+chooseDialog::chooseDialog(Doctor *doctor, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::chooseDialog)
 {
     ui->setupUi(this);
 
-    if(type == TypeChoice::NEW_MEDECIN){
-        this->ui->stackedWidget->setCurrentIndex(0);
+    this->doctor = doctor;
+    this->patient = new Patient();
+
+    if(this->doctor->getType() == Doctor::TypeDoctor::NEW_DOCTOR){
         this->ui->widget_clientNumber->setVisible(false);
         this->ui->lineEdit_clientNumber->setValidator(new QIntValidator());
     }
-    else if(type == TypeChoice::MEDECIN_ALREADY_EXIST){
+    else if(this->doctor->getType() == Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST){
         this->model = new QStandardItemModel();
 
-        QDir dir(QCoreApplication::applicationDirPath()+"/save/"+QString(idMedecin));
+        QDir dir(this->doctor->getDirPath());
         if(!dir.exists()){
             QMessageBox::critical(this, "Erreur critique", "Une erreur critique s'est produite.");
             this->reject();
-
         }
 
         QFileInfoList listInfo = dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot, QDir::Time);
@@ -58,8 +59,11 @@ chooseDialog::chooseDialog(TypeChoice type, QString idMedecin, QWidget *parent) 
         }
 
         this->ui->listView_availablePatient->setModel(this->model);
-        this->ui->stackedWidget->setCurrentIndex(1);
     }
+    else{
+    }
+
+    this->ui->stackedWidget->setCurrentIndex(this->doctor->getType());
 
 }
 
@@ -67,6 +71,17 @@ chooseDialog::~chooseDialog()
 {
     delete this->ui->lineEdit_clientNumber->validator();
     delete ui;
+}
+
+void chooseDialog::close()
+{
+    this->patient->setId(this->getPatientNumber());
+    QDialog::close();
+}
+
+Patient* chooseDialog::getPatient()
+{
+    return this->patient;
 }
 
 chooseDialog::Choice chooseDialog::getChoice()
@@ -84,9 +99,9 @@ chooseDialog::Choice chooseDialog::getChoice()
     return Choice::NEW_CLIENT_DATA;
 }
 
-int chooseDialog::getClientNumber()
+QString chooseDialog::getPatientNumber()
 {
-    return this->ui->lineEdit_clientNumber->text().toInt();
+    return this->ui->lineEdit_clientNumber->text();
 }
 
 void chooseDialog::on_radioButton_getAllClientsFiles_clicked()
