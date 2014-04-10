@@ -15,7 +15,6 @@ namespace salamandre
     {
         CryptoPP::FileSource f(getFilePath().c_str(), true,
                                new CryptoPP::DefaultEncryptorWithMAC(pass, new CryptoPP::FileSink((getFilePath()+".eas").c_str())));
-
     }
 
     void Fiche::decrypt(const char* pass)

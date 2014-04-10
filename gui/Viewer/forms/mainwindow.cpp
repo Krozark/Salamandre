@@ -1,19 +1,19 @@
 #include <forms/mainwindow.hpp>
 #include <ui_mainwindow.h>
-#include <forms/choosedialog.hpp>
+
 
 #include <QDir>
 #include <QMessageBox>
 #include <QDebug>
 
-MainWindow::MainWindow(QString idMedecin, QString passMedecin, QWidget *parent) :
+MainWindow::MainWindow(Doctor *doctor, Patient *patient, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
-    this->passMedecin = passMedecin;
-    this->idMedecin = idMedecin;
+    this->doctor = doctor;
+    this->patient = patient;
 
     this->init();
 }
@@ -25,50 +25,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::init()
 {
-    QString userFolderPath = QCoreApplication::applicationDirPath()+"/save/"+this->idMedecin;
-    QDir userFolder = QDir(userFolderPath);
 
-    if(!userFolder.exists()){
-        chooseDialog *chDialog = new chooseDialog(chooseDialog::TypeChoice::NEW_MEDECIN, "", this);
-        chDialog->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint);
-        int res = chDialog->exec();
-
-        if(res  == QDialog::Rejected){
-            this->close();
-        }
-
-        chooseDialog::Choice choice = chDialog->getChoice();
-        this->currentIdPatient = chDialog->getClientNumber();
-
-        switch(choice){
-        case chooseDialog::Choice::GET_ALL_CLIENTS_DATA:
-            this->startDownloadClientData();
-            break;
-        case chooseDialog::Choice::GET_ONE_CLIENT_DATA:
-            this->startDownloadClientData(this->currentIdPatient.toInt());
-            break;
-        case chooseDialog::Choice::NEW_CLIENT_DATA:
-            this->createNewClientData();
-            break;
-        default:
-            break;
-        }
-
-        delete chDialog;
-    }
-    else{
-        chooseDialog *chDialog = new chooseDialog(chooseDialog::TypeChoice::MEDECIN_ALREADY_EXIST, this->idMedecin, this);
-        chDialog->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint);
-        int res = chDialog->exec();
-
-        if(res == QDialog::Rejected){
-            this->close();
-        }
-
-        int clientNumber = chDialog->getClientNumber();
-        Q_UNUSED(clientNumber);
-        delete chDialog;
-    }
 }
 
 void MainWindow::startDownloadClientData(int clientNumber)
@@ -78,9 +35,9 @@ void MainWindow::startDownloadClientData(int clientNumber)
 
 void MainWindow::createNewClientData()
 {
-    QDir dir(QCoreApplication::applicationDirPath()+"/save/"+this->idMedecin+"/"+this->currentIdPatient);
+    QDir dir(this->patient->getDirPath());
     if(dir.exists()){
-        QMessageBox::information(this, "Client existant", "Ce client existe déjà, il sera chargé.");
+        QMessageBox::information(this, "Patient existant", "Ce patient existe déjà, il sera chargé.");
     }
 
     dir.mkdir(dir.path());

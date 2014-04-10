@@ -1,6 +1,9 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
+#include <objects/doctor.hpp>
+#include <objects/patient.hpp>
+
 #include <QMainWindow>
 
 namespace Ui {
@@ -12,15 +15,15 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QString idMedecin, QString passMedecin, QWidget *parent = 0);
+    explicit MainWindow(Doctor *doctor, Patient *patient, QWidget *parent = 0);
     ~MainWindow();
 
     void init();
 private:
     Ui::MainWindow *ui;
 
-    QString currentIdPatient;
-    QString idMedecin, passMedecin;
+    Doctor *doctor;
+    Patient *patient;
 
     void startDownloadClientData(int clientNumber = -1);
     void createNewClientData();
