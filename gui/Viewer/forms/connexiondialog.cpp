@@ -11,6 +11,7 @@ connexionDialog::connexionDialog(QWidget *parent) :
     ui->setupUi(this);
 
     this->isNew = false;
+    this->doctor = new Doctor();
     this->ui->pushButton_next->setVisible(false);
     this->ui->stackedWidget->setCurrentIndex(0);
     this->checkToEnableConnection();
@@ -23,22 +24,48 @@ connexionDialog::~connexionDialog()
 
 void connexionDialog::accept()
 {
+    this->doctor->setId(this->getIdDoctor());
+    this->doctor->setPass(this->getPassDoctor());
+    this->doctor->setDirPath(QCoreApplication::applicationDirPath()+"/save/"+this->doctor->getId());
+
+    QDir dir(this->doctor->getDirPath());
+
     if(this->isNew){
-        QDir dir(QCoreApplication::applicationDirPath()+"/save/"+this->getIdMedecin());
         if(!dir.exists()){
             dir.mkdir(dir.path());
+        }
+
+        this->doctor->setType(Doctor::TypeDoctor::NEW_DOCTOR);
+    }
+    else{
+        if(dir.entryInfoList(QDir::NoDotAndDotDot).size() == 0){
+            this->doctor->setType(Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST_BUT_NOTHING);
+        }
+        else{
+            this->doctor->setType(Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST);
         }
     }
 
     QDialog::accept();
 }
 
-QString connexionDialog::getIdMedecin()
+void connexionDialog::reject()
+{
+    delete this->doctor;
+    QDialog::reject();
+}
+
+Doctor* connexionDialog::getDoctor()
+{
+    return this->doctor;
+}
+
+QString connexionDialog::getIdDoctor()
 {
     return this->ui->lineEdit_userLogin->text();
 }
 
-QString connexionDialog::getPassMedecin()
+QString connexionDialog::getPassDoctor()
 {
     return this->ui->lineEdit_userPassword->text();
 }
@@ -73,7 +100,7 @@ void connexionDialog::on_pushButton_connectionNewMedecin_clicked()
 
 void connexionDialog::on_lineEdit_textChanged(const QString &arg1)
 {
-    if(this->getPassMedecin() == arg1){
+    if(this->getPassDoctor() == arg1){
         this->ui->pushButton_connectionNewMedecin->setEnabled(true);
         this->ui->label_differentPassword->setVisible(false);
     }

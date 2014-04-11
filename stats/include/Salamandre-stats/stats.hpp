@@ -8,11 +8,12 @@
 
 class Stats
 {
-public:
-    Stats();
-    void setup();
-    void add_node(std::string host, int port);
-    std::list<std::shared_ptr<Node>> get_nodes();
+    public:
+        Stats();
+
+        void add_node(std::string host, int port);
+        void delete_node(std::string host, int port);
+        std::list<std::shared_ptr<Node>> get_nodes();
 };
 
 #endif // STATS_HPP

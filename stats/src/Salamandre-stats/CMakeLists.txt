@@ -4,7 +4,7 @@ set(SRCROOT ${PROJECT_SOURCE_DIR}/src/${CMAKE_PROJECT_NAME})
 #ROOT files
 set(ROOT_SRC
 	${SRCROOT}/stats.cpp
-        ${SRCROOT}/node.cpp
+    ${SRCROOT}/node.cpp
 )
 set(ROOT_HEADER
 	${INCROOT}/stats.hpp
@@ -34,7 +34,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME} ${LIBS})
 INSTALL(TARGETS ${CMAKE_PROJECT_NAME}
     DESTINATION lib
 )
-
 
 #static lib
 add_library(${CMAKE_PROJECT_NAME}-static STATIC ${FILES_HEADER} ${FILES_SRC})
