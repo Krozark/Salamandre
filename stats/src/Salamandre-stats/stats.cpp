@@ -4,13 +4,6 @@ Stats::Stats()
 {
 }
 
-void Stats::setup()
-{
-    orm::Bdd::Default.connect();
-    Node::create(orm::Bdd::Default);
-    //orm::Bdd::Default.disconnect();
-}
-
 void Stats::add_node(std::string host, int port)
 {
     Node node;
