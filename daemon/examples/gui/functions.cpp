@@ -24,7 +24,7 @@ void run(ntw::cli::Client& client)
         }break;
         default :
         {
-            std::cout<<"[Recv] Server error code:"<<status":"<<salamandre::gui::statusToString(status)<<std::endl;
+            std::cout<<"[Recv] Server error code:"<<status<<":"<<salamandre::gui::statusToString((salamandre::gui::status)status)<<std::endl;
             client.request_sock.clear();
             /// server error???
         }break;

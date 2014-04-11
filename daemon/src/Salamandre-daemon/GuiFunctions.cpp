@@ -29,7 +29,7 @@ namespace gui
             }break;
             default:
             {
-                msg = "Unknow code value";
+                msg = "Unknow function id";
             }break;
         }
         return msg;
