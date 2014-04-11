@@ -3,6 +3,7 @@
 
 #include <crypto++/default.h>
 #include <QDir>
+#include <QDebug>
 
 connexionDialog::connexionDialog(QWidget *parent) :
     QDialog(parent),
@@ -38,10 +39,12 @@ void connexionDialog::accept()
         this->doctor->setType(Doctor::TypeDoctor::NEW_DOCTOR);
     }
     else{
-        if(dir.entryInfoList(QDir::NoDotAndDotDot).size() == 0){
+        if(dir.entryInfoList(QDir::AllDirs |& QDir::NoDotAndDotDot).size() == 0){
+            qDebug() << "doctor already exists but nothing";
             this->doctor->setType(Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST_BUT_NOTHING);
         }
         else{
+            qDebug() << "doctor already exists";
             this->doctor->setType(Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST);
         }
     }

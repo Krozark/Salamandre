@@ -1,8 +1,8 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
-#include <ORM/fields.hpp>
 #include <ORM/models/SqlObject.hpp>
+#include <ORM/fields.hpp>
 
 class Node : public orm::SqlObject<Node>
 {
