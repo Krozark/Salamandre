@@ -26,7 +26,8 @@ namespace gui
     enum status {
         OK = 0, 
         TODO = 1,
-        WRONG_PARAM = 2
+        WRONG_PARAM = 2,
+        ENABLE_TO_SEND_FILE = 3
     };
 
     /***
@@ -59,13 +60,6 @@ namespace gui
     void funcSync(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename);
 
 
-    /**
-     * \brief convert param as a fiule path
-     * \param id_medecin the medecin id
-     * \param id_patient the patient id
-     * \param filepath the filename
-     */
-    std::string toPath(int id_medecin, int id_patient,std::string filename);
 }
 }
 #endif

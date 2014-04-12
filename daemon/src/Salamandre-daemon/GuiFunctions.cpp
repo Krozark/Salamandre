@@ -1,9 +1,10 @@
 #include <Salamandre-daemon/GuiFunctions.hpp>
 
+#include <Salamandre-daemon/FileManager.hpp>
+
 #include <Socket/FuncWrapper.hpp>
 
 #include <iostream>
-#include <sstream>
 
 namespace salamandre
 {
@@ -26,6 +27,10 @@ namespace gui
             case status::WRONG_PARAM:
             {
                 msg = "Wrong param value";
+            }break;
+            case status::ENABLE_TO_SEND_FILE :
+            {
+                msg = "Enable to save file on network";
             }break;
             default:
             {
@@ -65,7 +70,17 @@ namespace gui
             sock.setStatus(status::WRONG_PARAM);
             return;
         }
-        sock.setStatus(status::TODO);
+
+        bool status;
+        if(id_patient > 0 and filepath != "")
+            status = upload(id_medecin,id_patient,filepath);
+        else if(id_patient > 0)
+            status = upload(id_medecin,id_patient);
+        else
+            status = upload(id_medecin);
+
+        if(status == false)
+            sock.setStatus(status::ENABLE_TO_SEND_FILE);
     }
 
     void funcSync(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename)
@@ -74,11 +89,5 @@ namespace gui
     }
 
 
-    std::string toPath(int id_medecin,int id_patient, std::string filename)
-    {
-        std::stringstream stream;
-        stream<<id_medecin<<"/"<<id_patient<<"/"<<filename;
-        return stream.str();
-    }
 }   
 }
