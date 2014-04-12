@@ -12,9 +12,10 @@ int main()
     orm::Bdd::Default.connect();
     orm::Tables::create();
 
-    Stats stats_module = Stats();
-    
-    stats_module.add_node(std::string("test"), 1234);
+    Stats::add_node(std::string("test"), 1234);
+
+    for(auto& u : Stats::get_nodes(12))
+        std::cout<<*u<<std::endl;
 
     orm::Bdd::Default.disconnect();
     return 0;

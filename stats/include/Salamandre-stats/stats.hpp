@@ -9,11 +9,17 @@
 class Stats
 {
     public:
-        Stats();
+        Stats() = delete;
 
-        void add_node(std::string host, int port);
-        void delete_node(std::string host, int port);
-        std::list<std::shared_ptr<Node>> get_nodes();
+        static void add_node(std::string host, int port);
+        static void delete_node(std::string host, int port);
+
+        /**
+         * \brief get a number of nodes
+         */
+        static std::list<std::shared_ptr<Node>> get_nodes(unsigned int number);
+
+        static std::list<std::shared_ptr<Node>> get_nodes();
 };
 
 #endif // STATS_HPP
