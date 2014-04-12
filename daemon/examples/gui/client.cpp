@@ -1,4 +1,3 @@
-#include "defines.hpp"
 #include "functions.hpp"
 ///data base
 #include <Socket/client/Client.hpp>

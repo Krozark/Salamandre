@@ -1,6 +1,7 @@
 #ifndef SALAMANDRE_GUIFUNCTIONS_HPP
 #define SALAMANDRE_GUIFUNCTIONS_HPP
 
+#include <Socket/define.hpp>
 #include <Socket/SocketSerialized.hpp>
 
 #include <string>
@@ -24,6 +25,7 @@ namespace gui
      * \brief enum that contain the error code put as socket status
      */
     enum status {
+        STOP = NTW_STOP_CONNEXION,
         OK = 0, 
         TODO = 1,
         WRONG_PARAM = 2,

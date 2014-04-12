@@ -1,5 +1,4 @@
 #include "functions.hpp"
-#include "defines.hpp"
 
 #include <Socket/SocketSerialized.hpp>
 #include <Socket/client/Client.hpp>
@@ -15,7 +14,7 @@ void run(ntw::cli::Client& client)
     short int status = client.request_sock.getStatus();
     switch(status)
     {
-        case ERRORS::STOP :
+        case salamandre::gui::status::STOP :
         {
             std::cerr<<" : The server is probably down."<<std::endl;
             std::cout<<"[Recv] Stop"<<std::endl

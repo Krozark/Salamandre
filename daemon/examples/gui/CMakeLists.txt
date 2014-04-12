@@ -1,5 +1,4 @@
 set(HEADERS
-    defines.hpp
     functions.hpp
 )
 

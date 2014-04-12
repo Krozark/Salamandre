@@ -73,19 +73,19 @@ namespace gui
 
         bool status;
         if(id_patient > 0 and filepath != "")
-            status = upload(id_medecin,id_patient,filepath);
+            status = FileManager::prepareForUpload(id_medecin,id_patient,filepath);
         else if(id_patient > 0)
-            status = upload(id_medecin,id_patient);
+            status = FileManager::prepareForUpload(id_medecin,id_patient);
         else
-            status = upload(id_medecin);
+            status = FileManager::prepareForUpload(id_medecin);
 
         if(status == false)
-            sock.setStatus(status::ENABLE_TO_SEND_FILE);
+            sock.setStatus(gui::status::ENABLE_TO_SEND_FILE);
     }
 
     void funcSync(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename)
     {
-        sock.setStatus(status::TODO);
+        sock.setStatus(gui::status::TODO);
     }
 
 
