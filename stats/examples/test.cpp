@@ -14,7 +14,7 @@ int main()
 
     Stats::add_node(std::string("test"), 1234);
 
-    for(auto& u : Stats::get_nodes(12))
+    for(auto& u : Stats::get_nodes(Stats::get_duplication_number_for(99.99)))
         std::cout<<*u<<std::endl;
 
     orm::Bdd::Default.disconnect();

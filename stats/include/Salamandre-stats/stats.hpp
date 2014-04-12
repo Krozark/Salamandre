@@ -19,6 +19,15 @@ class Stats
          */
         static std::list<std::shared_ptr<Node>> get_nodes(unsigned int number);
 
+        /**
+         * \brief get the number of minimal duplication of file to have 
+         * a robustesse of \a robustesse %
+         * \param robustesse the robustess needed (0~100)
+         * \return the number of duplication neded
+         */
+        static unsigned int get_duplication_number_for(float robustesse);
+
+    private:
         static std::list<std::shared_ptr<Node>> get_nodes();
 };
 

@@ -48,6 +48,12 @@ std::list<std::shared_ptr<Node>> Stats::get_nodes(unsigned int number)
     return list;
 }
 
+unsigned int Stats::get_duplication_number_for(float robustesse)
+{
+    //\todo TODO
+    return 4;
+}
+
 std::list<std::shared_ptr<Node>> Stats::get_nodes()
 {
     std::list<std::shared_ptr<Node>> list = Node::all();
