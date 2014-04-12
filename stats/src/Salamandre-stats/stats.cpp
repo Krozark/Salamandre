@@ -2,13 +2,18 @@
 
 void Stats::add_node(std::string host, int port)
 {
-    Node node;
-    //std::list<Cache<Node>::type_ptr> results;
-    Node::query().filter(host, "exact", Node::_host).filter(port, "exact", Node::_port).get(node);
-    node.host = host;
-    node.port = port;
-    node.last_seen_time = time(NULL);
-    node.save();
+	orm::Cache<Node>::type_ptr node;
+    std::list<orm::Cache<Node>::type_ptr> results;
+    Node::query().filter(host, "exact", Node::_host).filter(port, "exact", Node::_port).get(results);
+    if (results.size() > 0) {
+		node = results.front();
+	} else {
+		node = orm::Cache<Node>::type_ptr(new Node());
+		node->host = host;
+		node->port = port;
+	}
+    node->last_seen_time = time(NULL);
+    node->save();
 }
 
 void Stats::delete_node(std::string host, int port)

@@ -17,6 +17,11 @@ int main()
     for(auto& u : Stats::get_nodes(12))
         std::cout<<*u<<std::endl;
 
+	auto results = stats_module.get_nodes();
+
+	for(auto u : results)
+		std::cout<<*u<<std::endl;
+
     orm::Bdd::Default.disconnect();
     return 0;
 }
