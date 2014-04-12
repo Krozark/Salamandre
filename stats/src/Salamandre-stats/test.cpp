@@ -17,6 +17,11 @@ int main()
     //orm::Tables::create();
     stats_module.add_node(std::string("test"), 1234);
 
+	auto results = stats_module.get_nodes();
+
+	for(auto u : results)
+		std::cout<<*u<<std::endl;
+
     orm::Bdd::Default.disconnect();
     return 0;
 }
