@@ -3,18 +3,17 @@ orm::Sqlite3Bdd def("./datas/test.db");
 
 orm::Bdd& orm::Bdd::Default = def;
 
-#include <ORM/fields.hpp>
-#include <ORM/models/SqlObject.hpp>
-
 #include <Salamandre-stats/stats.hpp>
 
-#include <iostream>
+//#include <iostream>
 
 int main()
 {
+    orm::Bdd::Default.connect();
+    orm::Tables::create();
+
     Stats stats_module = Stats();
-    stats_module.setup();
-    //orm::Tables::create();
+    
     stats_module.add_node(std::string("test"), 1234);
 
 	auto results = stats_module.get_nodes();
