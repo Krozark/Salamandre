@@ -26,7 +26,20 @@ private:
     salamandre::Patient *patient;
 
     void startDownloadClientData(int clientNumber = -1);
-    void createNewClientData();
+    void loadRecords();
+
+    void loadFEC();
+    void loadFCT();
+    void loadFMT();
+    void loadFMN();
+
+    bool checkNeedSave();
+
+private slots:
+    void on_actionQuitter_triggered();
+    void on_actionNouveau_patient_triggered();
+    void on_actionChanger_de_patient_triggered();
+    void on_actionEnregistrer_triggered();
 };
 
 #endif // MAINWINDOW_HPP
