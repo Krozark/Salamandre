@@ -6,7 +6,7 @@
 #include <QMessageBox>
 #include <QDebug>
 
-MainWindow::MainWindow(Doctor *doctor, Patient *patient, QWidget *parent) :
+MainWindow::MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -14,6 +14,8 @@ MainWindow::MainWindow(Doctor *doctor, Patient *patient, QWidget *parent) :
 
     this->doctor = doctor;
     this->patient = patient;
+
+    this->setWindowTitle(this->windowTitle() + " - Patient n°"+this->patient->getId());
 
     this->init();
 }

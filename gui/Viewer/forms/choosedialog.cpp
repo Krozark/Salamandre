@@ -1,30 +1,22 @@
 #include <forms/choosedialog.hpp>
 #include <ui_choosedialog.h>
 
-#include <objects/FicheConfidentielle.hpp>
-#include <objects/FicheDonneesMedicales.hpp>
-#include <objects/FicheDonneesNumeriques.hpp>
-#include <objects/FicheEtatCivil.hpp>
-
 #include <QDir>
 #include <QMessageBox>
 #include <QDebug>
 
-chooseDialog::chooseDialog(Doctor *doctor, QWidget *parent) :
+chooseDialog::chooseDialog(salamandre::Doctor *doctor, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::chooseDialog)
 {
     ui->setupUi(this);
 
     this->doctor = doctor;
-    this->patient = new Patient();
+    this->patient = new salamandre::Patient();
 
-    if(this->doctor->getType() == Doctor::TypeDoctor::NEW_DOCTOR){
-        this->ui->widget_clientNumber->setVisible(false);
-        this->ui->lineEdit_clientNumber->setValidator(new QIntValidator());
-    }
-    else if(this->doctor->getType() == Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST){
+    if(this->doctor->getType() == salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST){
         this->model = new QStandardItemModel();
+        this->filterModel = new QSortFilterProxyModel();
 
         QDir dir(this->doctor->getDirPath());
         if(!dir.exists()){
@@ -35,10 +27,10 @@ chooseDialog::chooseDialog(Doctor *doctor, QWidget *parent) :
         QFileInfoList listInfo = dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot, QDir::Time);
         int nbSubDir = listInfo.size();
 
-        QStringList fileFilter = QStringList() << QString::fromStdString(salamandre::FicheConfidentielle::fileName)
-                                               << QString::fromStdString(salamandre::FicheDonneesMedicales::fileName)
-                                               << QString::fromStdString(salamandre::FicheDonneesNumeriques::fileName)
-                                               << QString::fromStdString(salamandre::FicheEtatCivil::fileName);
+        QStringList fileFilter = QStringList() << QString::fromStdString(salamandre::ConfidentialRecord::fileName)
+                                               << QString::fromStdString(salamandre::MedicalRecord::fileName)
+                                               << QString::fromStdString(salamandre::DigitalRecord::fileName)
+                                               << QString::fromStdString(salamandre::RegistryRecord::fileName);
 
         for(int i = 0; i < nbSubDir; ++i){
             QFileInfo dInfo = listInfo.at(i);
@@ -52,79 +44,120 @@ chooseDialog::chooseDialog(Doctor *doctor, QWidget *parent) :
 
             if(nbSubFile != 4){
                 item->setIcon(QPixmap(":/icons/controls/update.png"));
-                item->setToolTip("Une fiche est manquante, elle sera récupérée.");
+
+                if(nbSubFile == 3)
+                    item->setToolTip("Une fiche est manquante, elle sera récupérée.");
+                else
+                    item->setToolTip("Certaines fiches sont manquantes, elles seront récupérées.");
             }
 
             this->model->appendRow(item);
         }
 
-        this->ui->listView_availablePatient->setModel(this->model);
+        this->filterModel->setSourceModel(this->model);
+        this->ui->listView_availablePatient->setModel(this->filterModel);
+        this->ui->label_firstConnection->setVisible(false);
+        this->ui->stackedWidget->setCurrentIndex(this->doctor->getType());
+    }
+    else if(this->doctor->getType() == salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST_BUT_NOTHING){
+        this->ui->label_firstConnection->setVisible(true);
+        this->ui->stackedWidget->setCurrentIndex(salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST);
     }
     else{
+        this->ui->stackedWidget->setCurrentIndex(this->doctor->getType());
     }
-
-    this->ui->stackedWidget->setCurrentIndex(this->doctor->getType());
-
 }
 
 chooseDialog::~chooseDialog()
 {
-    delete this->ui->lineEdit_clientNumber->validator();
     delete ui;
 }
 
-void chooseDialog::close()
+void chooseDialog::accept()
 {
-    this->patient->setId(this->getPatientNumber());
-    QDialog::close();
+    switch(this->ui->stackedWidget->currentIndex()){
+    case salamandre::Doctor::TypeDoctor::NEW_DOCTOR:
+        this->patient->setId(this->ui->lineEdit_newMedecinAndClientData->text());
+        this->patient->setType(salamandre::Patient::TypePatient::NEW_PATIENT);
+        break;
+    case salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST:
+        if(this->ui->radioButton_availablePatient->isChecked()){
+            QItemSelectionModel *index = this->ui->listView_availablePatient->selectionModel();
+            this->patient->setId(this->model->item(index->currentIndex().row())->data().toString());
+            this->patient->setType(salamandre::Patient::TypePatient::PATIENT_ALREADY_EXIST);
+        }
+        else if(this->ui->radioButton_newClientData->isChecked()){
+            this->patient->setId(this->ui->lineEdit_newClientData->text());
+            this->patient->setType(salamandre::Patient::TypePatient::NEW_PATIENT);
+        }
+        else if(this->ui->radioButton_getDataClient->isChecked()){
+            this->patient->setId(this->ui->lineEdit_getDataClient->text());
+            this->patient->setType(salamandre::Patient::TypePatient::PATIENT_ALREADY_EXIST);
+        }
+        break;
+    default:
+        QMessageBox::critical(this, "Erreur critique", "Une erreur critique s'est produite.");
+        this->reject();
+        break;
+    }
+
+    this->patient->setDirPath(this->doctor->getDirPath()+"/"+this->patient->getId());
+    QDir dirPatient(this->patient->getDirPath());
+
+    if(!dirPatient.exists()){
+        dirPatient.mkdir(dirPatient.path());
+    }
+
+    if(this->patient->getType() == salamandre::Patient::TypePatient::NEW_PATIENT){
+        this->createNewRecords();
+    }
+    else{
+        this->loadAllRecords();
+    }
+
+    QDialog::accept();
 }
 
-Patient* chooseDialog::getPatient()
+void chooseDialog::loadAllRecords()
+{
+    QStringList fileFilter = QStringList() << QString::fromStdString(salamandre::ConfidentialRecord::fileName)
+                                           << QString::fromStdString(salamandre::MedicalRecord::fileName)
+                                           << QString::fromStdString(salamandre::DigitalRecord::fileName)
+                                           << QString::fromStdString(salamandre::RegistryRecord::fileName);
+
+    QDir dirPatient(this->patient->getDirPath());
+    QFileInfoList listFileInfo = dirPatient.entryInfoList(fileFilter, QDir::Files | QDir::NoDotAndDotDot);
+
+    int nbFile = listFileInfo.size();
+    int idPatient = this->patient->getId().toInt();
+
+    if(nbFile == 4){
+        this->patient->setConfidentialRecord(new salamandre::ConfidentialRecord(idPatient));
+        this->patient->setDigitalRecord(new salamandre::DigitalRecord(idPatient));
+        this->patient->setMedicalRecord(new salamandre::MedicalRecord(idPatient));
+        this->patient->setRegistryRecord(new salamandre::RegistryRecord(idPatient));
+    }
+    else{
+        for(int i = 0; i < nbFile; ++i){
+
+        }
+    }
+
+}
+
+void chooseDialog::createNewRecords()
+{
+    int idPatient = this->patient->getId().toInt();
+
+    this->patient->setConfidentialRecord(new salamandre::ConfidentialRecord(idPatient));
+    this->patient->setDigitalRecord(new salamandre::DigitalRecord(idPatient));
+    this->patient->setMedicalRecord(new salamandre::MedicalRecord(idPatient));
+    this->patient->setRegistryRecord(new salamandre::RegistryRecord(idPatient));
+}
+
+salamandre::Patient* chooseDialog::getPatient()
 {
     return this->patient;
-}
-
-chooseDialog::Choice chooseDialog::getChoice()
-{
-    if(this->ui->radioButton_getAllClientsFiles->isChecked()){
-        return Choice::GET_ALL_CLIENTS_DATA;
-    }
-    else if(this->ui->radioButton_getClientFiles->isChecked()){
-        return Choice::GET_ONE_CLIENT_DATA;
-    }
-    else if(this->ui->radioButton_createClientFiles->isChecked()){
-        return Choice::NEW_CLIENT_DATA;
-    }
-
-    return Choice::NEW_CLIENT_DATA;
-}
-
-QString chooseDialog::getPatientNumber()
-{
-    return this->ui->lineEdit_clientNumber->text();
-}
-
-void chooseDialog::on_radioButton_getAllClientsFiles_clicked()
-{
-    this->ui->widget_clientNumber->setVisible(false);
-    this->ui->buttonBox->setEnabled(true);
-}
-
-void chooseDialog::on_radioButton_getClientFiles_clicked()
-{
-    this->ui->widget_clientNumber->setVisible(true);
-    this->ui->buttonBox->setEnabled(!this->ui->lineEdit_clientNumber->text().isEmpty());
-}
-
-void chooseDialog::on_radioButton_createClientFiles_clicked()
-{
-    this->ui->widget_clientNumber->setVisible(true);
-    this->ui->buttonBox->setEnabled(!this->ui->lineEdit_clientNumber->text().isEmpty());
-}
-
-void chooseDialog::on_lineEdit_clientNumber_textChanged(const QString &arg1)
-{
-    this->ui->buttonBox->setEnabled(!arg1.isEmpty());
 }
 
 void chooseDialog::on_radioButton_newClientData_clicked()
@@ -132,6 +165,8 @@ void chooseDialog::on_radioButton_newClientData_clicked()
     this->ui->listView_availablePatient->setEnabled(false);
     this->ui->lineEdit_newClientData->setEnabled(true);
     this->ui->lineEdit_getDataClient->setEnabled(false);
+
+    this->ui->buttonBox->setEnabled(!this->ui->lineEdit_newClientData->text().isEmpty());
 }
 
 void chooseDialog::on_radioButton_getDataClient_clicked()
@@ -139,6 +174,8 @@ void chooseDialog::on_radioButton_getDataClient_clicked()
     this->ui->listView_availablePatient->setEnabled(false);
     this->ui->lineEdit_getDataClient->setEnabled(true);
     this->ui->lineEdit_newClientData->setEnabled(false);
+
+    this->ui->buttonBox->setEnabled(!this->ui->lineEdit_getDataClient->text().isEmpty());
 }
 
 void chooseDialog::on_radioButton_availablePatient_clicked()
@@ -146,4 +183,40 @@ void chooseDialog::on_radioButton_availablePatient_clicked()
     this->ui->listView_availablePatient->setEnabled(true);
     this->ui->lineEdit_getDataClient->setEnabled(false);
     this->ui->lineEdit_newClientData->setEnabled(false);
+
+    this->ui->buttonBox->setEnabled(this->ui->listView_availablePatient->currentIndex().isValid());
+}
+
+void chooseDialog::on_lineEdit_newMedecinAndClientData_textChanged(const QString &arg1)
+{
+    this->ui->buttonBox->setEnabled(!arg1.isEmpty());
+}
+
+void chooseDialog::on_listView_availablePatient_clicked(const QModelIndex &index)
+{
+    if(this->ui->radioButton_availablePatient->isChecked())
+        this->ui->buttonBox->setEnabled(index.isValid());
+    else
+        this->ui->buttonBox->setEnabled(false);
+}
+
+void chooseDialog::on_lineEdit_newClientData_textChanged(const QString &arg1)
+{
+    if(this->ui->radioButton_newClientData->isChecked())
+        this->ui->buttonBox->setEnabled(!arg1.isEmpty());
+    else
+        this->ui->buttonBox->setEnabled(false);
+}
+
+void chooseDialog::on_lineEdit_getDataClient_textChanged(const QString &arg1)
+{
+    if(this->ui->radioButton_getDataClient->isChecked())
+        this->ui->buttonBox->setEnabled(!arg1.isEmpty());
+    else
+        this->ui->buttonBox->setEnabled(false);
+}
+
+void chooseDialog::on_lineEdit_researchPatient_textChanged(const QString &arg1)
+{
+    this->filterModel->setFilterRegExp(arg1);
 }

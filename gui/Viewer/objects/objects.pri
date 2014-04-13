@@ -1,15 +1,15 @@
-SOURCES += objects/Fiche.cpp \
-    objects/FicheConfidentielle.cpp \
-    objects/FicheDonneesMedicales.cpp \
-    objects/FicheDonneesNumeriques.cpp \
-    objects/FicheEtatCivil.cpp \
+SOURCES += objects/Record.cpp \
+    objects/ConfidentialRecord.cpp \
+    objects/MedicalRecord.cpp \
+    objects/DigitalRecord.cpp \
+    objects/RegistryRecord.cpp \
     objects/doctor.cpp \
     objects/patient.cpp
 
-HEADERS += objects/Fiche.hpp \
-    objects/FicheConfidentielle.hpp \
-    objects/FicheDonneesMedicales.hpp \
-    objects/FicheDonneesNumeriques.hpp \
-    objects/FicheEtatCivil.hpp \
+HEADERS += objects/Record.hpp \
+    objects/ConfidentialRecord.hpp \
+    objects/MedicalRecord.hpp \
+    objects/DigitalRecord.hpp \
+    objects/RegistryRecord.hpp \
     objects/doctor.hpp \
     objects/patient.hpp

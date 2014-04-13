@@ -23,7 +23,11 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Connexion</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../Viewer.qrc">
+    <normaloff>:/icons/salamandre.png</normaloff>:/icons/salamandre.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">
@@ -203,6 +207,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../Viewer.qrc"/>
+ </resources>
  <connections/>
 </ui>

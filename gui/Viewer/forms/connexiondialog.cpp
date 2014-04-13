@@ -12,7 +12,7 @@ connexionDialog::connexionDialog(QWidget *parent) :
     ui->setupUi(this);
 
     this->isNew = false;
-    this->doctor = new Doctor();
+    this->doctor = new salamandre::Doctor();
     this->ui->pushButton_next->setVisible(false);
     this->ui->stackedWidget->setCurrentIndex(0);
     this->checkToEnableConnection();
@@ -36,16 +36,14 @@ void connexionDialog::accept()
             dir.mkdir(dir.path());
         }
 
-        this->doctor->setType(Doctor::TypeDoctor::NEW_DOCTOR);
+        this->doctor->setType(salamandre::Doctor::TypeDoctor::NEW_DOCTOR);
     }
     else{
-        if(dir.entryInfoList(QDir::AllDirs |& QDir::NoDotAndDotDot).size() == 0){
-            qDebug() << "doctor already exists but nothing";
-            this->doctor->setType(Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST_BUT_NOTHING);
+        if(dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot).size() == 0){
+            this->doctor->setType(salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST_BUT_NOTHING);
         }
         else{
-            qDebug() << "doctor already exists";
-            this->doctor->setType(Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST);
+            this->doctor->setType(salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST);
         }
     }
 
@@ -58,7 +56,7 @@ void connexionDialog::reject()
     QDialog::reject();
 }
 
-Doctor* connexionDialog::getDoctor()
+salamandre::Doctor* connexionDialog::getDoctor()
 {
     return this->doctor;
 }

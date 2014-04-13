@@ -1,25 +1,53 @@
 #ifndef PATIENT_HPP
 #define PATIENT_HPP
 
-#include <QMetaType>
 #include <QString>
 
-class Patient
-{
-public:
-    Patient();
+#include <objects/ConfidentialRecord.hpp>
+#include <objects/DigitalRecord.hpp>
+#include <objects/MedicalRecord.hpp>
+#include <objects/RegistryRecord.hpp>
 
-    void setDirPath(QString dirPath);
-    void setId(QString id);
+namespace salamandre {
+    class Patient
+    {
+    public:
 
-    QString getDirPath();
-    QString getId();
+        enum TypePatient{
+            NEW_PATIENT = 0,
+            PATIENT_ALREADY_EXIST
+        };
 
-private:
-    QString id;
-    QString dirPath;
-};
+        Patient();
 
-Q_DECLARE_METATYPE(Patient*)
+        void setDirPath(QString dirPath);
+        void setId(QString id);
+        void setType(TypePatient type);
+
+        void setConfidentialRecord(ConfidentialRecord *confidentialRecord);
+        void setDigitalRecord(DigitalRecord *digitalRecord);
+        void setMedicalRecord(MedicalRecord *medicalRecord);
+        void setRegistryRecord(RegistryRecord *registryRecord);
+
+        QString getDirPath();
+        QString getId();
+        TypePatient getType();
+
+        ConfidentialRecord *getConfidentialRecord();
+        DigitalRecord *getDigitalRecord();
+        MedicalRecord *getMedicalRecord();
+        RegistryRecord *getRegistryRecord();
+
+    private:
+        QString id;
+        QString dirPath;
+        TypePatient type;
+
+        ConfidentialRecord *confidentialRecord;
+        DigitalRecord *digitalRecord;
+        MedicalRecord *medicalRecord;
+        RegistryRecord *registryRecord;
+    };
+}
 
 #endif // PATIENT_HPP

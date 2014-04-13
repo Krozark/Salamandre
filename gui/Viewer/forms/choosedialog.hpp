@@ -5,6 +5,7 @@
 #include <objects/patient.hpp>
 
 #include <QDialog>
+#include <QSortFilterProxyModel>
 #include <QStandardItemModel>
 
 namespace Ui {
@@ -23,30 +24,34 @@ public:
         NEW_CLIENT_DATA
     };
 
-    explicit chooseDialog(Doctor *doctor, QWidget *parent = 0);
+    explicit chooseDialog(salamandre::Doctor *doctor, QWidget *parent = 0);
     ~chooseDialog();
 
-    Choice getChoice();
-    QString getPatientNumber();
+    salamandre::Patient* getPatient();
 
-    Patient* getPatient();
-
-    void close();
+    void accept();
     
 private slots:
-    void on_radioButton_getAllClientsFiles_clicked();
-    void on_radioButton_getClientFiles_clicked();
-    void on_radioButton_createClientFiles_clicked();
-    void on_lineEdit_clientNumber_textChanged(const QString &arg1);
     void on_radioButton_newClientData_clicked();
     void on_radioButton_getDataClient_clicked();
     void on_radioButton_availablePatient_clicked();
 
+    void on_lineEdit_newMedecinAndClientData_textChanged(const QString &arg1);
+    void on_listView_availablePatient_clicked(const QModelIndex &index);
+
+    void on_lineEdit_newClientData_textChanged(const QString &arg1);
+    void on_lineEdit_getDataClient_textChanged(const QString &arg1);
+    void on_lineEdit_researchPatient_textChanged(const QString &arg1);
+
 private:
     Ui::chooseDialog *ui;
     QStandardItemModel *model;
-    Doctor *doctor;
-    Patient *patient;
+    QSortFilterProxyModel *filterModel;
+    salamandre::Doctor *doctor;
+    salamandre::Patient *patient;
+
+    void createNewRecords();
+    void loadAllRecords();
 };
 
 #endif // CHOOSEDIALOG_HPP
