@@ -15,6 +15,4 @@ public:
     MAKE_STATIC_COLUMN(host, port, last_seen_time);
 };
 
-
-
 #endif // NODE_HPP

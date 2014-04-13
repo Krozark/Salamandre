@@ -16,6 +16,9 @@ class Stats
         static void add_node(std::string host, int port);
         static void delete_node(std::string host, int port);
 
+        static void init();
+        static void close();
+
 
         /**
          * \brief get the number of minimal duplication of file to have 

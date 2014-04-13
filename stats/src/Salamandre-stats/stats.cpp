@@ -1,6 +1,21 @@
+#include <ORM/backends/Sqlite3.hpp>
+orm::Sqlite3Bdd def("./salamandre.db");
+orm::Bdd& orm::Bdd::Default = def;
+
 #include <Salamandre-stats/stats.hpp>
 
-float default_robustesse = 99.9f;
+float Stats::default_robustesse = 99.9f;
+
+void Stats::init()
+{
+    orm::Bdd::Default.connect();
+    orm::Tables::create();
+}
+
+void Stats::close()
+{
+    orm::Bdd::Default.disconnect();
+}
 
 void Stats::add_node(std::string host, int port)
 {

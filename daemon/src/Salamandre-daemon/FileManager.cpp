@@ -1,4 +1,7 @@
 #include <Salamandre-daemon/FileManager.hpp>
+#include <Salamandre-daemon/std.hpp>
+
+#include <Salamandre-stats/stats.hpp>
 
 #include <sstream>
 
@@ -9,13 +12,38 @@ namespace salamandre
 
     bool FileManager::prepareForUpload(int id_medecin)
     {
+        int res = 0;
+        const std::string path_medecin = std::join("/",std::vector<std::string>({new_file_dir_path,std::to_string(id_medecin)}));
         //check if the medecin dir exist
-        //check if the patient dir exist
-        //get list of files
+        if(std::createDir(path_medecin) == 2) //already exist
+        {
+            //check if the patient dir exist
+            const std::vector<std::string> patients = std::getDirList(path_medecin);
+            for(const std::string& patient : patients)
+            {
+                //patient path
+                const std::string path_patient = std::join("/",std::vector<std::string>({path_medecin,patient}));
+                //get list of files
+                const std::vector<std::string> files = std::getFileList(path_patient);
 
-        //get list of dest on network
-        //send them
-        return true;
+                for(const std::string& file : files)
+                {
+                    //get list of dest on network
+                    auto dests = Stats::get_nodes();
+                    //send them
+                    for(auto& dest : dests)
+                    {
+                        const std::string path_save = std::join("/",std::vector<std::string>({network_file_dir_path,
+                                                                                             dest->host+":"+std::to_string((int)dest->port),
+                                                                                             std::to_string(id_medecin),
+                                                                                             patient}));
+                        std::cout<<path_save<<" + "<<file<<std::endl;
+                    }
+                }
+                ++res;
+            }
+        }
+        return res;
     }
 
     bool FileManager::prepareForUpload(int id_medecin,int id_patient)

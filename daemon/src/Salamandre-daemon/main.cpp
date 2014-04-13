@@ -64,7 +64,6 @@ int main(int argc,char* argv[])
         std::cout<<e.what()<<std::endl;
     }
 
-    
     std::cout<<"Daemon is now close. Good bye"<<std::endl;    
 
     return 0;

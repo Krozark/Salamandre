@@ -15,10 +15,10 @@ namespace std
     std::vector<std::string> split(const std::string& string, const std::string& del);
 
     /**
-     * \brief lik the python join
+     * \brief like the python join
      */
     template<typename T>
-    std::string join(const std::string del,const std::vector<T>& datas);
+    std::string join(const std::string& del,const std::vector<T>& datas);
 
     /**
      * \brief create a directory.

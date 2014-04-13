@@ -3,7 +3,7 @@
 namespace std
 {
     template<typename T>
-    std::string join(const std::string del,const std::vector<T>& datas)
+    std::string join(const std::string& del,const std::vector<T>& datas)
     {
         std::stringstream ss;
         const unsigned int _size = datas.size();

@@ -3,6 +3,8 @@
 #include <Salamandre-daemon/GuiFunctions.hpp>
 #include <Salamandre-daemon/ServerFunctions.hpp>
 
+#include <Salamandre-stats/stats.hpp>
+
 namespace salamandre
 {
     Daemon::Daemon(int listen_gui_port,int listen_port): 
@@ -43,10 +45,12 @@ namespace salamandre
     void Daemon::init()
     {
         ntw::Socket::init();
+        Stats::init();
     }
 
     void Daemon::close()
     {
         ntw::Socket::close();
+        Stats::close();
     }
 }

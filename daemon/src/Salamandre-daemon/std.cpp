@@ -38,11 +38,13 @@ namespace std
         for(unsigned int i=0; i<_size and res != 0;++i)
         {
             current += sp[i] + "/";
+
             #if __WIN32
             res = ::mkdir(current.c_str());
             #else
             res = ::mkdir(current.c_str(), permissions);
             #endif
+
             if(res == 0)
                 res = 1;
             else if(errno == EEXIST)
