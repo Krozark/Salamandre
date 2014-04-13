@@ -4,7 +4,8 @@
 #include <Salamandre-stats/stats.hpp>
 
 #include <sstream>
-#include <stdlib.h>
+#include <cstdlib>
+#include <sys/file.h>
 
 namespace salamandre
 {
@@ -47,32 +48,62 @@ namespace salamandre
     bool FileManager::prepareForUpload(int id_medecin,int id_patient,std::string filename)
     {
         int res = 0;
-        const std::string path_file = std::join("/",std::vector<std::string>({new_file_dir_path,
+        const std::string path_origin = std::join("/",std::vector<std::string>({new_file_dir_path,
                                                                                 std::to_string(id_medecin),
                                                                                 std::to_string(id_patient),
                                                                                 filename}));
-        //test if file exist
-        //get list of dest on network
-        auto dests = Stats::get_nodes();
-        //send them
-        for(auto& dest : dests)
+        //TODO test if file exist
+        FILE* source = ::fopen(path_origin.c_str(), "r");
+        if(source != nullptr)
         {
-            const std::string path_save = std::join("/",std::vector<std::string>({network_file_dir_path,
-                                                                                 dest->host+":"+std::to_string((int)dest->port),
-                                                                                 std::to_string(id_medecin),
-                                                                                 std::to_string(id_patient),
-                                                                                 filename}));
-            //TODO cp filename to path_save
+            std::cout<<"Save file path_origin"<<std::endl;
+            //lock it
+            if(flock(::fileno(source),LOCK_EX) == 0)
+            {
+                //get list of dest on network
+                auto dests = Stats::get_nodes();
+                //send them
+                for(auto& dest : dests)
+                    res += cpForUpload(id_medecin,id_patient,filename,dest->host,dest->port,source);
+                //unlock it
+                ::flock(::fileno(source), LOCK_UN);
+            }
+            else
+            {
+                std::cerr<<"Unable to lock file "<<path_origin<<std::endl;
+            }
+            ::fclose(source);
         }
-        //TODO rm filename
-        std::cout<<"save file "<<path_file<<std::endl;
+        //TODO rm path_origin
         return res;
     }
 
-    std::string FileManager::getFilePath(int id_medecin,int id_patient, std::string filename)
+    bool FileManager::cpForUpload(int id_medecin,int id_patient,std::string filename,std::string host, int port,FILE* source)
     {
-        std::stringstream stream;
-        stream<<id_medecin<<"/"<<id_patient<<"/"<<filename;
-        return stream.str();
+        bool res = true;
+
+        const std::string path_dest = std::join("/",std::vector<std::string>({network_file_dir_path,
+                                                                             host+":"+std::to_string(port),
+                                                                             std::to_string(id_medecin),
+                                                                             std::to_string(id_patient),
+                                                                             filename}));
+        FILE* dest = ::fopen(path_dest.c_str(), "wb");
+        if(dest)
+        {
+            //cp source to dest
+            ::fseek(source,0,SEEK_SET);
+
+            char buf[BUFSIZ];
+            size_t size;
+            while ((size = ::fread(buf, 1, BUFSIZ, source)) > 0)
+                ::fwrite(buf, 1, size, dest);
+
+            ::fclose(dest);
+        }
+        else
+            res = false;
+        std::cout<<"copy file to "<<path_dest<<" ["<<res<<"]"<<std::endl;
+        return res;
     }
+
 }
