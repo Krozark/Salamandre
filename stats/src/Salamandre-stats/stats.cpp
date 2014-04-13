@@ -1,5 +1,7 @@
 #include <Salamandre-stats/stats.hpp>
 
+float default_robustesse = 99.9f;
+
 void Stats::add_node(std::string host, int port)
 {
 	orm::Cache<Node>::type_ptr node;
@@ -52,10 +54,4 @@ unsigned int Stats::get_duplication_number_for(float robustesse)
 {
     //\todo TODO
     return 4;
-}
-
-std::list<std::shared_ptr<Node>> Stats::get_nodes()
-{
-    std::list<std::shared_ptr<Node>> list = Node::all();
-    return list;
 }

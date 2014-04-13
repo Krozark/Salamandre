@@ -11,13 +11,11 @@ class Stats
     public:
         Stats() = delete;
 
+        static float default_robustesse;
+
         static void add_node(std::string host, int port);
         static void delete_node(std::string host, int port);
 
-        /**
-         * \brief get a number of nodes
-         */
-        static std::list<std::shared_ptr<Node>> get_nodes(unsigned int number);
 
         /**
          * \brief get the number of minimal duplication of file to have 
@@ -25,10 +23,14 @@ class Stats
          * \param robustesse the robustess needed (0~100)
          * \return the number of duplication neded
          */
-        static unsigned int get_duplication_number_for(float robustesse);
+        static unsigned int get_duplication_number_for(float robustesse=default_robustesse);
+
+        /**
+         * \brief get a number of nodes
+         */
+        static std::list<std::shared_ptr<Node>> get_nodes(unsigned int number=get_duplication_number_for());
 
     private:
-        static std::list<std::shared_ptr<Node>> get_nodes();
 };
 
 #endif // STATS_HPP
