@@ -37,7 +37,7 @@ namespace std
         {
             current += sp[i] + "/";
             #if __WIN23
-            res = ::mkdir(current.c_str(), permissions);
+            res = ::mkdir(current.c_str());
             #else
             res = ::mkdir(current.c_str(), permissions);
             #endif
