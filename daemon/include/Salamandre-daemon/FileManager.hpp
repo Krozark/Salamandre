@@ -36,19 +36,14 @@ namespace salamandre
              * \return true if success
              */
             static bool prepareForUpload(int id_medecin, int id_patient, std::string filename);
+            
+
 
 
         private:
 
-            static std::string new_file_dir_path; ///< where the gui store files to saves
-            static std::string network_file_dir_path; ///< where file are stored for the network sender
-
-            /**
-             * \brief create a directory.
-             * \param dirpath the dir path name
-             * \return 1 if created, 2 if it was allready exist, 0 if errored
-             */
-            int createDir(std::string dirpath);
+            static const std::string new_file_dir_path; ///< where the gui store files to saves
+            static const std::string network_file_dir_path; ///< where file are stored for the network sender
 
             /***
              * \brief move file for upload

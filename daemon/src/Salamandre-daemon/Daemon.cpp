@@ -39,4 +39,14 @@ namespace salamandre
         std::cout<<"[srv] stop: send signal."<<std::endl;
         file_server.stop();
     }
+
+    void Daemon::init()
+    {
+        ntw::Socket::init();
+    }
+
+    void Daemon::close()
+    {
+        ntw::Socket::close();
+    }
 }

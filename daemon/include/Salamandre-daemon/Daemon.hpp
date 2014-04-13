@@ -42,6 +42,14 @@ namespace salamandre
             void stop();
 
 
+            /**
+             * \brief init socket, and dirs
+             */
+            static void init();
+
+            static void close();
+
+
         private:
             ntw::srv::Server gui_server; ///< the gui socket listener
             ntw::srv::Server file_server; ///< the external daemon socket listener

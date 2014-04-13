@@ -4,8 +4,8 @@
 
 namespace salamandre
 {
-    std::string FileManager::new_file_dir_path = "datas/save/";
-    std::string FileManager::network_file_dir_path = "datas/network/";
+    const std::string FileManager::new_file_dir_path = "datas/save/";
+    const std::string FileManager::network_file_dir_path = "datas/network/";
 
     bool FileManager::prepareForUpload(int id_medecin)
     {
@@ -33,12 +33,5 @@ namespace salamandre
         std::stringstream stream;
         stream<<id_medecin<<"/"<<id_patient<<"/"<<filename;
         return stream.str();
-    }
-
-    //////// Private /////////////
-    int FileManager::createDir(std::string dirpath)
-    {
-        int res = 0; //0 => error, 1 => created, 2 => already exist
-        return res;
     }
 }

@@ -7,12 +7,15 @@ set(ROOT_SRC
     ${SRCROOT}/FileManager.cpp
     ${SRCROOT}/GuiFunctions.cpp
     ${SRCROOT}/ServerFunctions.cpp
+    ${SRCROOT}/std.cpp
 )
 set(ROOT_HEADER
     ${INCROOT}/Daemon.hpp
     ${INCROOT}/FileManager.hpp
     ${INCROOT}/GuiFunctions.hpp
     ${INCROOT}/ServerFunctions.hpp
+    ${INCROOT}/std.hpp
+    ${INCROOT}/std.tpl
 )
 set(ROOT_FILES
     ${ROOT_HEADER}

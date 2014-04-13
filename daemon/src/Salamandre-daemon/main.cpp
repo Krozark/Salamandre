@@ -45,9 +45,8 @@ int main(int argc,char* argv[])
 
     try
     {
-
-        ntw::Socket::init();
-
+        salamandre::Daemon::init();
+        
         server = new salamandre::Daemon(gui_port,server_port);
         server->start();
         server->wait();
@@ -55,7 +54,8 @@ int main(int argc,char* argv[])
         delete server;
         server = nullptr;
 
-        ntw::Socket::close();
+        salamandre::Daemon::close();
+
     }
     catch(ntw::SocketExeption& e)
     {
