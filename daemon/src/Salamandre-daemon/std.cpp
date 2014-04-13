@@ -2,7 +2,9 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <errno.h>
+
 
 namespace std
 {
@@ -48,6 +50,46 @@ namespace std
             else
                 res = 0;
         }
+        return res;
+    }
+
+    std::vector<std::string> getFileList(const std::string& dirpath)
+    {
+        DIR *curDir;
+        std::vector<std::string> res;
+
+        if ((curDir = opendir(dirpath.c_str())) == NULL)
+            return res;
+
+        struct dirent *curEntry =readdir(curDir);
+        while (curEntry != NULL)
+        {
+            if(curEntry->d_type == DT_REG)
+                res.push_back(curEntry->d_name);
+            curEntry =readdir(curDir);
+        }
+
+        return res;
+    }
+
+    std::vector<std::string> getDirList(const std::string& dirpath)
+    {
+        DIR *curDir;
+        std::vector<std::string> res;
+
+        if ((curDir = opendir(dirpath.c_str())) == NULL)
+            return res;
+
+        struct dirent *curEntry =readdir(curDir);
+        while (curEntry != NULL)
+        {
+            if(curEntry->d_type == DT_DIR
+               and std::string(curEntry->d_name) != ".."
+               and std::string(curEntry->d_name) != ".")
+                    res.push_back(curEntry->d_name);
+            curEntry =readdir(curDir);
+        }
+
         return res;
     }
 }

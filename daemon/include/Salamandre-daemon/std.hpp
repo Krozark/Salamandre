@@ -27,6 +27,20 @@ namespace std
      * \return 1 if created, 2 if it was allready exist, 0 if errored
      */
     int createDir(const std::string& dirpath,const int permissions = 0777);
+
+    /**
+     * \brief get file list of a directory
+     * \param dirpath the root dir
+     * \return the list
+     */
+    std::vector<std::string> getFileList(const std::string& dirpath);
+
+    /**
+     * \brief get the dir list in a folder
+     * \param dirpath the root dir
+     * \return the dir list (without . and ..)
+     */
+    std::vector<std::string> getDirList(const std::string& dirpath);
 }
 #include <Salamandre-daemon/std.tpl>
 #endif
