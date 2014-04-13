@@ -45,7 +45,7 @@ std::list<std::shared_ptr<Node>> Stats::get_nodes(unsigned int number)
     std::list<std::shared_ptr<Node>> list;
     Node::query()\
         //.filter(...)
-        //.orderBy(...)
+        .orderBy("?")
         .limit(number)\
         .get(list);
 
