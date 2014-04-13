@@ -5,7 +5,6 @@
 #include <dirent.h>
 #include <errno.h>
 
-
 namespace std
 {
     std::vector<std::string> split(const std::string& string, const std::string& del)
@@ -33,10 +32,12 @@ namespace std
         int res = 1; //0 => error, 1 => created, 2 => already exist
         auto sp = split(dirpath,"/");
 
+
         std::string current;
         const unsigned int _size = sp.size();
         for(unsigned int i=0; i<_size and res != 0;++i)
         {
+
             current += sp[i] + "/";
 
             #if __WIN32
@@ -63,7 +64,7 @@ namespace std
         if ((curDir = opendir(dirpath.c_str())) == NULL)
             return res;
 
-        struct dirent *curEntry =readdir(curDir);
+        dirent *curEntry =readdir(curDir);
         while (curEntry != NULL)
         {
             if(curEntry->d_type == DT_REG)
@@ -82,7 +83,7 @@ namespace std
         if ((curDir = opendir(dirpath.c_str())) == NULL)
             return res;
 
-        struct dirent *curEntry =readdir(curDir);
+        dirent *curEntry =readdir(curDir);
         while (curEntry != NULL)
         {
             if(curEntry->d_type == DT_DIR

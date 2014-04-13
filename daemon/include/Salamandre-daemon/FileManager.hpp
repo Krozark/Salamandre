@@ -24,7 +24,7 @@ namespace salamandre
             /***
              * \brief save new file
              * \param id_medecin the medecin id
-             * \param id_patient the patient id (if <=0, all are send)
+             * \param id_patient the patient id
              * \return true if success
              */
             static bool prepareForUpload(int id_medecin, int id_patient);
@@ -32,12 +32,20 @@ namespace salamandre
             /***
              * \brief save new file
              * \param id_medecin the medecin id
-             * \param id_patient the patient id (if <=0, all are check)
-             * \param filepath the filename (if empty, all files are saves)
+             * \param id_patient the patient id
+             * \param filepath the filename
              * \return true if success
              */
             static bool prepareForUpload(int id_medecin, int id_patient, std::string filename);
-            
+
+            /***
+             * \brief save new file
+             * \param id_medecin the medecin id
+             * \param id_patient the patient id
+             * \param filepath the filename
+             * \return true if success
+             */
+            static std::string makeNewFilePath(int id_medecin,int id_patient = -1,const std::string& filename = "");
 
 
 

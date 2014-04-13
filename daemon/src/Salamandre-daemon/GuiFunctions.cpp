@@ -63,16 +63,16 @@ namespace gui
         return res;
     }
 
-    void funcNewFile(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename)
+    void funcNewFile(ntw::SocketSerialized& sock,int id_medecin, int id_patient,std::string filename)
     {
         if(id_medecin <=0)
         {
             sock.setStatus(status::WRONG_PARAM);
             return;
         }
-
+        
         bool status;
-        if(id_patient > 0 and filename != "")
+        if(id_patient > 0 and filename.size() > 1)
             status = FileManager::prepareForUpload(id_medecin,id_patient,filename);
         else if(id_patient > 0)
             status = FileManager::prepareForUpload(id_medecin,id_patient);

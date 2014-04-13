@@ -46,6 +46,21 @@ namespace salamandre
     {
         ntw::Socket::init();
         Stats::init();
+
+        Node::clear();
+
+        Stats::add_node(std::string("127.0.0.1"), 3000);
+        Stats::add_node(std::string("127.0.0.1"), 3500);
+        Stats::add_node(std::string("127.0.0.1"), 4000);
+        Stats::add_node(std::string("127.0.0.1"), 4500);
+        Stats::add_node(std::string("127.0.0.1"), 5000);
+        Stats::add_node(std::string("127.0.0.1"), 5500);
+        Stats::add_node(std::string("127.0.0.1"), 6000);
+        Stats::add_node(std::string("127.0.0.1"), 6500);
+        Stats::add_node(std::string("127.0.0.1"), 7000);
+        Stats::add_node(std::string("127.0.0.1"), 7500);
+        Stats::add_node(std::string("127.0.0.1"), 8000);
+        Stats::add_node(std::string("127.0.0.1"), 8500);
     }
 
     void Daemon::close()
