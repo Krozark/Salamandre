@@ -43,10 +43,13 @@ namespace salamandre
 
 
             /**
-             * \brief init socket, and dirs
+             * \brief init socket, and depandances
              */
             static void init();
 
+            /**
+             * \brief close socket, and depandances
+             */
             static void close();
 
 
