@@ -23,9 +23,10 @@ namespace std
     /**
      * \brief create a directory.
      * \param dirpath the dir path name
+     * \param permissions  (ignored in windows)
      * \return 1 if created, 2 if it was allready exist, 0 if errored
      */
-    int createDir(const std::string& dirpath);
+    int createDir(const std::string& dirpath,const int permissions = 0777);
 }
 #include <Salamandre-daemon/std.tpl>
 #endif

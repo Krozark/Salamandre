@@ -26,7 +26,7 @@ namespace std
         return tokens;
     }
 
-    int createDir(const std::string& dirpath)
+    int createDir(const std::string& dirpath,const int permissions)
     {
         int res = 1; //0 => error, 1 => created, 2 => already exist
         auto sp = split(dirpath,"/");
@@ -36,7 +36,11 @@ namespace std
         for(unsigned int i=0; i<_size and res != 0;++i)
         {
             current += sp[i] + "/";
-            res = ::mkdir(current.c_str(), 0777);
+            #if __WIN23
+            res = ::mkdir(current.c_str(), permissions);
+            #else
+            res = ::mkdir(current.c_str(), permissions);
+            #endif
             if(res == 0)
                 res = 1;
             else if(errno == EEXIST)
