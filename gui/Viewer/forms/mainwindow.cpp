@@ -1,9 +1,10 @@
 #include <forms/mainwindow.hpp>
 #include <ui_mainwindow.h>
-
+#include <forms/choosedialog.hpp>
 
 #include <QDir>
 #include <QMessageBox>
+#include <QInputDialog>
 #include <QDebug>
 
 MainWindow::MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient, QWidget *parent) :
@@ -15,8 +16,6 @@ MainWindow::MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient,
     this->doctor = doctor;
     this->patient = patient;
 
-    this->setWindowTitle(this->windowTitle() + " - Patient n°"+this->patient->getId());
-
     this->init();
 }
 
@@ -27,7 +26,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::init()
 {
+    this->setWindowTitle(QString("Salamandre") + " - Patient n°"+this->patient->getId());
 
+    this->ui->lineEdit_patientIdNumber->setText(this->patient->getId());
+    this->ui->lineEdit_confidentialPatientNumber->setText(this->patient->getId());
+    this->ui->lineEdit_medicalPatientNumber->setText(this->patient->getId());
+    this->ui->lineEdit_numericalPatientNumber->setText(this->patient->getId());
+
+    this->loadRecords();
 }
 
 void MainWindow::startDownloadClientData(int clientNumber)
@@ -35,12 +41,92 @@ void MainWindow::startDownloadClientData(int clientNumber)
     Q_UNUSED(clientNumber);
 }
 
-void MainWindow::createNewClientData()
+void MainWindow::loadRecords()
 {
-    QDir dir(this->patient->getDirPath());
-    if(dir.exists()){
-        QMessageBox::information(this, "Patient existant", "Ce patient existe déjà, il sera chargé.");
-    }
-
-    dir.mkdir(dir.path());
+    this->loadFEC();
+    this->loadFCT();
+    this->loadFMT();
+    this->loadFMN();
 }
+
+void MainWindow::loadFEC()
+{
+
+}
+
+void MainWindow::loadFCT()
+{
+
+}
+
+void MainWindow::loadFMT()
+{
+
+}
+
+void MainWindow::loadFMN()
+{
+
+}
+
+bool MainWindow::checkNeedSave()
+{
+    return true;
+}
+
+void MainWindow::on_actionNouveau_patient_triggered()
+{
+    if(this->checkNeedSave())
+    {
+        QString id = QInputDialog::getText(this, QString("Salamandre"), QString("Entrer le numéro du nouveau patient"), QLineEdit::Normal, QString(), nullptr, Qt::Dialog, Qt::ImhDigitsOnly);
+
+        if(!id.isEmpty()){
+            salamandre::Patient *newPatient = new salamandre::Patient();
+            newPatient->setId(id);
+            newPatient->setDirPath(doctor->getDirPath()+"/"+id);
+            QDir dirPatient = QDir(newPatient->getDirPath());
+            if(!dirPatient.exists()){
+                dirPatient.mkdir(dirPatient.path());
+
+                delete this->patient;
+                this->patient =  newPatient;
+                this->init();
+            }
+            else{
+                delete newPatient;
+                QMessageBox::warning(nullptr, "Salamandre", "Ce patient existe déjà dans votre répertoire.");
+            }
+        }
+    }
+}
+
+void MainWindow::on_actionChanger_de_patient_triggered()
+{
+    if(this->checkNeedSave())
+    {
+        chooseDialog *chDialog = new chooseDialog(this->doctor, nullptr);
+        int res = chDialog->exec();
+
+        if(res  == QDialog::Accepted){
+            delete this->patient;
+            this->patient = chDialog->getPatient();
+            this->init();
+        }
+
+        delete chDialog;
+    }
+}
+
+void MainWindow::on_actionEnregistrer_triggered()
+{
+
+}
+
+void MainWindow::on_actionQuitter_triggered()
+{
+    if(this->checkNeedSave())
+    {
+        this->close();
+    }
+}
+

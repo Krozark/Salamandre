@@ -5,5 +5,9 @@
         <file>icons/salamandre.png</file>
         <file>icons/controls/update.png</file>
         <file>icons/controls/reload.png</file>
+        <file>icons/controls/confidential.png</file>
+        <file>icons/controls/digital.png</file>
+        <file>icons/controls/medical.png</file>
+        <file>icons/controls/registry.png</file>
     </qresource>
 </RCC>
