@@ -36,7 +36,7 @@ namespace std
         for(unsigned int i=0; i<_size and res != 0;++i)
         {
             current += sp[i] + "/";
-            res = mkdir(current.c_str(), 0777);
+            res = ::mkdir(current.c_str(), 0777);
             if(res == 0)
                 res = 1;
             else if(errno == EEXIST)
