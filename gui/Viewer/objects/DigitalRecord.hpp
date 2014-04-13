@@ -1,19 +1,19 @@
 #ifndef SALAMANDRE_FICHEDONNEESNUMERIQUES_HPP
 #define SALAMANDRE_FICHEDONNEESNUMERIQUES_HPP
 
-#include <objects/Fiche.hpp>
+#include <objects/Record.hpp>
 
 namespace salamandre
 {
     /**
      * /brief Une fiche de donnees medicales numeriques (FMN) contenant typiquement de l’imagerie medicale (radios, scanner, IRM, ...), mais aussi un electrocardiogramme, ...). Cette fiche est une collection de fichiers numeriques et le numero d’identification du patient.
      */
-    class FicheDonneesNumeriques : public Fiche
+    class DigitalRecord : public Record
     {
         public:
-            FicheDonneesNumeriques(const unsigned int cli_id);
-            FicheDonneesNumeriques(const FicheDonneesNumeriques&) = delete;
-            FicheDonneesNumeriques& operator=(const FicheDonneesNumeriques&) = delete;
+            DigitalRecord(const unsigned int pat_id);
+            DigitalRecord(const DigitalRecord&) = delete;
+            DigitalRecord& operator=(const DigitalRecord&) = delete;
 
             virtual std::string getFilePath()const;
             const static std::string fileName;

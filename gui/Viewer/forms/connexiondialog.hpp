@@ -17,7 +17,7 @@ public:
     explicit connexionDialog(QWidget *parent = 0);
     ~connexionDialog();
 
-    Doctor *getDoctor();
+    salamandre::Doctor *getDoctor();
     QString getIdDoctor();
     QString getPassDoctor();
 
@@ -38,7 +38,7 @@ private:
     Ui::connexionDialog *ui;
 
     bool isNew;
-    Doctor *doctor;
+    salamandre::Doctor *doctor;
 };
 
 #endif // CONNEXIONDIALOG_HPP

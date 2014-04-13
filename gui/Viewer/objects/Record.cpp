@@ -1,36 +1,35 @@
-#include <objects/Fiche.hpp>
+#include <objects/Record.hpp>
 
 #include <crypto++/files.h>
 #include <crypto++/default.h>
 
 namespace salamandre
-{
-    
-    Fiche::Fiche(const unsigned int cli_id) : related_cli(cli_id)
+{    
+    Record::Record(const unsigned int pat_id) : related_pat(pat_id)
     {
     }
 
 
-    void Fiche::encrypt(const char* pass)
+    void Record::encrypt(const char* pass)
     {
         CryptoPP::FileSource f(getFilePath().c_str(), true,
                                new CryptoPP::DefaultEncryptorWithMAC(pass, new CryptoPP::FileSink((getFilePath()+".eas").c_str())));
     }
 
-    void Fiche::decrypt(const char* pass)
+    void Record::decrypt(const char* pass)
     {
         CryptoPP::FileSource f((getFilePath()+".eas").c_str(), true,
                                new CryptoPP::DefaultDecryptorWithMAC(pass, new CryptoPP::FileSink(getFilePath().c_str())));
     }
 
-    void Fiche::stream(std::fstream& s)const
+    void Record::stream(std::fstream& s)const
     {
         s.open(getFilePath(), std::fstream::in | std::fstream::out | std::fstream::binary);
     }
 
-    std::string Fiche::getDirPath()const
+    std::string Record::getDirPath()const
     {
         //\todo TODO remplacer le "0" par l'id du medecin
-        return "0/"+std::to_string(related_cli)+"/";
+        return "0/"+std::to_string(related_pat)+"/";
     }
 }

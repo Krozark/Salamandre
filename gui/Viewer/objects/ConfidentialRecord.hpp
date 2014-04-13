@@ -1,7 +1,7 @@
 #ifndef SALAMANDRE_FICHECONFIDENTIELLE_HPP
 #define SALAMANDRE_FICHECONFIDENTIELLE_HPP
 
-#include <objects/Fiche.hpp>
+#include <objects/Record.hpp>
 
 namespace salamandre
 {
@@ -9,12 +9,12 @@ namespace salamandre
      * /breif Une fiche confidentielle textuelle (FCT) comportant des notes privees d’ordre non
 medical prises par le medecin. La fiche comporte une zone de texte et le numero d’identification du patient.
     */
-    class FicheConfidentielle : public Fiche
+    class ConfidentialRecord : public Record
     {
         public:
-            FicheConfidentielle(const unsigned int cli_id);
-            FicheConfidentielle(const FicheConfidentielle&) = delete;
-            FicheConfidentielle& operator=(const FicheConfidentielle&) = delete;
+            ConfidentialRecord(const unsigned int pat_id);
+            ConfidentialRecord(const ConfidentialRecord&) = delete;
+            ConfidentialRecord& operator=(const ConfidentialRecord&) = delete;
 
             virtual std::string getFilePath()const;
             const static std::string fileName;

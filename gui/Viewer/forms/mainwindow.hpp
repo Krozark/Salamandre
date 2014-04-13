@@ -15,15 +15,15 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(Doctor *doctor, Patient *patient, QWidget *parent = 0);
+    explicit MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient, QWidget *parent = 0);
     ~MainWindow();
 
     void init();
 private:
     Ui::MainWindow *ui;
 
-    Doctor *doctor;
-    Patient *patient;
+    salamandre::Doctor *doctor;
+    salamandre::Patient *patient;
 
     void startDownloadClientData(int clientNumber = -1);
     void createNewClientData();
