@@ -48,7 +48,7 @@ namespace gui
      * \param sock the socket
      * \param id_medecin the medecin id
      * \param id_patient the patient id (if <=0, all are check)
-     * \param filepath the filename (if empty, all files are saves)
+     * \param filename the filename (if empty, all files are saves)
      */
     void funcNewFile(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename);
 

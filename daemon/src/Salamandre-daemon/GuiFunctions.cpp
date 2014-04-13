@@ -63,7 +63,7 @@ namespace gui
         return res;
     }
 
-    void funcNewFile(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filepath)
+    void funcNewFile(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename)
     {
         if(id_medecin <=0)
         {
@@ -72,8 +72,8 @@ namespace gui
         }
 
         bool status;
-        if(id_patient > 0 and filepath != "")
-            status = FileManager::prepareForUpload(id_medecin,id_patient,filepath);
+        if(id_patient > 0 and filename != "")
+            status = FileManager::prepareForUpload(id_medecin,id_patient,filename);
         else if(id_patient > 0)
             status = FileManager::prepareForUpload(id_medecin,id_patient);
         else
