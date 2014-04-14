@@ -4,12 +4,39 @@ namespace salamandre
 {
     const std::string ConfidentialRecord::fileName = "FCT";
 
-    ConfidentialRecord::ConfidentialRecord(const unsigned int pat_id) : Record(pat_id)
+    ConfidentialRecord::ConfidentialRecord(const std::string path, const std::string key)
     {
+        this->setFilePath(path);
+        this->load(key);
     }
     
     std::string ConfidentialRecord::getFilePath()const
     {
-        return getDirPath()+fileName;
+        return this->filePath;
+    }
+
+    void ConfidentialRecord::setFilePath(std::string filePath)
+    {
+        this->filePath = filePath;
+    }
+
+    std::string ConfidentialRecord::serialize()
+    {
+        return std::string();
+    }
+
+    void ConfidentialRecord::unSerialize(std::string string)
+    {
+        (void) string;
+    }
+
+    void ConfidentialRecord::save(std::string key)
+    {
+        (void) key;
+    }
+
+    void ConfidentialRecord::load(std::string key)
+    {
+        (void) key;
     }
 }

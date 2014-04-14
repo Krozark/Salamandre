@@ -17,6 +17,14 @@ MainWindow::MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient,
     this->patient = patient;
 
     this->init();
+
+    //salamandre::RegistryRecord *r = new salamandre::RegistryRecord();
+    //r->setAdress("1 rue du test");
+    //qDebug() << QString::fromStdString(r->serialize());
+
+    //std::string pass = doctor->getPass().toStdString();
+    //std::string encrypt = r->strEncrypt(pass, "coucou");
+    //std::string decrypt = r->strDecrypt(pass, encrypt);
 }
 
 MainWindow::~MainWindow()
@@ -119,7 +127,10 @@ void MainWindow::on_actionChanger_de_patient_triggered()
 
 void MainWindow::on_actionEnregistrer_triggered()
 {
-
+    //this->patient->getConfidentialRecord()->save();
+    //this->patient->getDigitalRecord()->save();
+    //this->patient->getMedicalRecord()->save();
+    this->patient->getRegistryRecord()->save(this->doctor->getPass().toStdString());
 }
 
 void MainWindow::on_actionQuitter_triggered()

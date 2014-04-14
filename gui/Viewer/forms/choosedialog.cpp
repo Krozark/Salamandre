@@ -129,15 +129,21 @@ void chooseDialog::loadAllRecords()
     QFileInfoList listFileInfo = dirPatient.entryInfoList(fileFilter, QDir::Files | QDir::NoDotAndDotDot);
 
     int nbFile = listFileInfo.size();
-    int idPatient = this->patient->getId().toInt();
+
+    std::string key = this->doctor->getPass().toStdString();
 
     if(nbFile == 4){
-        this->patient->setConfidentialRecord(new salamandre::ConfidentialRecord(idPatient));
-        this->patient->setDigitalRecord(new salamandre::DigitalRecord(idPatient));
-        this->patient->setMedicalRecord(new salamandre::MedicalRecord(idPatient));
-        this->patient->setRegistryRecord(new salamandre::RegistryRecord(idPatient));
+        this->patient->setConfidentialRecord(new salamandre::ConfidentialRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::ConfidentialRecord::fileName, key));
+        this->patient->setDigitalRecord(new salamandre::DigitalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::DigitalRecord::fileName, key));
+        this->patient->setMedicalRecord(new salamandre::MedicalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::MedicalRecord::fileName, key));
+        this->patient->setRegistryRecord(new salamandre::RegistryRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::RegistryRecord::fileName, key));
     }
     else{
+        this->patient->setConfidentialRecord(new salamandre::ConfidentialRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::ConfidentialRecord::fileName, key));
+        this->patient->setDigitalRecord(new salamandre::DigitalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::DigitalRecord::fileName, key));
+        this->patient->setMedicalRecord(new salamandre::MedicalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::MedicalRecord::fileName, key));
+        this->patient->setRegistryRecord(new salamandre::RegistryRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::RegistryRecord::fileName, key));
+
         for(int i = 0; i < nbFile; ++i){
 
         }
@@ -147,12 +153,12 @@ void chooseDialog::loadAllRecords()
 
 void chooseDialog::createNewRecords()
 {
-    int idPatient = this->patient->getId().toInt();
+    std::string key = this->doctor->getPass().toStdString();
 
-    this->patient->setConfidentialRecord(new salamandre::ConfidentialRecord(idPatient));
-    this->patient->setDigitalRecord(new salamandre::DigitalRecord(idPatient));
-    this->patient->setMedicalRecord(new salamandre::MedicalRecord(idPatient));
-    this->patient->setRegistryRecord(new salamandre::RegistryRecord(idPatient));
+    this->patient->setConfidentialRecord(new salamandre::ConfidentialRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::ConfidentialRecord::fileName, key));
+    this->patient->setDigitalRecord(new salamandre::DigitalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::DigitalRecord::fileName, key));
+    this->patient->setMedicalRecord(new salamandre::MedicalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::MedicalRecord::fileName, key));
+    this->patient->setRegistryRecord(new salamandre::RegistryRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::RegistryRecord::fileName, key));
 }
 
 salamandre::Patient* chooseDialog::getPatient()

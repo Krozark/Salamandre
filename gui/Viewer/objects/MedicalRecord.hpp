@@ -11,16 +11,23 @@ namespace salamandre
     class MedicalRecord : public Record
     {
         public:
-            MedicalRecord(const unsigned int pat_id);
+            MedicalRecord(const std::string path, const std::string key);
             MedicalRecord(const MedicalRecord&) = delete;
             MedicalRecord& operator=(const MedicalRecord&) = delete;
 
-            virtual std::string getFilePath()const;
+            std::string getFilePath() const;
+            void setFilePath(std::string filePath);
+            std::string serialize();
+            void unSerialize(std::string string);
+            void save(std::string key);
+            void load(std::string key);
+
             const static std::string fileName;
 
         protected:
 
         private:
+            std::string filePath;
     };
 }
 #endif

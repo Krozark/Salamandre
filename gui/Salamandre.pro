@@ -12,11 +12,11 @@ TARGET = Salamandre
 TEMPLATE = app
 
 TEMPLATE = subdirs
-SUBDIRS = Viewer \
-    Simulator
+SUBDIRS = Simulator \
+    Viewer
 
-app1.file = Viewer.pro
-app2.file = Simulator.pro
+app1.file = Simulator.pro
+app2.file = Viewer.pro
 
 QMAKE_CXXFLAGS += -std=c++11
 

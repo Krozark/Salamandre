@@ -11,16 +11,23 @@ namespace salamandre
     class DigitalRecord : public Record
     {
         public:
-            DigitalRecord(const unsigned int pat_id);
+            DigitalRecord(const std::string path, const std::string key);
             DigitalRecord(const DigitalRecord&) = delete;
             DigitalRecord& operator=(const DigitalRecord&) = delete;
 
-            virtual std::string getFilePath()const;
+            std::string getFilePath() const;
+            void setFilePath(std::string filePath);
+            std::string serialize();
+            void unSerialize(std::string string);
+            void save(std::string key);
+            void load(std::string key);
+
             const static std::string fileName;
 
         protected:
 
         private:
+            std::string filePath;
     };
 }
 #endif

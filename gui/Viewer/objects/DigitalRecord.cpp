@@ -4,12 +4,39 @@ namespace salamandre
 {
     const std::string DigitalRecord::fileName = "FMN";
 
-    DigitalRecord::DigitalRecord(const unsigned int pat_id) : Record(pat_id)
+    DigitalRecord::DigitalRecord(const std::string path, const std::string key)
     {
+        this->setFilePath(path);
+        this->load(key);
     }
 
     std::string DigitalRecord::getFilePath() const
     {
-        return getDirPath()+fileName;
+        return this->filePath;
+    }
+
+    void DigitalRecord::setFilePath(std::string filePath)
+    {
+        this->filePath = filePath;
+    }
+
+    std::string DigitalRecord::serialize()
+    {
+        return std::string();
+    }
+
+    void DigitalRecord::unSerialize(std::string string)
+    {
+        (void) string;
+    }
+
+    void DigitalRecord::save(std::string key)
+    {
+        (void) key;
+    }
+
+    void DigitalRecord::load(std::string key)
+    {
+        (void) key;
     }
 }
