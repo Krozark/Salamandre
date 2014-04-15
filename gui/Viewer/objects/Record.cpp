@@ -65,7 +65,7 @@ namespace salamandre
         this->loadHeader();
 
         std::ifstream inputFile(this->getFilePath().c_str(), std::ios::in | std::ios::binary);
-        std::cout << "opening FEC version n°" << this->getVersionNumber() << std::endl;
+        std::cout << "opening " << this->getFileName() << " version n°" << this->getVersionNumber() << std::endl;
 
         std::string str((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
         this->unSerialize(this->strDecrypt(key, str.substr(SIZE_HEADER, str.size()-SIZE_HEADER)));

@@ -93,6 +93,10 @@ l’adresse, . . . , et surtout, un numero d’identification)
             std::string serialize();
             void unSerialize(std::string string);
 
+            std::string getFileName(){
+                return this->fileName;
+            }
+
             const static std::string fileName;
 
             void setFirstName(std::string firstName);

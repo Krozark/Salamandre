@@ -18,10 +18,44 @@ namespace salamandre
             std::string serialize();
             void unSerialize(std::string string);
 
+            std::string getFileName(){
+                return this->fileName;
+            }
+
+            std::string getContent();
+            void setContent(std::string content);
+
+            friend std::ostream& operator<<(std::ostream& os, const MedicalRecord& medical)
+            {
+                unsigned len;
+                len = medical.fileContent.size();
+                os.write(reinterpret_cast<const char*>(&len), sizeof(len));
+                os.write(medical.fileContent.c_str(), len);
+
+                return os;
+            }
+
+            friend std::istream& operator>>(std::istream& is, MedicalRecord& medical)
+            {
+                unsigned lgth;
+                char* buf;
+
+                is.read(reinterpret_cast<char*>(&lgth), sizeof(lgth));
+                if(lgth > 0){
+                  buf = new char[lgth];
+                  is.read(buf, lgth);
+                  medical.fileContent.assign(buf, lgth);
+                  delete[] buf;
+                }
+
+                return is;
+            }
+
             const static std::string fileName;
         protected:
 
         private:
+            std::string fileContent;
     };
 }
 #endif

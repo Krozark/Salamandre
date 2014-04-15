@@ -11,11 +11,25 @@ namespace salamandre
 
     std::string MedicalRecord::serialize()
     {
-        return std::string();
+        std::ostringstream os;
+        os << *this;
+        return os.str();
     }
 
     void MedicalRecord::unSerialize(std::string string)
     {
-        (void) string;
+        std::istringstream is;
+        is.str(string);
+        is >> *this;
+    }
+
+    std::string MedicalRecord::getContent()
+    {
+        return this->fileContent;
+    }
+
+    void MedicalRecord::setContent(std::string content)
+    {
+        this->fileContent = content;
     }
 }

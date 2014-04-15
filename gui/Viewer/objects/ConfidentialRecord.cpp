@@ -11,11 +11,25 @@ namespace salamandre
 
     std::string ConfidentialRecord::serialize()
     {
-        return std::string();
+        std::ostringstream os;
+        os << *this;
+        return os.str();
     }
 
     void ConfidentialRecord::unSerialize(std::string string)
     {
-        (void) string;
+        std::istringstream is;
+        is.str(string);
+        is >> *this;
+    }
+
+    std::string ConfidentialRecord::getContent()
+    {
+        return this->fileContent;
+    }
+
+    void ConfidentialRecord::setContent(std::string content)
+    {
+        this->fileContent = content;
     }
 }

@@ -17,6 +17,11 @@ namespace salamandre
 
             std::string serialize();
             void unSerialize(std::string string);
+
+            std::string getFileName(){
+                return this->fileName;
+            }
+
             void save(std::string key);
             void load(std::string key);
 

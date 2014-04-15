@@ -82,12 +82,32 @@ void MainWindow::loadFEC()
 
 void MainWindow::loadFCT()
 {
+    salamandre::ConfidentialRecord *record = this->patient->getConfidentialRecord();
 
+    if(QFile::exists(QString::fromStdString(record->getFilePath())))
+    {
+        record->load(this->doctor->getPass().toStdString());
+
+        this->ui->plainTextEdit_confidentialTextPatient->setPlainText(QString::fromStdString(record->getContent()));
+    }
+    else{
+        record->setVersionNumber(0); // will be automatically increment at save.
+    }
 }
 
 void MainWindow::loadFMT()
 {
+    salamandre::MedicalRecord *record = this->patient->getMedicalRecord();
 
+    if(QFile::exists(QString::fromStdString(record->getFilePath())))
+    {
+        record->load(this->doctor->getPass().toStdString());
+
+        this->ui->plainTextEdit_medicalTextPatient->setPlainText(QString::fromStdString(record->getContent()));
+    }
+    else{
+        record->setVersionNumber(0); // will be automatically increment at save.
+    }
 }
 
 void MainWindow::loadFMN()
@@ -106,7 +126,6 @@ void MainWindow::saveRecords()
 void MainWindow::saveFEC()
 {
     salamandre::RegistryRecord *record = this->patient->getRegistryRecord();
-
     record->setAdress(this->ui->lineEdit_patientAdress->text().toStdString());
     record->setBirthDate(this->ui->dateEdit_patientBirthDate->date().toString("yyyy-MM-dd").toStdString());
     record->setFirstName(this->ui->lineEdit_patientFirstName->text().toStdString());
@@ -121,12 +140,18 @@ void MainWindow::saveFEC()
 
 void MainWindow::saveFCT()
 {
+    salamandre::ConfidentialRecord *record = this->patient->getConfidentialRecord();
+    record->setContent(this->ui->plainTextEdit_confidentialTextPatient->toPlainText().toStdString());
 
+    record->save(this->doctor->getPass().toStdString());
 }
 
 void MainWindow::saveFMT()
 {
+    salamandre::MedicalRecord *record = this->patient->getMedicalRecord();
+    record->setContent(this->ui->plainTextEdit_medicalTextPatient->toPlainText().toStdString());
 
+    record->save(this->doctor->getPass().toStdString());
 }
 
 void MainWindow::saveFMN()
