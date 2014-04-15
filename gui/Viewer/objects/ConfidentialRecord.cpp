@@ -8,16 +8,6 @@ namespace salamandre
     {
         this->setFilePath(path);
     }
-    
-    std::string ConfidentialRecord::getFilePath()const
-    {
-        return this->filePath;
-    }
-
-    void ConfidentialRecord::setFilePath(std::string filePath)
-    {
-        this->filePath = filePath;
-    }
 
     std::string ConfidentialRecord::serialize()
     {
@@ -27,15 +17,5 @@ namespace salamandre
     void ConfidentialRecord::unSerialize(std::string string)
     {
         (void) string;
-    }
-
-    void ConfidentialRecord::save(std::string key)
-    {
-        (void) key;
-    }
-
-    void ConfidentialRecord::load(std::string key)
-    {
-        (void) key;
     }
 }

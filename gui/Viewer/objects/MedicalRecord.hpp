@@ -15,19 +15,13 @@ namespace salamandre
             MedicalRecord(const MedicalRecord&) = delete;
             MedicalRecord& operator=(const MedicalRecord&) = delete;
 
-            std::string getFilePath() const;
-            void setFilePath(std::string filePath);
             std::string serialize();
             void unSerialize(std::string string);
-            void save(std::string key);
-            void load(std::string key);
 
             const static std::string fileName;
-
         protected:
 
         private:
-            std::string filePath;
     };
 }
 #endif

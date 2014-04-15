@@ -35,8 +35,61 @@ namespace salamandre
         return output;
     }
 
-    void Record::stream(std::fstream& s)const
+    std::string Record::getFilePath()
     {
-        s.open(getFilePath(), std::fstream::in | std::fstream::out | std::fstream::binary);
+        return this->filePath;
+    }
+
+    void Record::setFilePath(std::string filePath)
+    {
+        this->filePath = filePath;
+    }
+
+    void Record::save(std::string key)
+    {
+        std::string str = this->serialize();
+        std::ofstream outputFile(this->getFilePath().c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
+        outputFile.flush();
+
+        char *header = new char[SIZE_HEADER];
+        strcpy(header, std::to_string(this->getVersionNumber()+1).c_str());
+
+        outputFile.write(header, SIZE_HEADER);
+        delete[] header;
+
+        outputFile << this->strEncrypt(key, str);
+    }
+
+    void Record::load(std::string key)
+    {
+        this->loadHeader();
+
+        std::ifstream inputFile(this->getFilePath().c_str(), std::ios::in | std::ios::binary);
+        std::cout << "opening FEC version n°" << this->getVersionNumber() << std::endl;
+
+        std::string str((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
+        this->unSerialize(this->strDecrypt(key, str.substr(SIZE_HEADER, str.size()-SIZE_HEADER)));
+    }
+
+    void Record::loadHeader()
+    {
+        std::ifstream inputFile(this->getFilePath().c_str(), std::ios::in | std::ios::binary);
+
+        char *header = new char[SIZE_HEADER];
+        inputFile.read(header, SIZE_HEADER);
+        std::string strHeader(header);
+        delete[] header;
+
+        this->setVersionNumber(std::stoll(strHeader));
+    }
+
+    void Record::setVersionNumber(long long versionNumber)
+    {
+        this->versionNumber = versionNumber;
+    }
+
+    long long Record::getVersionNumber()
+    {
+        return this->versionNumber;
     }
 }

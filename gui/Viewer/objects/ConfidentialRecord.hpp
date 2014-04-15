@@ -16,19 +16,13 @@ medical prises par le medecin. La fiche comporte une zone de texte et le numero 
             ConfidentialRecord(const ConfidentialRecord&) = delete;
             ConfidentialRecord& operator=(const ConfidentialRecord&) = delete;
 
-            std::string getFilePath() const;
-            void setFilePath(std::string filePath);
             std::string serialize();
             void unSerialize(std::string string);
-            void save(std::string key);
-            void load(std::string key);
 
             const static std::string fileName;
-
         protected:
 
         private:
-            std::string filePath;
             std::string fileContent;
     };
 }

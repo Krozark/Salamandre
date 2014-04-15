@@ -9,16 +9,6 @@ namespace salamandre
         this->setFilePath(path);
     }
 
-    std::string DigitalRecord::getFilePath() const
-    {
-        return this->filePath;
-    }
-
-    void DigitalRecord::setFilePath(std::string filePath)
-    {
-        this->filePath = filePath;
-    }
-
     std::string DigitalRecord::serialize()
     {
         return std::string();

@@ -90,8 +90,6 @@ l’adresse, . . . , et surtout, un numero d’identification)
                 return is;
             }
 
-            std::string getFilePath() const;
-            void setFilePath(std::string filePath);
             std::string serialize();
             void unSerialize(std::string string);
 
@@ -111,13 +109,9 @@ l’adresse, . . . , et surtout, un numero d’identification)
 
             void setAdress(std::string adress);
             std::string getAdress();
-
-            void save(std::string key);
-            void load(std::string key);
         protected:
 
         private:
-            std::string filePath;
             std::string lastName;
             std::string firstName;
             std::string birthDate;

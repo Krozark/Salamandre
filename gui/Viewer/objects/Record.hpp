@@ -3,6 +3,13 @@
 
 #include <string>
 #include <fstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sstream>
+#include <fstream>
+#include <iostream>
+#include <string>
 
 #define SIZE_HEADER 64 // 8 octets
 
@@ -26,36 +33,22 @@ namespace salamandre
         std::string strDecrypt(const std::string pass, std::string string);
         std::string strEncrypt(const std::string pass, const std::string string);
 
-        virtual std::string getFilePath() const = 0;
-        virtual void setFilePath(std::string filePath) = 0;
+        std::string getFilePath();
+        void setFilePath(std::string filePath);
+
         virtual std::string serialize() = 0;
         virtual void unSerialize(std::string string) = 0;
-        virtual void save(std::string key) = 0;
-        virtual void load(std::string key) = 0;
 
-        void stream(std::fstream& stream)const;
+        void save(std::string key);
+        void load(std::string key);
+        void loadHeader();
 
-        void loadHeader(){
-            std::ifstream inputFile(this->getFilePath().c_str(), std::ios::in | std::ios::binary);
-
-            char *header = new char[SIZE_HEADER];
-            inputFile.read(header, SIZE_HEADER);
-            std::string strHeader(header);
-            delete[] header;
-
-            this->setVersionNumber(std::stoll(strHeader));
-        }
-
-        void setVersionNumber(long long versionNumber){
-            this->versionNumber = versionNumber;
-        }
-
-        long long getVersionNumber(){
-            return this->versionNumber;
-        }
+        void setVersionNumber(long long versionNumber);
+        long long getVersionNumber();
 
     private:
         long long versionNumber;
+        std::string filePath;
 
     };
 }
