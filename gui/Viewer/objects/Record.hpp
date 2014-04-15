@@ -4,7 +4,7 @@
 #include <string>
 #include <fstream>
 
-#define SIZE_HEADER 72
+#define SIZE_HEADER 64 // 8 octets
 
 
 namespace salamandre
@@ -35,15 +35,27 @@ namespace salamandre
 
         void stream(std::fstream& stream)const;
 
-        void setVersionNumber(int versionNumber){
+        void loadHeader(){
+            std::ifstream inputFile(this->getFilePath().c_str(), std::ios::in | std::ios::binary);
+
+            char *header = new char[SIZE_HEADER];
+            inputFile.read(header, SIZE_HEADER);
+            std::string strHeader(header);
+            delete[] header;
+
+            this->setVersionNumber(std::stoll(strHeader));
+        }
+
+        void setVersionNumber(long long versionNumber){
             this->versionNumber = versionNumber;
         }
-        int getVersionNumber(){
+
+        long long getVersionNumber(){
             return this->versionNumber;
         }
 
     private:
-        int versionNumber;
+        long long versionNumber;
 
     };
 }

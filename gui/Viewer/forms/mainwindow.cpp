@@ -60,9 +60,10 @@ void MainWindow::loadRecords()
 
 void MainWindow::loadFEC()
 {
-    if(QFile::exists(QString::fromStdString(this->patient->getRegistryRecord()->getFilePath())))
+    salamandre::RegistryRecord *record = this->patient->getRegistryRecord();
+
+    if(QFile::exists(QString::fromStdString(record->getFilePath())))
     {
-        salamandre::RegistryRecord *record = this->patient->getRegistryRecord();
         record->load(this->doctor->getPass().toStdString());
 
         this->ui->lineEdit_patientLastName->setText(QString::fromStdString(record->getLastName()));
@@ -73,6 +74,9 @@ void MainWindow::loadFEC()
             this->ui->radioButton_patientSexMale->setChecked(true);
         else
             this->ui->radioButton_patientSexFemale->setChecked(true);
+    }
+    else{
+        record->setVersionNumber(0); // will be automatically increment at save.
     }
 }
 
