@@ -3,6 +3,7 @@
 
 #include <objects/doctor.hpp>
 #include <objects/patient.hpp>
+#include <objects/listview.hpp>
 
 #include <QMainWindow>
 
@@ -25,6 +26,8 @@ private:
     salamandre::Doctor *doctor;
     salamandre::Patient *patient;
 
+    ListView *listViewDigitalFiles;
+
     void startDownloadClientData(int clientNumber = -1);
     void loadRecords();
     void loadFEC();
@@ -45,6 +48,8 @@ private slots:
     void on_actionNouveau_patient_triggered();
     void on_actionChanger_de_patient_triggered();
     void on_actionEnregistrer_triggered();
+
+
 };
 
 #endif // MAINWINDOW_HPP

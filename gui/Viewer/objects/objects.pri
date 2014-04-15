@@ -4,7 +4,8 @@ SOURCES += objects/Record.cpp \
     objects/DigitalRecord.cpp \
     objects/RegistryRecord.cpp \
     objects/doctor.cpp \
-    objects/patient.cpp
+    objects/patient.cpp \
+    objects/listview.cpp
 
 HEADERS += objects/Record.hpp \
     objects/ConfidentialRecord.hpp \
@@ -12,4 +13,5 @@ HEADERS += objects/Record.hpp \
     objects/DigitalRecord.hpp \
     objects/RegistryRecord.hpp \
     objects/doctor.hpp \
-    objects/patient.hpp
+    objects/patient.hpp \
+    objects/listview.hpp

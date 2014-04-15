@@ -16,16 +16,9 @@ MainWindow::MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient,
 
     this->doctor = doctor;
     this->patient = patient;
+    this->listViewDigitalFiles = new ListView(nullptr);
 
     this->init();
-
-    //salamandre::RegistryRecord *r = new salamandre::RegistryRecord();
-    //r->setAdress("1 rue du test");
-    //qDebug() << QString::fromStdString(r->serialize());
-
-    //std::string pass = doctor->getPass().toStdString();
-    //std::string encrypt = r->strEncrypt(pass, "coucou");
-    //std::string decrypt = r->strDecrypt(pass, encrypt);
 }
 
 MainWindow::~MainWindow()
@@ -36,6 +29,8 @@ MainWindow::~MainWindow()
 void MainWindow::init()
 {
     this->setWindowTitle(QString("Salamandre") + " - Patient n°"+this->patient->getId());
+
+    this->ui->verticalLayout_listView->addWidget(this->listViewDigitalFiles);
 
     this->ui->lineEdit_patientIdNumber->setText(this->patient->getId());
     this->ui->lineEdit_confidentialPatientNumber->setText(this->patient->getId());

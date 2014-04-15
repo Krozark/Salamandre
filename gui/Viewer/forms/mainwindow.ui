@@ -39,7 +39,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <property name="iconSize">
        <size>
@@ -255,8 +255,17 @@
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMinimumSize</enum>
+          </property>
           <item>
            <widget class="QLabel" name="label_numericalPatientNumber">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
              <string>Numéro d'identification du patient :</string>
             </property>
@@ -267,28 +276,28 @@
             <property name="enabled">
              <bool>false</bool>
             </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
            </widget>
           </item>
          </layout>
         </item>
         <item>
-         <widget class="QListView" name="listView">
-          <property name="dragEnabled">
-           <bool>true</bool>
+         <layout class="QVBoxLayout" name="verticalLayout_listView">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetNoConstraint</enum>
           </property>
-          <property name="dragDropMode">
-           <enum>QAbstractItemView::DragOnly</enum>
-          </property>
-          <property name="defaultDropAction">
-           <enum>Qt::IgnoreAction</enum>
-          </property>
-          <property name="selectionBehavior">
-           <enum>QAbstractItemView::SelectRows</enum>
-          </property>
-         </widget>
+         </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMinimumSize</enum>
+          </property>
           <property name="rightMargin">
            <number>0</number>
           </property>

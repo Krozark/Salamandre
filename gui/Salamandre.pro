@@ -12,8 +12,10 @@ TARGET = Salamandre
 TEMPLATE = app
 
 TEMPLATE = subdirs
-SUBDIRS = Simulator \
-    Viewer
+SUBDIRS = Viewer
+
+#SUBDIRS = Simulator \
+#    Viewer
 
 app1.file = Simulator.pro
 app2.file = Viewer.pro
