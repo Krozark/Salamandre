@@ -13,10 +13,9 @@ namespace salamandre
 {
     const std::string RegistryRecord::fileName = "FEC";
 
-    RegistryRecord::RegistryRecord(const std::string path, const std::string key)
+    RegistryRecord::RegistryRecord(const std::string path)
     {
         this->setFilePath(path);
-        this->load(key);
     }
 
     std::string RegistryRecord::getFilePath() const
@@ -45,31 +44,17 @@ namespace salamandre
 
     void RegistryRecord::save(std::string key)
     {
-        this->setAdress("1 rue du test");
         std::string str = this->serialize();
-        std::string strEncrypt = this->strEncrypt(key, str);
-
-        qDebug() << QString("writting to : ") << QString::fromStdString(this->getFilePath());
-
-        std::ofstream outputFile(this->getFilePath(), std::ios::out | std::ios::trunc );
-
-        //outputFile << this->getVersionNumber() << strEncrypt;
-        outputFile << strEncrypt;
-
-        outputFile.close();
-
+        std::ofstream outputFile(this->getFilePath().c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
+        outputFile.flush();
+        outputFile << this->strEncrypt(key, str);
     }
 
     void RegistryRecord::load(std::string key)
     {
-        std::ifstream inputFile(this->getFilePath().c_str(), std::ios::in );
-        std::string str;
-        getline(inputFile, str);
-
-        std::string decrypt = this->strDecrypt(key, str);
-        this->unSerialize(decrypt);
-
-        qDebug() << "test load: " << QString::fromStdString(this->getAdress());
+        std::ifstream inputFile(this->getFilePath().c_str(), std::ios::in | std::ios::app | std::ios::binary);
+        std::string str((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
+        this->unSerialize(this->strDecrypt(key, str));
     }
 
     void RegistryRecord::setFirstName(std::string firstName)

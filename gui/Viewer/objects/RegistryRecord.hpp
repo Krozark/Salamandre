@@ -12,30 +12,80 @@ l’adresse, . . . , et surtout, un numero d’identification)
     class RegistryRecord : public Record
     {
         public:
-            RegistryRecord(const std::string path, const std::string key);
+            RegistryRecord(const std::string path);
             RegistryRecord(const RegistryRecord&) = delete;
             RegistryRecord& operator=(const RegistryRecord&) = delete;
 
             friend std::ostream& operator<<(std::ostream& os, const RegistryRecord& registry)
             {
-                os << registry.adress << '\n';
-                os << registry.birthDate << '\n';
-                os << registry.firstName << '\n';
-                os << registry.lastName << '\n';
-                os << registry.sex;
+                unsigned len;
+                len = registry.adress.size();
+                os.write(reinterpret_cast<const char*>(&len), sizeof(len));
+                os.write(registry.adress.c_str(), len);
+
+                len = registry.birthDate.size();
+                os.write(reinterpret_cast<const char*>(&len), sizeof(len));
+                os.write(registry.birthDate.c_str(), len);
+
+                len = registry.firstName.size();
+                os.write(reinterpret_cast<const char*>(&len), sizeof(len));
+                os.write(registry.firstName.c_str(), len);
+
+                len = registry.lastName.size();
+                os.write(reinterpret_cast<const char*>(&len), sizeof(len));
+                os.write(registry.lastName.c_str(), len);
+
+                len = registry.sex.size();
+                os.write(reinterpret_cast<const char*>(&len), sizeof(len));
+                os.write(registry.sex.c_str(), len);
+
                 return os;
             }
 
             friend std::istream& operator>>(std::istream& is, RegistryRecord& registry)
             {
-                std::string adress, birthDate, firstName, lastName, sex;
-                is >> adress >> birthDate >> firstName >> lastName >> sex;
+                unsigned lgth;
+                char* buf;
 
-                registry.setAdress(adress);
-                registry.setBirthDate(birthDate);
-                registry.setFirstName(firstName);
-                registry.setLastName(lastName);
-                registry.setSex(sex);
+                is.read(reinterpret_cast<char*>(&lgth), sizeof(lgth));
+                if(lgth > 0){
+                  buf = new char[lgth];
+                  is.read(buf, lgth);
+                  registry.adress.assign(buf, lgth);
+                  delete[] buf;
+                }
+
+                is.read(reinterpret_cast<char*>(&lgth), sizeof(lgth));
+                if(lgth > 0){
+                  buf = new char[lgth];
+                  is.read(buf, lgth);
+                  registry.birthDate.assign(buf, lgth);
+                  delete[] buf;
+                }
+
+                is.read(reinterpret_cast<char*>( &lgth ), sizeof(lgth));
+                if(lgth > 0){
+                  buf = new char[lgth];
+                  is.read(buf, lgth);
+                  registry.firstName.assign(buf, lgth);
+                  delete[] buf;
+                }
+
+                is.read(reinterpret_cast<char*>(&lgth), sizeof(lgth));
+                if(lgth > 0){
+                  buf = new char[lgth];
+                  is.read(buf, lgth);
+                  registry.lastName.assign(buf, lgth);
+                  delete[] buf;
+                }
+
+                is.read(reinterpret_cast<char*>(&lgth), sizeof(lgth));
+                if(lgth > 0){
+                  buf = new char[lgth];
+                  is.read(buf, lgth);
+                  registry.sex.assign(buf, lgth);
+                  delete[] buf;
+                }
 
                 return is;
             }

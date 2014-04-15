@@ -11,7 +11,7 @@ namespace salamandre
     class MedicalRecord : public Record
     {
         public:
-            MedicalRecord(const std::string path, const std::string key);
+            MedicalRecord(const std::string path);
             MedicalRecord(const MedicalRecord&) = delete;
             MedicalRecord& operator=(const MedicalRecord&) = delete;
 

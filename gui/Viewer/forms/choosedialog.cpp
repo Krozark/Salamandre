@@ -130,35 +130,31 @@ void chooseDialog::loadAllRecords()
 
     int nbFile = listFileInfo.size();
 
-    std::string key = this->doctor->getPass().toStdString();
-
     if(nbFile == 4){
-        this->patient->setConfidentialRecord(new salamandre::ConfidentialRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::ConfidentialRecord::fileName, key));
-        this->patient->setDigitalRecord(new salamandre::DigitalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::DigitalRecord::fileName, key));
-        this->patient->setMedicalRecord(new salamandre::MedicalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::MedicalRecord::fileName, key));
-        this->patient->setRegistryRecord(new salamandre::RegistryRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::RegistryRecord::fileName, key));
+        this->patient->setConfidentialRecord(new salamandre::ConfidentialRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::ConfidentialRecord::fileName));
+        this->patient->setDigitalRecord(new salamandre::DigitalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::DigitalRecord::fileName));
+        this->patient->setMedicalRecord(new salamandre::MedicalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::MedicalRecord::fileName));
+        this->patient->setRegistryRecord(new salamandre::RegistryRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::RegistryRecord::fileName));
     }
     else{
-        this->patient->setConfidentialRecord(new salamandre::ConfidentialRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::ConfidentialRecord::fileName, key));
-        this->patient->setDigitalRecord(new salamandre::DigitalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::DigitalRecord::fileName, key));
-        this->patient->setMedicalRecord(new salamandre::MedicalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::MedicalRecord::fileName, key));
-        this->patient->setRegistryRecord(new salamandre::RegistryRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::RegistryRecord::fileName, key));
+        this->patient->setConfidentialRecord(new salamandre::ConfidentialRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::ConfidentialRecord::fileName));
+        this->patient->setDigitalRecord(new salamandre::DigitalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::DigitalRecord::fileName));
+        this->patient->setMedicalRecord(new salamandre::MedicalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::MedicalRecord::fileName));
+        this->patient->setRegistryRecord(new salamandre::RegistryRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::RegistryRecord::fileName));
 
         for(int i = 0; i < nbFile; ++i){
-
         }
     }
-
 }
 
 void chooseDialog::createNewRecords()
 {
     std::string key = this->doctor->getPass().toStdString();
 
-    this->patient->setConfidentialRecord(new salamandre::ConfidentialRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::ConfidentialRecord::fileName, key));
-    this->patient->setDigitalRecord(new salamandre::DigitalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::DigitalRecord::fileName, key));
-    this->patient->setMedicalRecord(new salamandre::MedicalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::MedicalRecord::fileName, key));
-    this->patient->setRegistryRecord(new salamandre::RegistryRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::RegistryRecord::fileName, key));
+    this->patient->setConfidentialRecord(new salamandre::ConfidentialRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::ConfidentialRecord::fileName));
+    this->patient->setDigitalRecord(new salamandre::DigitalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::DigitalRecord::fileName));
+    this->patient->setMedicalRecord(new salamandre::MedicalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::MedicalRecord::fileName));
+    this->patient->setRegistryRecord(new salamandre::RegistryRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::RegistryRecord::fileName));
 }
 
 salamandre::Patient* chooseDialog::getPatient()

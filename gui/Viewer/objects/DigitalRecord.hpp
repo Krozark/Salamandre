@@ -11,7 +11,7 @@ namespace salamandre
     class DigitalRecord : public Record
     {
         public:
-            DigitalRecord(const std::string path, const std::string key);
+            DigitalRecord(const std::string path);
             DigitalRecord(const DigitalRecord&) = delete;
             DigitalRecord& operator=(const DigitalRecord&) = delete;
 

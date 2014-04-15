@@ -4,10 +4,9 @@ namespace salamandre
 {
     const std::string MedicalRecord::fileName = "FMT";
     
-    MedicalRecord::MedicalRecord(const std::string path, const std::string key)
+    MedicalRecord::MedicalRecord(const std::string path)
     {
         this->setFilePath(path);
-        this->load(key);
     }
 
     std::string MedicalRecord::getFilePath()const

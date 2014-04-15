@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QDebug>
+#include <QDate>
 
 MainWindow::MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient, QWidget *parent) :
     QMainWindow(parent),
@@ -59,7 +60,20 @@ void MainWindow::loadRecords()
 
 void MainWindow::loadFEC()
 {
+    if(QFile::exists(QString::fromStdString(this->patient->getRegistryRecord()->getFilePath())))
+    {
+        salamandre::RegistryRecord *record = this->patient->getRegistryRecord();
+        record->load(this->doctor->getPass().toStdString());
 
+        this->ui->lineEdit_patientLastName->setText(QString::fromStdString(record->getLastName()));
+        this->ui->lineEdit_patientFirstName->setText(QString::fromStdString(record->getFirstName()));
+        this->ui->lineEdit_patientAdress->setText(QString::fromStdString(record->getAdress()));
+        this->ui->dateEdit_patientBirthDate->setDate(QDate::fromString(QString::fromStdString(record->getBirthDate()), "yyyy-MM-dd"));
+        if(QString::fromStdString(record->getSex()) == "M")
+            this->ui->radioButton_patientSexMale->setChecked(true);
+        else
+            this->ui->radioButton_patientSexFemale->setChecked(true);
+    }
 }
 
 void MainWindow::loadFCT()
@@ -73,6 +87,45 @@ void MainWindow::loadFMT()
 }
 
 void MainWindow::loadFMN()
+{
+
+}
+
+void MainWindow::saveRecords()
+{
+    this->saveFEC();
+    this->saveFCT();
+    this->saveFMT();
+    this->saveFMN();
+}
+
+void MainWindow::saveFEC()
+{
+    salamandre::RegistryRecord *record = this->patient->getRegistryRecord();
+
+    record->setAdress(this->ui->lineEdit_patientAdress->text().toStdString());
+    record->setBirthDate(this->ui->dateEdit_patientBirthDate->date().toString("yyyy-MM-dd").toStdString());
+    record->setFirstName(this->ui->lineEdit_patientFirstName->text().toStdString());
+    record->setLastName(this->ui->lineEdit_patientLastName->text().toStdString());
+    if(this->ui->radioButton_patientSexMale->isChecked())
+        record->setSex("M");
+    else
+        record->setSex("F");
+
+    record->save(this->doctor->getPass().toStdString());
+}
+
+void MainWindow::saveFCT()
+{
+
+}
+
+void MainWindow::saveFMT()
+{
+
+}
+
+void MainWindow::saveFMN()
 {
 
 }
@@ -130,7 +183,8 @@ void MainWindow::on_actionEnregistrer_triggered()
     //this->patient->getConfidentialRecord()->save();
     //this->patient->getDigitalRecord()->save();
     //this->patient->getMedicalRecord()->save();
-    this->patient->getRegistryRecord()->save(this->doctor->getPass().toStdString());
+
+    this->saveRecords();
 }
 
 void MainWindow::on_actionQuitter_triggered()

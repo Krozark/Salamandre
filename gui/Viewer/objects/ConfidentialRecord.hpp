@@ -12,7 +12,7 @@ medical prises par le medecin. La fiche comporte une zone de texte et le numero 
     class ConfidentialRecord : public Record
     {
         public:
-            ConfidentialRecord(const std::string path, const std::string key);
+            ConfidentialRecord(const std::string path);
             ConfidentialRecord(const ConfidentialRecord&) = delete;
             ConfidentialRecord& operator=(const ConfidentialRecord&) = delete;
 

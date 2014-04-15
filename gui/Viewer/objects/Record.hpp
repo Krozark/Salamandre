@@ -12,11 +12,10 @@ namespace salamandre
     class Record
     {
     public:
-        Record(){};
-        Record(const std::string path, const std::string key)
+        Record(){}
+        Record(const std::string path)
         {
             this->setFilePath(path);
-            this->load(key);
         }
         Record(const Record&) = delete;
         Record& operator=(const Record&) = delete;

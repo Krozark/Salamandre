@@ -4,10 +4,9 @@ namespace salamandre
 {
     const std::string DigitalRecord::fileName = "FMN";
 
-    DigitalRecord::DigitalRecord(const std::string path, const std::string key)
+    DigitalRecord::DigitalRecord(const std::string path)
     {
         this->setFilePath(path);
-        this->load(key);
     }
 
     std::string DigitalRecord::getFilePath() const

@@ -27,11 +27,16 @@ private:
 
     void startDownloadClientData(int clientNumber = -1);
     void loadRecords();
-
     void loadFEC();
     void loadFCT();
     void loadFMT();
     void loadFMN();
+
+    void saveRecords();
+    void saveFEC();
+    void saveFCT();
+    void saveFMT();
+    void saveFMN();
 
     bool checkNeedSave();
 
