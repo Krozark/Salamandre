@@ -1,17 +1,23 @@
 #include <objects/threaduploadfile.hpp>
 
 #include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
 
 threadUploadFile::threadUploadFile(QString destination, QObject *parent) :
     QThread(parent)
 {
     this->destination = destination;
+
+    QDir tmpDir = QDir(this->destination+"/tmp");
+    if(!tmpDir.exists())
+        tmpDir.mkdir(tmpDir.path());
 }
 
 void threadUploadFile::start(Priority)
 {
-    //this->run();
-    QThread::run();
+    this->run();
 }
 
 void threadUploadFile::run()
@@ -20,6 +26,9 @@ void threadUploadFile::run()
         QString fileToUpload = this->uploadFileList.at(0);
         this->uploadFileList.pop_front();
         qDebug() << "running " << fileToUpload;
+        QFile f(fileToUpload);
+        qDebug() << "dest : " << this->destination+"/"+QFileInfo(f.fileName()).fileName();
+        f.copy(this->destination+"/tmp/"+QFileInfo(f.fileName()).fileName());
     }
 }
 

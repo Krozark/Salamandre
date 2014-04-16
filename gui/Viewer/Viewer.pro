@@ -15,7 +15,7 @@ include("./forms/forms.pri")
 include("./objects/objects.pri")
 
 QMAKE_CXXFLAGS += -std=c++11
-LIBS += -lcryptopp
+LIBS += -lcryptopp -lz
 
 SOURCES += main.cpp
 

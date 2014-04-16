@@ -6,7 +6,8 @@ SOURCES += objects/Record.cpp \
     objects/doctor.cpp \
     objects/patient.cpp \
     objects/listview.cpp \
-    objects/threaduploadfile.cpp
+    objects/threaduploadfile.cpp \
+    objects/gzstream.cpp
 
 HEADERS += objects/Record.hpp \
     objects/ConfidentialRecord.hpp \
@@ -16,4 +17,5 @@ HEADERS += objects/Record.hpp \
     objects/doctor.hpp \
     objects/patient.hpp \
     objects/listview.hpp \
-    objects/threaduploadfile.hpp
+    objects/threaduploadfile.hpp \
+    objects/gzstream.hpp

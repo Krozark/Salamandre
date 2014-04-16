@@ -112,7 +112,17 @@ void MainWindow::loadFMT()
 
 void MainWindow::loadFMN()
 {
+    salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
 
+    if(QFile::exists(QString::fromStdString(record->getFilePath())))
+    {
+        record->load(this->doctor->getPass().toStdString());
+
+        ///this->ui->plainTextEdit_medicalTextPatient->setPlainText(QString::fromStdString(record->getContent()));
+    }
+    else{
+        record->setVersionNumber(0); // will be automatically increment at save.
+    }
 }
 
 void MainWindow::saveRecords()
@@ -156,7 +166,10 @@ void MainWindow::saveFMT()
 
 void MainWindow::saveFMN()
 {
+    salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
+    //record->setContent(this->ui->plainTextEdit_medicalTextPatient->toPlainText().toStdString());
 
+    record->save(this->doctor->getPass().toStdString());
 }
 
 bool MainWindow::checkNeedSave()
@@ -226,5 +239,6 @@ void MainWindow::on_actionQuitter_triggered()
 
 void MainWindow::startUploadDigitalFile(QStringList listFile)
 {
+    this->patient->getDigitalRecord()->vFile.push_back(QString(this->patient->getDirPath()+QString("/tmp/")+QFileInfo(listFile.at(0)).fileName()).toStdString());
     this->threadUpload->addFileToUpload(listFile);
 }

@@ -11,21 +11,15 @@ namespace salamandre
 
     std::string DigitalRecord::serialize()
     {
-        return std::string();
+        std::ostringstream os;
+        os << *this;
+        return os.str();
     }
 
     void DigitalRecord::unSerialize(std::string string)
     {
-        (void) string;
-    }
-
-    void DigitalRecord::save(std::string key)
-    {
-        (void) key;
-    }
-
-    void DigitalRecord::load(std::string key)
-    {
-        (void) key;
+        std::istringstream is;
+        is.str(string);
+        is >> *this;
     }
 }
