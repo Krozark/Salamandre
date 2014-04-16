@@ -4,6 +4,7 @@
 #include <objects/doctor.hpp>
 #include <objects/patient.hpp>
 #include <objects/listview.hpp>
+#include <objects/threaduploadfile.hpp>
 
 #include <QMainWindow>
 
@@ -27,6 +28,7 @@ private:
     salamandre::Patient *patient;
 
     ListView *listViewDigitalFiles;
+    threadUploadFile *threadUpload;
 
     void startDownloadClientData(int clientNumber = -1);
     void loadRecords();
@@ -44,6 +46,8 @@ private:
     bool checkNeedSave();
 
 private slots:
+    void startUploadDigitalFile(QStringList listFile);
+
     void on_actionQuitter_triggered();
     void on_actionNouveau_patient_triggered();
     void on_actionChanger_de_patient_triggered();

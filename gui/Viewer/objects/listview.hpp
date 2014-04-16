@@ -2,6 +2,10 @@
 #define LISTVIEW_HPP
 
 #include <QListView>
+#include <QDragEnterEvent>
+#include <QDragLeaveEvent>
+#include <QDragMoveEvent>
+#include <QMouseEvent>
 
 class ListView : public QListView
 {
@@ -9,11 +13,17 @@ class ListView : public QListView
 public:
     explicit ListView(QWidget *parent = 0);
 
-    void dropEvent(QDropEvent *e);
+    void dropEvent(QDropEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
-    
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
+
+    void resetStyle();
+
+private:
+
 signals:
-    
+    void dropFile(QStringList);
 public slots:
     
 };

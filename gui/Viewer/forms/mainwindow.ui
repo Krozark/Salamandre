@@ -237,7 +237,11 @@
          </layout>
         </item>
         <item>
-         <widget class="QPlainTextEdit" name="plainTextEdit_medicalTextPatient"/>
+         <widget class="QPlainTextEdit" name="plainTextEdit_medicalTextPatient">
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

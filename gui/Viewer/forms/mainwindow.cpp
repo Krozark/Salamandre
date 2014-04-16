@@ -17,12 +17,17 @@ MainWindow::MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient,
     this->doctor = doctor;
     this->patient = patient;
     this->listViewDigitalFiles = new ListView(nullptr);
+    this->threadUpload = new threadUploadFile(this->patient->getDirPath(), nullptr);
+
+    this->connect(this->listViewDigitalFiles, SIGNAL(dropFile(QStringList)), SLOT(startUploadDigitalFile(QStringList)));
 
     this->init();
 }
 
 MainWindow::~MainWindow()
 {
+    delete this->threadUpload;
+    delete this->listViewDigitalFiles;
     delete ui;
 }
 
@@ -219,3 +224,7 @@ void MainWindow::on_actionQuitter_triggered()
     }
 }
 
+void MainWindow::startUploadDigitalFile(QStringList listFile)
+{
+    this->threadUpload->addFileToUpload(listFile);
+}
