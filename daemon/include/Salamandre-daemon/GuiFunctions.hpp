@@ -69,7 +69,7 @@ namespace gui
      * \param id_patient the patient id (if <=0, all are check)
      * \param filepath the filename (if empty, all files are get)
      */
-    bool funcIsInUpdate(ntw::SocketSerialized& sock,int id_medecin, int id_patient, int std::string filename);
+    bool funcIsInUpdate(ntw::SocketSerialized& sock,int id_medecin, int id_patient,std::string filename);
 }
 }
 #endif

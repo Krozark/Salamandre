@@ -92,7 +92,7 @@ namespace gui
         sock.setStatus(gui::status::TODO);
     }
 
-    bool funcIsInUpdate(ntw::SocketSerialized& sock,int id_medecin, int id_patient, int std::string filename)
+    bool funcIsInUpdate(ntw::SocketSerialized& sock,int id_medecin, int id_patient,std::string filename)
     {
         if(id_medecin <=0)
         {

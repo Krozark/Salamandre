@@ -15,8 +15,9 @@ namespace srv
      */
     enum func {
         thisIsMyInfos = 1, ///< recv infos of an othen Daemon (listen on broadcast)
-        lostData, ///< is call whene a Daemon need to rebuild all his (listen on broadcast) datas                
-        sendDatas, ///< recv files to save
+        iLostData, ///< is call whene a Daemon need to rebuild all his (listen on broadcast) datas                
+        thisIsMyFiles,///< serd a filename list
+        sendFile, ///< recv files to save
     };
 
     /***

@@ -22,6 +22,12 @@ int main(int argc,char* argv[])
         test::sendNewFile(client);
     }
 
+    ntw::cli::Client client2;
+    if(client2.connect(argv[SERVER_HOST],atoi(argv[SERVER_PORT])) != NTW_ERROR_CONNEXION)
+    {
+        test::sendNewFile(client2);
+    }
+
     ntw::Socket::close();
 
     return 0;
