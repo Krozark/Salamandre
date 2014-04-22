@@ -18,7 +18,8 @@ namespace gui
      */
     enum func {
         newFile = 1, ///< to call whene the gui add files to save
-        sync ///< to call whene un sync is need
+        sync, ///< to call whene un sync is need
+        isInUpdate ///< is in update
     };
 
     /**
@@ -61,7 +62,14 @@ namespace gui
      */
     void funcSync(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename);
 
-
+    /**
+     * \brief is in update
+     * \param sock the socket
+     * \param id_medecin the medecin id
+     * \param id_patient the patient id (if <=0, all are check)
+     * \param filepath the filename (if empty, all files are get)
+     */
+    bool funcIsInUpdate(ntw::SocketSerialized& sock,int id_medecin, int id_patient, int std::string filename);
 }
 }
 #endif

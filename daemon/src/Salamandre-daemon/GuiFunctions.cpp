@@ -55,6 +55,10 @@ namespace gui
             {
                 res = ntw::FuncWrapper::srv::exec(funcSync,request);
             }break;
+            case func::isInUpdate :
+            {
+                res = ntw::FuncWrapper::srv::exec(funcIsInUpdate,request);
+            }break;
             default:
             {
                 std::cout<<"[dispatch] Function id not found"<<std::endl;                
@@ -86,6 +90,18 @@ namespace gui
     void funcSync(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename)
     {
         sock.setStatus(gui::status::TODO);
+    }
+
+    bool funcIsInUpdate(ntw::SocketSerialized& sock,int id_medecin, int id_patient, int std::string filename)
+    {
+        if(id_medecin <=0)
+        {
+            sock.setStatus(status::WRONG_PARAM);
+            return false;
+        }
+        bool status = false;
+        ///\todo TODO
+        return status;
     }
 
 
