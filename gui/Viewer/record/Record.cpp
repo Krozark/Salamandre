@@ -1,4 +1,4 @@
-#include <objects/Record.hpp>
+#include <record/Record.hpp>
 
 #include <crypto++/files.h>
 #include <crypto++/default.h>
@@ -19,7 +19,7 @@ namespace salamandre
                                new CryptoPP::DefaultDecryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::FileSink(getFilePath().c_str())));
     }
 
-    std::string Record::strEncrypt(const std::string pass, const std::string string)
+    const std::string Record::strEncrypt(const std::string pass, const std::string string)
     {
         std::string output;
         CryptoPP::StringSource(string, true, new CryptoPP::DefaultEncryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::HexEncoder(new CryptoPP::StringSink(output))));
@@ -27,7 +27,7 @@ namespace salamandre
         return output;
     }
 
-    std::string Record::strDecrypt(const std::string pass, std::string string)
+    const std::string Record::strDecrypt(const std::string pass, std::string string)
     {
         std::string output;
         CryptoPP::StringSource(string, true, new CryptoPP::HexDecoder(new CryptoPP::DefaultDecryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::StringSink(output))));
@@ -47,17 +47,20 @@ namespace salamandre
 
     void Record::save(std::string key)
     {
-        std::string str = this->serialize();
-        std::ofstream outputFile(this->getFilePath().c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
-        outputFile.flush();
+        std::string str = this->serialize(key);
+        std::ofstream outputFile(this->getFilePath().c_str(), openMode());
 
         char *header = new char[SIZE_HEADER];
-        strcpy(header, std::to_string(this->getVersionNumber()+1).c_str());
+        const char *version = std::to_string(this->getVersionNumber()+1).c_str();
+        memcpy(header, version, sizeof(version));
 
+        outputFile.seekp(0, outputFile.beg);
         outputFile.write(header, SIZE_HEADER);
+        outputFile.seekp(0, outputFile.end);
+
         delete[] header;
 
-        outputFile << this->strEncrypt(key, str);
+        outputFile << str;
     }
 
     void Record::load(std::string key)
@@ -68,7 +71,9 @@ namespace salamandre
         std::cout << "opening " << this->getFileName() << " version n°" << this->getVersionNumber() << std::endl;
 
         std::string str((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
-        this->unSerialize(this->strDecrypt(key, str.substr(SIZE_HEADER, str.size()-SIZE_HEADER)));
+        this->unSerialize(key, str.substr(SIZE_HEADER, str.size()-SIZE_HEADER));//this->strDecrypt(key, str.substr(SIZE_HEADER, str.size()-SIZE_HEADER)));
+
+        inputFile.close();
     }
 
     void Record::loadHeader()
@@ -88,7 +93,7 @@ namespace salamandre
         this->versionNumber = versionNumber;
     }
 
-    long long Record::getVersionNumber()
+    u_int64_t Record::getVersionNumber()
     {
         return this->versionNumber;
     }

@@ -1,4 +1,4 @@
-#include <objects/MedicalRecord.hpp>
+#include <record/MedicalRecord.hpp>
 
 namespace salamandre
 {
@@ -9,17 +9,17 @@ namespace salamandre
         this->setFilePath(path);
     }
 
-    std::string MedicalRecord::serialize()
+    std::string MedicalRecord::serialize(std::string key)
     {
         std::ostringstream os;
         os << *this;
-        return os.str();
+        return this->strEncrypt(key, os.str());
     }
 
-    void MedicalRecord::unSerialize(std::string string)
+    void MedicalRecord::unSerialize(std::string key, std::string string)
     {
         std::istringstream is;
-        is.str(string);
+        is.str(this->strDecrypt(key,string));
         is >> *this;
     }
 
@@ -31,5 +31,10 @@ namespace salamandre
     void MedicalRecord::setContent(std::string content)
     {
         this->fileContent = content;
+    }
+
+    std::ios_base::openmode MedicalRecord::openMode()
+    {
+        return std::ios::out | std::ios::trunc | std::ios::binary;
     }
 }

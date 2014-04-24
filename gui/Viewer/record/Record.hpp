@@ -1,10 +1,8 @@
 #ifndef SALAMANDRE_FICHE_HPP
 #define SALAMANDRE_FICHE_HPP
 
-#include <string>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <sstream>
 #include <fstream>
 #include <iostream>
@@ -29,25 +27,26 @@ namespace salamandre
         void encrypt(const std::string pass);
         void decrypt(const std::string pass);
 
-        std::string strDecrypt(const std::string pass, std::string string);
-        std::string strEncrypt(const std::string pass, const std::string string);
+        static const std::string strDecrypt(const std::string pass, std::string string);
+        static const std::string strEncrypt(const std::string pass, const std::string string);
 
         std::string getFilePath();
         void setFilePath(std::string filePath);
 
-        virtual std::string serialize() = 0;
-        virtual void unSerialize(std::string string) = 0;
+        virtual std::string serialize(std::string key) = 0;
+        virtual void unSerialize(std::string key, std::string string) = 0;
         virtual std::string getFileName() = 0;
+        virtual std::ios_base::openmode openMode() = 0;
 
         void save(std::string key);
         void load(std::string key);
         void loadHeader();
 
         void setVersionNumber(long long versionNumber);
-        long long getVersionNumber();
+        u_int64_t getVersionNumber();
 
     private:
-        long long versionNumber;
+        u_int64_t versionNumber;
         std::string filePath;
 
     };

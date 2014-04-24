@@ -3,10 +3,10 @@
 
 #include <QString>
 
-#include <objects/ConfidentialRecord.hpp>
-#include <objects/DigitalRecord.hpp>
-#include <objects/MedicalRecord.hpp>
-#include <objects/RegistryRecord.hpp>
+#include <record/ConfidentialRecord.hpp>
+#include <record/DigitalRecord.hpp>
+#include <record/MedicalRecord.hpp>
+#include <record/RegistryRecord.hpp>
 
 namespace salamandre {
     class Patient

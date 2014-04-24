@@ -1,7 +1,7 @@
 #ifndef SALAMANDRE_FICHEDONNEESMEDICALES_HPP
 #define SALAMANDRE_FICHEDONNEESMEDICALES_HPP
 
-#include <objects/Record.hpp>
+#include <record/Record.hpp>
 
 namespace salamandre
 {
@@ -15,8 +15,9 @@ namespace salamandre
             MedicalRecord(const MedicalRecord&) = delete;
             MedicalRecord& operator=(const MedicalRecord&) = delete;
 
-            std::string serialize();
-            void unSerialize(std::string string);
+            std::string serialize(std::string key);
+            void unSerialize(std::string key, std::string string);
+            std::ios_base::openmode openMode();
 
             std::string getFileName(){
                 return this->fileName;

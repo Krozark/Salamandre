@@ -1,7 +1,7 @@
 #ifndef SALAMANDRE_FICHECONFIDENTIELLE_HPP
 #define SALAMANDRE_FICHECONFIDENTIELLE_HPP
 
-#include <objects/Record.hpp>
+#include <record/Record.hpp>
 
 namespace salamandre
 {
@@ -16,8 +16,9 @@ medical prises par le medecin. La fiche comporte une zone de texte et le numero 
             ConfidentialRecord(const ConfidentialRecord&) = delete;
             ConfidentialRecord& operator=(const ConfidentialRecord&) = delete;
 
-            std::string serialize();
-            void unSerialize(std::string string);
+            std::string serialize(std::string key);
+            void unSerialize(std::string key, std::string string);
+            std::ios_base::openmode openMode();
 
             std::string getFileName(){
                 return this->fileName;

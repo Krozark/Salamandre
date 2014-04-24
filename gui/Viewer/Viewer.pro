@@ -13,6 +13,7 @@ TEMPLATE = app
 
 include("./forms/forms.pri")
 include("./objects/objects.pri")
+include("./record/record.pri")
 
 QMAKE_CXXFLAGS += -std=c++11
 LIBS += -lcryptopp -lz

@@ -1,7 +1,7 @@
 #ifndef SALAMANDRE_FICHEETATCIVIL_HPP
 #define SALAMANDRE_FICHEETATCIVIL_HPP
 
-#include <objects/Record.hpp>
+#include <record/Record.hpp>
 
 namespace salamandre
 {
@@ -15,6 +15,10 @@ l’adresse, . . . , et surtout, un numero d’identification)
             RegistryRecord(const std::string path);
             RegistryRecord(const RegistryRecord&) = delete;
             RegistryRecord& operator=(const RegistryRecord&) = delete;
+
+            std::string serialize(std::string key);
+            void unSerialize(std::string key, std::string string);
+            std::ios_base::openmode openMode();
 
             friend std::ostream& operator<<(std::ostream& os, const RegistryRecord& registry)
             {
@@ -89,9 +93,6 @@ l’adresse, . . . , et surtout, un numero d’identification)
 
                 return is;
             }
-
-            std::string serialize();
-            void unSerialize(std::string string);
 
             std::string getFileName(){
                 return this->fileName;

@@ -222,23 +222,27 @@ void MainWindow::on_actionChanger_de_patient_triggered()
 
 void MainWindow::on_actionEnregistrer_triggered()
 {
-    //this->patient->getConfidentialRecord()->save();
-    //this->patient->getDigitalRecord()->save();
-    //this->patient->getMedicalRecord()->save();
-
     this->saveRecords();
 }
 
 void MainWindow::on_actionQuitter_triggered()
 {
-    if(this->checkNeedSave())
-    {
+    if(this->checkNeedSave()){
         this->close();
     }
 }
 
 void MainWindow::startUploadDigitalFile(QStringList listFile)
 {
-    this->patient->getDigitalRecord()->vFile.push_back(QString(this->patient->getDirPath()+QString("/tmp/")+QFileInfo(listFile.at(0)).fileName()).toStdString());
+    u_int32_t nbFileToAdd = listFile.size();
+
+    for(u_int32_t i = 0; i < nbFileToAdd; ++i){
+        salamandre::DigitalContent *digitalContent = new salamandre::DigitalContent();
+        digitalContent->fileName = QFileInfo(listFile.at(i)).fileName().toStdString();
+        digitalContent->filePath = QString(this->patient->getDirPath()+QString("/tmp/")+QFileInfo(listFile.at(i)).fileName()).toStdString();
+
+        this->patient->getDigitalRecord()->vFileToAdd.push_back(digitalContent);
+    }
+
     this->threadUpload->addFileToUpload(listFile);
 }
