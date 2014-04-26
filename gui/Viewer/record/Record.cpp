@@ -71,7 +71,7 @@ namespace salamandre
         std::cout << "opening " << this->getFileName() << " version n°" << this->getVersionNumber() << std::endl;
 
         std::string str((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
-        this->unSerialize(key, str.substr(SIZE_HEADER, str.size()-SIZE_HEADER));//this->strDecrypt(key, str.substr(SIZE_HEADER, str.size()-SIZE_HEADER)));
+        this->unSerialize(key, str.substr(SIZE_HEADER, str.size()-SIZE_HEADER));
 
         inputFile.close();
     }

@@ -8,6 +8,8 @@ ListView::ListView(QWidget *parent) :
     QListView(parent)
 {
     this->setAcceptDrops(true);
+
+    this->setEditTriggers(EditTrigger::NoEditTriggers);
 }
 
 void ListView::dropEvent(QDropEvent *event)

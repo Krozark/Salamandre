@@ -28,26 +28,19 @@ namespace salamandre
 
             friend std::ostream& operator<<(std::ostream& os, const MedicalRecord& medical)
             {
-                unsigned len;
-                len = medical.fileContent.size();
-                os.write(reinterpret_cast<const char*>(&len), sizeof(len));
-                os.write(medical.fileContent.c_str(), len);
-
+                os.write(medical.fileContent.c_str(), medical.fileContent.size());
                 return os;
             }
 
             friend std::istream& operator>>(std::istream& is, MedicalRecord& medical)
             {
-                unsigned lgth;
-                char* buf;
+                is.seekg(0, is.end);
+                int size = is.tellg();
+                is.seekg(0, is.beg);
+                char buf[size+1];
+                is.read(buf, size);
 
-                is.read(reinterpret_cast<char*>(&lgth), sizeof(lgth));
-                if(lgth > 0){
-                  buf = new char[lgth];
-                  is.read(buf, lgth);
-                  medical.fileContent.assign(buf, lgth);
-                  delete[] buf;
-                }
+                medical.fileContent.assign(buf, size);
 
                 return is;
             }

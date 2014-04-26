@@ -25,8 +25,14 @@ namespace salamandre
             DigitalRecord(const DigitalRecord&) = delete;
             DigitalRecord& operator=(const DigitalRecord&) = delete;
 
-            std::string serialize(std::string key);
-            void unSerialize(std::string key, std::string string);
+            std::string serialize(std::string key){
+                (void) key;
+                return "";
+            }
+            void unSerialize(std::string key, std::string string){
+                (void) key;
+                (void) string;
+            }
             std::ios_base::openmode openMode();
 
             void save(std::string key);
@@ -34,6 +40,8 @@ namespace salamandre
 
             friend std::ostream& operator<<(std::ostream& os, const DigitalRecord& digital)
             {
+                (void) digital;
+                /*
                 int nbFile = digital.vFileToAdd.size();
                 unsigned lenContent, lenName;
 
@@ -48,7 +56,6 @@ namespace salamandre
                     lenContent = content.size();
                     lenName = s.size();
 
-
                     os.write(reinterpret_cast<const char*>(&lenName), sizeof(lenName));
                     os.write(s.c_str(), lenName);
 
@@ -57,12 +64,15 @@ namespace salamandre
 
                     std::remove(digital.vFileToAdd.at(i)->filePath.c_str());
                 }
+                */
 
                 return os;
             }
 
             friend std::istream& operator>>(std::istream& is, DigitalRecord& digital)
             {
+                (void) digital;
+                /*
                 unsigned lgth;
                 char* buf;
                 u_int32_t cpt = 0;
@@ -112,6 +122,7 @@ namespace salamandre
                 for(u_int32_t i = 0; i < cpt; ++i){
                     std::cout << digital.vFile.at(i)->fileName << std::endl;
                 }
+                */
 
                 return is;
             }

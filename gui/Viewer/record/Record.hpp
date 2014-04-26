@@ -8,8 +8,9 @@
 #include <iostream>
 #include <string>
 
-#define SIZE_HEADER 64 // 8 octets
+#include <Socket/Serializer.hpp>
 
+#define SIZE_HEADER 64
 
 namespace salamandre
 {
@@ -41,6 +42,8 @@ namespace salamandre
         void save(std::string key);
         void load(std::string key);
         void loadHeader();
+
+        static u_int64_t getVersion(u_int32_t idMedecin, u_int32_t idPatient, std::string nameRecord);
 
         void setVersionNumber(long long versionNumber);
         u_int64_t getVersionNumber();

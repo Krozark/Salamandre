@@ -7,6 +7,7 @@
 #include <objects/threaduploadfile.hpp>
 
 #include <QMainWindow>
+#include <QStandardItemModel>
 
 namespace Ui {
 class MainWindow;
@@ -28,6 +29,8 @@ private:
     salamandre::Patient *patient;
 
     ListView *listViewDigitalFiles;
+    QStandardItemModel *modelListFile;
+
     threadUploadFile *threadUpload;
 
     void startDownloadClientData(int clientNumber = -1);
@@ -44,6 +47,7 @@ private:
     void saveFMN();
 
     bool checkNeedSave();
+    void refreshDigitalFile();
 
 private slots:
     void startUploadDigitalFile(QStringList listFile);

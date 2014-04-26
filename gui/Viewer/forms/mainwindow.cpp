@@ -18,6 +18,7 @@ MainWindow::MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient,
     this->patient = patient;
     this->listViewDigitalFiles = new ListView(nullptr);
     this->threadUpload = new threadUploadFile(this->patient->getDirPath(), nullptr);
+    this->modelListFile = new QStandardItemModel();
 
     this->connect(this->listViewDigitalFiles, SIGNAL(dropFile(QStringList)), SLOT(startUploadDigitalFile(QStringList)));
 
@@ -114,11 +115,10 @@ void MainWindow::loadFMN()
 {
     salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
 
-    if(QFile::exists(QString::fromStdString(record->getFilePath())))
-    {
+    if(QFile::exists(QString::fromStdString(record->getFilePath()))){
         record->load(this->doctor->getPass().toStdString());
 
-        ///this->ui->plainTextEdit_medicalTextPatient->setPlainText(QString::fromStdString(record->getContent()));
+        this->refreshDigitalFile();
     }
     else{
         record->setVersionNumber(0); // will be automatically increment at save.
@@ -170,6 +170,22 @@ void MainWindow::saveFMN()
     //record->setContent(this->ui->plainTextEdit_medicalTextPatient->toPlainText().toStdString());
 
     record->save(this->doctor->getPass().toStdString());
+}
+
+void MainWindow::refreshDigitalFile()
+{
+    salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
+
+    int nbFile = record->vFile.size();
+    QStandardItem *item;
+    for(int i = 0; i < nbFile; ++i){
+        salamandre::DigitalContent *digit;
+        digit = record->vFile.at(i);
+        item = new QStandardItem(QString::fromStdString(digit->fileName));
+        this->modelListFile->appendRow(item);
+    }
+
+    this->listViewDigitalFiles->setModel(this->modelListFile);
 }
 
 bool MainWindow::checkNeedSave()

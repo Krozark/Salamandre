@@ -29,27 +29,19 @@ medical prises par le medecin. La fiche comporte une zone de texte et le numero 
 
             friend std::ostream& operator<<(std::ostream& os, const ConfidentialRecord& confidential)
             {
-                unsigned len;
-                len = confidential.fileContent.size();
-                os.write(reinterpret_cast<const char*>(&len), sizeof(len));
-                os.write(confidential.fileContent.c_str(), len);
-
+                os.write(confidential.fileContent.c_str(), confidential.fileContent.size());
                 return os;
             }
 
             friend std::istream& operator>>(std::istream& is, ConfidentialRecord& confidential)
             {
-                unsigned lgth;
-                char* buf;
+                is.seekg(0, is.end);
+                int size = is.tellg();
+                is.seekg(0, is.beg);
+                char buf[size+1];
+                is.read(buf, size);
 
-                is.read(reinterpret_cast<char*>(&lgth), sizeof(lgth));
-                if(lgth > 0){
-                  buf = new char[lgth];
-                  is.read(buf, lgth);
-                  confidential.fileContent.assign(buf, lgth);
-                  delete[] buf;
-                }
-
+                confidential.fileContent.assign(buf, size);
                 return is;
             }
 

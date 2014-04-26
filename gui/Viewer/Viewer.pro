@@ -16,7 +16,7 @@ include("./objects/objects.pri")
 include("./record/record.pri")
 
 QMAKE_CXXFLAGS += -std=c++11
-LIBS += -lcryptopp -lz
+LIBS += -lcryptopp -lz -lsocket
 
 SOURCES += main.cpp
 
