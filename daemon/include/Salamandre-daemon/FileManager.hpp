@@ -53,6 +53,7 @@ namespace salamandre
 
             static const std::string new_file_dir_path; ///< where the gui store files to saves
             static const std::string network_file_dir_path; ///< where file are stored for the network sender
+            static const std::string backup_file_dir_path; ///< where the recv files are stored
 
             /***
              * \brief copy file for upload

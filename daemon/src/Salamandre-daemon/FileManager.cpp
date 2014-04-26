@@ -11,6 +11,7 @@ namespace salamandre
 {
     const std::string FileManager::new_file_dir_path = "datas/tosave";
     const std::string FileManager::network_file_dir_path = "datas/network";
+    const std::string FileManager::backup_file_dir_path = "datas/backup";
 
     bool FileManager::prepareForUpload(int id_medecin)
     {

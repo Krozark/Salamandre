@@ -6,6 +6,7 @@ set(ROOT_SRC
     ${SRCROOT}/Daemon.cpp
     ${SRCROOT}/FileManager.cpp
     ${SRCROOT}/GuiFunctions.cpp
+    ${SRCROOT}/ServerBroadcast
     ${SRCROOT}/ServerFunctions.cpp
     ${SRCROOT}/std.cpp
 )
@@ -13,6 +14,7 @@ set(ROOT_HEADER
     ${INCROOT}/Daemon.hpp
     ${INCROOT}/FileManager.hpp
     ${INCROOT}/GuiFunctions.hpp
+    ${INCROOT}/ServerBroadcast.hpp
     ${INCROOT}/ServerFunctions.hpp
     ${INCROOT}/std.hpp
     ${INCROOT}/std.tpl
