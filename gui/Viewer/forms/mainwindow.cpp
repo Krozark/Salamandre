@@ -29,6 +29,11 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::closeEvent(QCloseEvent *)
+{
+    this->checkNeedSave();
+}
+
 void MainWindow::init()
 {
     this->listViewDigitalFiles = new ListView(this->patient->getDirPath(), nullptr);
@@ -105,6 +110,8 @@ void MainWindow::loadFCT()
 
         record->setVersionNumber(0); // will be automatically increment at save.
     }
+
+    this->saveFCTNeeded = false;
 }
 
 void MainWindow::loadFMT()
@@ -122,6 +129,8 @@ void MainWindow::loadFMT()
 
         record->setVersionNumber(0); // will be automatically increment at save.
     }
+
+    this->saveFMTNeeded = false;
 }
 
 void MainWindow::loadFMN()
@@ -129,8 +138,9 @@ void MainWindow::loadFMN()
     salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
 
     if(QFile::exists(QString::fromStdString(record->getFilePath()))){
+        QFile f(QString::fromStdString(record->getFilePath()));
+        f.copy(this->patient->getDirPath()+"/tmp/"+QString::fromStdString(record->getFileName()));
         record->load(this->doctor->getPass().toStdString());
-
         this->refreshDigitalFile();
     }
     else{
@@ -180,8 +190,6 @@ void MainWindow::saveFMT()
 void MainWindow::saveFMN()
 {
     salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
-    //record->setContent(this->ui->plainTextEdit_medicalTextPatient->toPlainText().toStdString());
-
     record->save(this->doctor->getPass().toStdString());
 }
 
@@ -202,9 +210,42 @@ void MainWindow::refreshDigitalFile()
     }
 }
 
-bool MainWindow::checkNeedSave()
+void MainWindow::checkNeedSave()
 {
-    return true;
+    if(this->checkNeedSaveFCT())
+        qDebug() << "save fct needed";
+    if(this->checkNeedSaveFEC())
+        qDebug() << "save fec needed";
+    if(this->checkNeedSaveFMN())
+        qDebug() << "save fmn needed";
+    if(this->checkNeedSaveFMT())
+        qDebug() << "save fmt needed";
+
+    bool needToSave = this->checkNeedSaveFCT() || this->checkNeedSaveFEC() || this->checkNeedSaveFMN() || this->checkNeedSaveFMT();
+
+    if(needToSave){
+        QMessageBox::StandardButton saveBox;
+        saveBox = QMessageBox::question(this, "Sauvegarde requise", "Voulez-vous sauvegarder les modifications ?<br/>", QMessageBox::Yes|QMessageBox::No);
+
+        if (saveBox == QMessageBox::Yes){
+            this->saveRecords();
+        }
+        else{
+            // restore FMN.
+            salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
+
+            QFile fileFMN(QString::fromStdString(record->getFilePath()));
+            if(fileFMN.exists())
+                fileFMN.remove();
+
+            QFile f(this->patient->getDirPath()+"/tmp/"+QString::fromStdString(record->getFileName()));
+            f.copy(QString::fromStdString(record->getFilePath()));
+        }
+    }
+
+    QDir dirTmp(this->patient->getDirPath()+"/tmp");
+    if(dirTmp.exists())
+        dirTmp.removeRecursively();
 }
 
 bool MainWindow::checkNeedSaveFEC()
@@ -229,14 +270,12 @@ bool MainWindow::checkNeedSaveFEC()
 
 bool MainWindow::checkNeedSaveFCT()
 {
-    salamandre::ConfidentialRecord *record = this->patient->getConfidentialRecord();
-    return record->getContent() == this->ui->plainTextEdit_confidentialTextPatient->toPlainText().toStdString();
+    return this->saveFCTNeeded;
 }
 
 bool MainWindow::checkNeedSaveFMT()
 {
-    salamandre::MedicalRecord *record = this->patient->getMedicalRecord();
-    return record->getContent() == this->ui->plainTextEdit_medicalTextPatient->toPlainText().toStdString();
+    return this->saveFMTNeeded;
 }
 
 bool MainWindow::checkNeedSaveFMN()
@@ -246,45 +285,43 @@ bool MainWindow::checkNeedSaveFMN()
 
 void MainWindow::on_actionNouveau_patient_triggered()
 {
-    if(this->checkNeedSave())
-    {
-        QString id = QInputDialog::getText(this, QString("Salamandre"), QString("Entrer le numéro du nouveau patient"), QLineEdit::Normal, QString(), nullptr, Qt::Dialog, Qt::ImhDigitsOnly);
+    this->checkNeedSave();
 
-        if(!id.isEmpty()){
-            salamandre::Patient *newPatient = new salamandre::Patient();
-            newPatient->setId(id);
-            newPatient->setDirPath(doctor->getDirPath()+"/"+id);
-            QDir dirPatient = QDir(newPatient->getDirPath());
-            if(!dirPatient.exists()){
-                dirPatient.mkdir(dirPatient.path());
+    QString id = QInputDialog::getText(this, QString("Salamandre"), QString("Entrer le numéro du nouveau patient"), QLineEdit::Normal, QString(), nullptr, Qt::Dialog, Qt::ImhDigitsOnly);
 
-                delete this->patient;
-                this->patient =  newPatient;
-                this->init();
-            }
-            else{
-                delete newPatient;
-                QMessageBox::warning(nullptr, "Salamandre", "Ce patient existe déjà dans votre répertoire.");
-            }
+    if(!id.isEmpty()){
+        salamandre::Patient *newPatient = new salamandre::Patient();
+        newPatient->setId(id);
+        newPatient->setDirPath(doctor->getDirPath()+"/"+id);
+        QDir dirPatient = QDir(newPatient->getDirPath());
+        if(!dirPatient.exists()){
+            dirPatient.mkdir(dirPatient.path());
+
+            delete this->patient;
+            this->patient =  newPatient;
+            this->init();
+        }
+        else{
+            delete newPatient;
+            QMessageBox::warning(nullptr, "Salamandre", "Ce patient existe déjà dans votre répertoire.");
         }
     }
 }
 
 void MainWindow::on_actionChanger_de_patient_triggered()
 {
-    if(this->checkNeedSave())
-    {
-        chooseDialog *chDialog = new chooseDialog(this->doctor, nullptr);
-        int res = chDialog->exec();
+    this->checkNeedSave();
 
-        if(res  == QDialog::Accepted){
-            this->clearPatient();
-            this->patient = chDialog->getPatient();
-            this->init();
-        }
+    chooseDialog *chDialog = new chooseDialog(this->doctor, nullptr);
+    int res = chDialog->exec();
 
-        delete chDialog;
+    if(res  == QDialog::Accepted){
+        this->clearPatient();
+        this->patient = chDialog->getPatient();
+        this->init();
     }
+
+    delete chDialog;
 }
 
 void MainWindow::on_actionEnregistrer_triggered()
@@ -294,9 +331,8 @@ void MainWindow::on_actionEnregistrer_triggered()
 
 void MainWindow::on_actionQuitter_triggered()
 {
-    if(this->checkNeedSave()){
-        this->close();
-    }
+    this->checkNeedSave();
+    this->close();
 }
 
 void MainWindow::startUploadDigitalFile(QStringList listFile)
@@ -338,4 +374,14 @@ void MainWindow::on_toolButton_numericalImporter_clicked()
         this->listViewDigitalFiles->needToSave = true;
         this->startUploadDigitalFile(fileList);
     }
+}
+
+void MainWindow::on_plainTextEdit_confidentialTextPatient_textChanged()
+{
+    this->saveFCTNeeded = true;
+}
+
+void MainWindow::on_plainTextEdit_medicalTextPatient_textChanged()
+{
+    this->saveFMTNeeded = true;
 }

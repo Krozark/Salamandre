@@ -29,6 +29,8 @@ private:
 
     ListView *listViewDigitalFiles;
 
+    bool saveFCTNeeded, saveFMTNeeded;
+
     threadUploadFile *threadUpload;
 
     void startDownloadClientData(int clientNumber = -1);
@@ -44,13 +46,15 @@ private:
     void saveFMT();
     void saveFMN();
 
-    bool checkNeedSave();
+    void checkNeedSave();
     bool checkNeedSaveFEC();
     bool checkNeedSaveFCT();
     bool checkNeedSaveFMT();
     bool checkNeedSaveFMN();
 
     void clearPatient();
+
+    void closeEvent(QCloseEvent *);
 
 private slots:
     void startUploadDigitalFile(QStringList listFile);
@@ -64,6 +68,8 @@ private slots:
 
     void on_toolButton_numericalExporter_clicked();
     void on_toolButton_numericalImporter_clicked();
+    void on_plainTextEdit_confidentialTextPatient_textChanged();
+    void on_plainTextEdit_medicalTextPatient_textChanged();
 };
 
 #endif // MAINWINDOW_HPP
