@@ -13,6 +13,8 @@ namespace salamandre
                                new CryptoPP::DefaultEncryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::FileSink((getFilePath()+".eas").c_str())));
     }
 
+    Record::~Record(){}
+
     void Record::decrypt(const std::string pass)
     {
         CryptoPP::FileSource((getFilePath()+".eas").c_str(), true,
@@ -48,7 +50,7 @@ namespace salamandre
     void Record::save(std::string key)
     {
         std::string str = this->serialize(key);
-        std::ofstream outputFile(this->getFilePath().c_str(), openMode());
+        std::ofstream outputFile(this->getFilePath().c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
 
         char *header = new char[SIZE_HEADER];
         const char *version = std::to_string(this->getVersionNumber()+1).c_str();
@@ -78,6 +80,15 @@ namespace salamandre
 
     void Record::loadHeader()
     {
+        FILE *file = fopen(this->getFilePath().c_str(), "rb");
+        if(file){
+            char header[SIZE_HEADER];
+            fseek(file, 0, SEEK_SET);
+            fread(header, SIZE_HEADER, 1, file);
+            this->setVersionNumber(std::stoll(header));
+            fclose(file);
+        }
+        /*
         std::ifstream inputFile(this->getFilePath().c_str(), std::ios::in | std::ios::binary);
 
         char *header = new char[SIZE_HEADER];
@@ -86,10 +97,12 @@ namespace salamandre
         delete[] header;
 
         this->setVersionNumber(std::stoll(strHeader));
+        ***/
     }
 
     void Record::setVersionNumber(long long versionNumber)
     {
+        std::cout << "open file : " << this->getFilePath() << " version : " << std::to_string(versionNumber) << std::endl;
         this->versionNumber = versionNumber;
     }
 

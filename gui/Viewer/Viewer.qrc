@@ -9,5 +9,8 @@
         <file>icons/controls/digital.png</file>
         <file>icons/controls/medical.png</file>
         <file>icons/controls/registry.png</file>
+        <file>icons/controls/download.png</file>
+        <file>icons/controls/open.png</file>
+        <file>icons/controls/upload.png</file>
     </qresource>
 </RCC>

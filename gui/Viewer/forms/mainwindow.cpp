@@ -7,6 +7,7 @@
 #include <QInputDialog>
 #include <QDebug>
 #include <QDate>
+#include <QFileDialog>
 
 MainWindow::MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient, QWidget *parent) :
     QMainWindow(parent),
@@ -16,24 +17,26 @@ MainWindow::MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient,
 
     this->doctor = doctor;
     this->patient = patient;
-    this->listViewDigitalFiles = new ListView(nullptr);
-    this->threadUpload = new threadUploadFile(this->patient->getDirPath(), nullptr);
-    this->modelListFile = new QStandardItemModel();
 
-    this->connect(this->listViewDigitalFiles, SIGNAL(dropFile(QStringList)), SLOT(startUploadDigitalFile(QStringList)));
 
     this->init();
 }
 
 MainWindow::~MainWindow()
 {
-    delete this->threadUpload;
-    delete this->listViewDigitalFiles;
+    this->clearPatient();
+
     delete ui;
 }
 
 void MainWindow::init()
 {
+    this->listViewDigitalFiles = new ListView(this->patient->getDirPath(), nullptr);
+    this->threadUpload = new threadUploadFile(this->patient, this->doctor, nullptr);
+
+    this->connect(this->listViewDigitalFiles, SIGNAL(dropFile(QStringList)), SLOT(startUploadDigitalFile(QStringList)));
+    this->connect(this->threadUpload, SIGNAL(newFileInserted()), this, SLOT(refreshDigitalFile()));
+
     this->setWindowTitle(QString("Salamandre") + " - Patient n°"+this->patient->getId());
 
     this->ui->verticalLayout_listView->addWidget(this->listViewDigitalFiles);
@@ -70,13 +73,19 @@ void MainWindow::loadFEC()
         this->ui->lineEdit_patientLastName->setText(QString::fromStdString(record->getLastName()));
         this->ui->lineEdit_patientFirstName->setText(QString::fromStdString(record->getFirstName()));
         this->ui->lineEdit_patientAdress->setText(QString::fromStdString(record->getAdress()));
-        this->ui->dateEdit_patientBirthDate->setDate(QDate::fromString(QString::fromStdString(record->getBirthDate()), "yyyy-MM-dd"));
+        this->ui->dateTimeEdit_patientBirthDate->setDateTime(QDateTime::fromString(QString::fromStdString(record->getBirthDate()), "yyyy-MM-ddThh:mm:ss"));
         if(QString::fromStdString(record->getSex()) == "M")
             this->ui->radioButton_patientSexMale->setChecked(true);
         else
             this->ui->radioButton_patientSexFemale->setChecked(true);
     }
     else{
+        this->ui->lineEdit_patientLastName->setText("");
+        this->ui->lineEdit_patientFirstName->setText("");
+        this->ui->lineEdit_patientAdress->setText("");
+        this->ui->dateTimeEdit_patientBirthDate->setDateTime(QDateTime(QDate(1970,1,1), QTime(0,0,0)));
+        this->ui->radioButton_patientSexMale->setChecked(true);
+
         record->setVersionNumber(0); // will be automatically increment at save.
     }
 }
@@ -92,6 +101,8 @@ void MainWindow::loadFCT()
         this->ui->plainTextEdit_confidentialTextPatient->setPlainText(QString::fromStdString(record->getContent()));
     }
     else{
+        this->ui->plainTextEdit_confidentialTextPatient->setPlainText("");
+
         record->setVersionNumber(0); // will be automatically increment at save.
     }
 }
@@ -107,6 +118,8 @@ void MainWindow::loadFMT()
         this->ui->plainTextEdit_medicalTextPatient->setPlainText(QString::fromStdString(record->getContent()));
     }
     else{
+        this->ui->plainTextEdit_medicalTextPatient->setPlainText("");
+
         record->setVersionNumber(0); // will be automatically increment at save.
     }
 }
@@ -137,7 +150,7 @@ void MainWindow::saveFEC()
 {
     salamandre::RegistryRecord *record = this->patient->getRegistryRecord();
     record->setAdress(this->ui->lineEdit_patientAdress->text().toStdString());
-    record->setBirthDate(this->ui->dateEdit_patientBirthDate->date().toString("yyyy-MM-dd").toStdString());
+    record->setBirthDate(this->ui->dateTimeEdit_patientBirthDate->dateTime().toString("yyyy-MM-ddThh:mm:ss").toStdString());
     record->setFirstName(this->ui->lineEdit_patientFirstName->text().toStdString());
     record->setLastName(this->ui->lineEdit_patientLastName->text().toStdString());
     if(this->ui->radioButton_patientSexMale->isChecked())
@@ -176,21 +189,59 @@ void MainWindow::refreshDigitalFile()
 {
     salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
 
+    this->listViewDigitalFiles->modelListFile->clear();
+
     int nbFile = record->vFile.size();
     QStandardItem *item;
     for(int i = 0; i < nbFile; ++i){
         salamandre::DigitalContent *digit;
         digit = record->vFile.at(i);
         item = new QStandardItem(QString::fromStdString(digit->fileName));
-        this->modelListFile->appendRow(item);
+        item->setData(QVariant::fromValue(digit));
+        this->listViewDigitalFiles->modelListFile->appendRow(item);
     }
-
-    this->listViewDigitalFiles->setModel(this->modelListFile);
 }
 
 bool MainWindow::checkNeedSave()
 {
     return true;
+}
+
+bool MainWindow::checkNeedSaveFEC()
+{
+    salamandre::RegistryRecord *record = this->patient->getRegistryRecord();
+
+    if(record->getAdress() != this->ui->lineEdit_patientAdress->text().toStdString())
+        return true;
+    if(record->getBirthDate() != this->ui->dateTimeEdit_patientBirthDate->dateTime().toString("yyyy-MM-ddThh:mm:ss").toStdString())
+        return true;
+    if(record->getFirstName() != this->ui->lineEdit_patientFirstName->text().toStdString())
+        return true;
+    if(record->getLastName() != this->ui->lineEdit_patientLastName->text().toStdString())
+        return true;
+    if(record->getSex() == "M" && !this->ui->radioButton_patientSexMale->isChecked())
+        return true;
+    if(record->getSex() == "F" && !this->ui->radioButton_patientSexFemale->isChecked())
+        return true;
+
+    return false;
+}
+
+bool MainWindow::checkNeedSaveFCT()
+{
+    salamandre::ConfidentialRecord *record = this->patient->getConfidentialRecord();
+    return record->getContent() == this->ui->plainTextEdit_confidentialTextPatient->toPlainText().toStdString();
+}
+
+bool MainWindow::checkNeedSaveFMT()
+{
+    salamandre::MedicalRecord *record = this->patient->getMedicalRecord();
+    return record->getContent() == this->ui->plainTextEdit_medicalTextPatient->toPlainText().toStdString();
+}
+
+bool MainWindow::checkNeedSaveFMN()
+{
+    return this->listViewDigitalFiles->needToSave;
 }
 
 void MainWindow::on_actionNouveau_patient_triggered()
@@ -227,7 +278,7 @@ void MainWindow::on_actionChanger_de_patient_triggered()
         int res = chDialog->exec();
 
         if(res  == QDialog::Accepted){
-            delete this->patient;
+            this->clearPatient();
             this->patient = chDialog->getPatient();
             this->init();
         }
@@ -251,14 +302,40 @@ void MainWindow::on_actionQuitter_triggered()
 void MainWindow::startUploadDigitalFile(QStringList listFile)
 {
     u_int32_t nbFileToAdd = listFile.size();
+    QVector<salamandre::DigitalContent*> vFile;
 
     for(u_int32_t i = 0; i < nbFileToAdd; ++i){
         salamandre::DigitalContent *digitalContent = new salamandre::DigitalContent();
         digitalContent->fileName = QFileInfo(listFile.at(i)).fileName().toStdString();
         digitalContent->filePath = QString(this->patient->getDirPath()+QString("/tmp/")+QFileInfo(listFile.at(i)).fileName()).toStdString();
+        digitalContent->sourcePath = listFile.at(i).toStdString();
 
-        this->patient->getDigitalRecord()->vFileToAdd.push_back(digitalContent);
+        vFile.push_back(digitalContent);
     }
 
-    this->threadUpload->addFileToUpload(listFile);
+    this->threadUpload->addFileToUpload(vFile);
+}
+
+void MainWindow::clearPatient()
+{
+    delete this->patient;
+    delete this->threadUpload;
+    delete this->listViewDigitalFiles;
+}
+
+void MainWindow::on_toolButton_numericalExporter_clicked()
+{
+    this->listViewDigitalFiles->startUpload();
+}
+
+void MainWindow::on_toolButton_numericalImporter_clicked()
+{
+    QStringList fileList = QFileDialog::getOpenFileNames(nullptr, tr("Choix des fichiers"), QDir::homePath());
+
+    int nbFile = fileList.size();
+
+    if(nbFile > 0){
+        this->listViewDigitalFiles->needToSave = true;
+        this->startUploadDigitalFile(fileList);
+    }
 }

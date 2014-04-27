@@ -1,50 +1,74 @@
 #include <objects/threaduploadfile.hpp>
+#include <record/DigitalRecord.hpp>
 
 #include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 
-threadUploadFile::threadUploadFile(QString destination, QObject *parent) :
+threadUploadFile::threadUploadFile(salamandre::Patient *patient, salamandre::Doctor *doctor, QObject *parent) :
     QThread(parent)
 {
-    this->destination = destination;
+    this->patient = patient;
+    this->doctor = doctor;
 
-    QDir tmpDir = QDir(this->destination+"/tmp");
+    this->destinationTmp = this->patient->getDirPath()+"/tmp";
+    this->destinationFmn = this->patient->getDirPath()+"/FMN";
+
+    QDir tmpDir = QDir(this->destinationTmp);
     if(!tmpDir.exists())
         tmpDir.mkdir(tmpDir.path());
 }
 
-void threadUploadFile::start(Priority)
-{
-    this->run();
-}
-
 void threadUploadFile::run()
 {
-    while(this->uploadFileList.size() > 0){
-        QString fileToUpload = this->uploadFileList.at(0);
+    salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
+    u_int32_t nbDigitalFile;
+    bool exists;
+
+    while(!this->uploadFileList.isEmpty()){
+        nbDigitalFile = record->vFile.size();
+        std::cout << "nb digital files : " << nbDigitalFile << std::endl;
+
+        salamandre::DigitalContent *digit = this->uploadFileList.at(0);
         this->uploadFileList.pop_front();
-        qDebug() << "running " << fileToUpload;
-        QFile f(fileToUpload);
-        qDebug() << "dest : " << this->destination+"/"+QFileInfo(f.fileName()).fileName();
-        f.copy(this->destination+"/tmp/"+QFileInfo(f.fileName()).fileName());
+
+        QFile f(QString::fromStdString(digit->sourcePath));
+        QString fileName = QFileInfo(f.fileName()).fileName();
+        exists = false;
+
+        for(u_int32_t j = 0; j < nbDigitalFile; ++j){
+            salamandre::DigitalContent *digitFile = record->vFile.at(j);
+            if(fileName.toStdString() == digitFile->fileName){
+                exists = true;
+                break;
+            }
+        }
+
+        if(!exists){
+            f.copy(this->destinationTmp+"/"+fileName);
+            salamandre::DigitalRecord::insertDigitFile(this->destinationFmn.toStdString(), this->doctor->getPass().toStdString(), digit);
+            record->vFile.push_back(digit);
+            ++nbDigitalFile;
+            QFile::remove(this->destinationTmp+"/"+fileName);
+            emit newFileInserted();
+        }
     }
 }
 
-void threadUploadFile::addFileToUpload(QStringList listFile)
+void threadUploadFile::addFileToUpload(QVector<salamandre::DigitalContent *> vFile)
 {
-    int nbFile = listFile.size();
+    int nbFile = vFile.size();
 
     for(int i = 0; i < nbFile; ++i)
-        this->addFileToUpload(listFile.at(i));
+        this->addFileToUpload(vFile.at(i));
 }
 
-void threadUploadFile::addFileToUpload(QString file)
+void threadUploadFile::addFileToUpload(salamandre::DigitalContent *file)
 {
     this->uploadFileList << file;
 
     if(!this->isRunning()){
-        this->start(QThread::NormalPriority);
+        this->start(QThread::HighPriority);
     }
 }

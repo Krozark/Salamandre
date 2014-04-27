@@ -39,7 +39,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <property name="iconSize">
        <size>
@@ -117,13 +117,6 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
-           <widget class="QDateEdit" name="dateEdit_patientBirthDate">
-            <property name="calendarPopup">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
           <item row="4" column="0">
            <widget class="QLabel" name="label_patientSex">
             <property name="text">
@@ -166,6 +159,20 @@
           </item>
           <item row="5" column="1">
            <widget class="QLineEdit" name="lineEdit_patientAdress"/>
+          </item>
+          <item row="3" column="1">
+           <widget class="QDateTimeEdit" name="dateTimeEdit_patientBirthDate">
+            <property name="date">
+             <date>
+              <year>1970</year>
+              <month>1</month>
+              <day>1</day>
+             </date>
+            </property>
+            <property name="calendarPopup">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -319,6 +326,19 @@
             <property name="text">
              <string>Importer un fichier ...</string>
             </property>
+            <property name="icon">
+             <iconset resource="../Viewer.qrc">
+              <normaloff>:/icons/controls/download.png</normaloff>:/icons/controls/download.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextBesideIcon</enum>
+            </property>
            </widget>
           </item>
           <item>
@@ -331,6 +351,19 @@
             </property>
             <property name="text">
              <string>Exporter ce fichier ...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../Viewer.qrc">
+              <normaloff>:/icons/controls/upload.png</normaloff>:/icons/controls/upload.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextBesideIcon</enum>
             </property>
            </widget>
           </item>

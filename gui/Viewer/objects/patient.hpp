@@ -19,6 +19,7 @@ namespace salamandre {
         };
 
         Patient();
+        ~Patient();
 
         void setDirPath(QString dirPath);
         void setId(QString id);

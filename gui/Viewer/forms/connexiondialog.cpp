@@ -39,6 +39,10 @@ void connexionDialog::accept()
         this->doctor->setType(salamandre::Doctor::TypeDoctor::NEW_DOCTOR);
     }
     else{
+        if(!dir.exists()){
+            dir.mkdir(dir.path());
+        }
+
         if(dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot).size() == 0){
             this->doctor->setType(salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST_BUT_NOTHING);
         }

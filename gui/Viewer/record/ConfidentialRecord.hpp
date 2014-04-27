@@ -15,10 +15,10 @@ medical prises par le medecin. La fiche comporte une zone de texte et le numero 
             ConfidentialRecord(const std::string path);
             ConfidentialRecord(const ConfidentialRecord&) = delete;
             ConfidentialRecord& operator=(const ConfidentialRecord&) = delete;
+            ~ConfidentialRecord();
 
             std::string serialize(std::string key);
             void unSerialize(std::string key, std::string string);
-            std::ios_base::openmode openMode();
 
             std::string getFileName(){
                 return this->fileName;

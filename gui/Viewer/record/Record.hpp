@@ -22,8 +22,10 @@ namespace salamandre
         {
             this->setFilePath(path);
         }
+
         Record(const Record&) = delete;
         Record& operator=(const Record&) = delete;
+        virtual ~Record() = 0;
 
         void encrypt(const std::string pass);
         void decrypt(const std::string pass);
@@ -37,7 +39,6 @@ namespace salamandre
         virtual std::string serialize(std::string key) = 0;
         virtual void unSerialize(std::string key, std::string string) = 0;
         virtual std::string getFileName() = 0;
-        virtual std::ios_base::openmode openMode() = 0;
 
         void save(std::string key);
         void load(std::string key);

@@ -5,6 +5,14 @@ namespace salamandre {
     {
     }
 
+    Patient::~Patient()
+    {
+        delete this->confidentialRecord;
+        delete this->digitalRecord;
+        delete this->medicalRecord;
+        delete this->registryRecord;
+    }
+
     QString Patient::getId()
     {
         return this->id;

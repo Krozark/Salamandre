@@ -3,26 +3,34 @@
 
 #include <QThread>
 #include <QStringList>
+#include <QVector>
+
+#include <objects/patient.hpp>
+#include <objects/doctor.hpp>
 
 class threadUploadFile : public QThread
 {
     Q_OBJECT
 public:
-    explicit threadUploadFile(QString destination, QObject *parent = 0);
+    explicit threadUploadFile(salamandre::Patient *patient, salamandre::Doctor *doctor, QObject *parent = 0);
 
-    void addFileToUpload(QStringList listFile);
-    void addFileToUpload(QString file);
+    void addFileToUpload(QVector<salamandre::DigitalContent*> listFile);
+    void addFileToUpload(salamandre::DigitalContent *file);
 
 private:
+    QVector<salamandre::DigitalContent*> uploadFileList;
+    QString destinationTmp;
+    QString destinationFmn;
+
+    salamandre::Patient *patient;
+    salamandre::Doctor *doctor;
+
     void run();
-
-    QStringList uploadFileList;
-    QString destination;
-
 private slots:
-    void start(Priority);
+
     
 signals:
+    void newFileInserted();
     
 public slots:
     

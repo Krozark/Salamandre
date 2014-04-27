@@ -26,8 +26,6 @@ int main(int argc, char *argv[])
     delete coDialog;
 
     chooseDialog *chDialog = new chooseDialog(doctor, nullptr);
-    //chDialog->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint);
-
     res = chDialog->exec();
 
     if(res  == QDialog::Rejected){

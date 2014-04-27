@@ -9,6 +9,11 @@ namespace salamandre
         this->setFilePath(path);
     }
 
+    DigitalRecord::~DigitalRecord()
+    {
+
+    }
+
     void DigitalRecord::save(std::string key)
     {
         if(this->vFileToAdd.size() == 0)
@@ -23,52 +28,20 @@ namespace salamandre
         FILE *digitFile = fopen(this->getFilePath().c_str(), "rb+");
 
         fseek(digitFile, 0, SEEK_END);
-        //std::cout << "1 size of file : " << ftell(digitFile) << std::endl;
-
         if(digitFile){
             fseek(digitFile, 0, SEEK_SET);
-            //std::cout << "pre size of file : " << ftell(digitFile) << std::endl;
-
             fwrite(header, SIZE_HEADER, 1, digitFile);
-            fseek(digitFile, 0, SEEK_END);
-
-            //std::cout << "2 size of file : " << ftell(digitFile) << std::endl;
+            fclose(digitFile);
 
             for(u_int32_t i = 0; i < this->vFileToAdd.size(); ++i){
-                DigitalContent *digit = this->vFileToAdd.at(i);
-                fwrite(digit->fileName.c_str(), digit->fileName.size(), 1, digitFile);
-
-                std::ifstream inputFile(this->vFileToAdd.at(i)->filePath.c_str(), std::ios::in);
-                std::string content;
-                content.assign((std::istreambuf_iterator<char>(inputFile)), (std::istreambuf_iterator<char>()));
-                content = Record::strEncrypt(key, content);
-                long int fileSize = content.size();
-
-                ntw::Serializer serializer;
-                serializer << fileSize;
-                char sizeFile[8];
-                serializer.read(sizeFile, 8);
-                serializer.clear();
-
-                //std::cout << "writting size : " << fileSize << std::endl;
-
-                fwrite(sizeFile, 8, 1, digitFile);
-                fwrite(content.c_str(), fileSize, 1, digitFile);
-
+                DigitalRecord::insertDigitFile(this->getFilePath(), key, this->vFileToAdd.at(i));
                 remove(this->vFileToAdd.at(i)->filePath.c_str());
-
-                //std::cout << "3 size of file : " << ftell(digitFile) << std::endl;
             }
-
-            fclose(digitFile);
         }
     }
 
     void DigitalRecord::load(std::string key)
     {
-        (void) key;
-        //this->loadHeader();
-
         FILE *digitFile = fopen(this->getFilePath().c_str(), "rb");
         if(digitFile){
 
@@ -79,6 +52,8 @@ namespace salamandre
             char header[SIZE_HEADER];
             fseek(digitFile, 0, SEEK_SET);
             fread(header, SIZE_HEADER, 1, digitFile);
+
+            this->setVersionNumber(std::stoll(header));
 
             curOffset += SIZE_HEADER;
 
@@ -113,16 +88,15 @@ namespace salamandre
 
                 curOffset += 8;
 
+                fileContent->offset = curOffset;
+                fileContent->key = key;
+
                 long int sizeFile;
                 serializer >> sizeFile;
-
-                curOffset += sizeFile;
-
-                //std::cout << "reading file size : " << sizeFile << std::endl;
+                fileContent->size = sizeFile;
 
                 fseek(digitFile, sizeFile, SEEK_CUR);
-
-                //std::cout << "reading third size : " << ftell(digitFile) << std::endl;
+                curOffset += sizeFile;
             }
 
             fclose(digitFile);
@@ -132,8 +106,85 @@ namespace salamandre
         }
     }
 
-    std::ios_base::openmode DigitalRecord::openMode()
+    void DigitalRecord::extractDigitFile(std::string source, DigitalContent *digit)
     {
-        return std::ios::out | std::ios::app | std::ios::ate | std::ios::binary;
+        std::string fileNameToRead = digit->filePathExport.append(digit->fileName);
+
+        std::cout << "extract file : " << digit->fileName << " to : " << fileNameToRead << std::endl;
+
+        FILE * fileToRead = fopen(fileNameToRead.c_str(), "rb");
+
+        if(fileToRead){ // check if file exists
+                fclose(fileToRead);
+        }
+        else{
+            FILE *file = fopen((source+"/"+salamandre::DigitalRecord::fileName).c_str(), "rb");
+
+            u_int64_t fileSize = digit->size;
+            char *buf = (char*) malloc(sizeof(char)*fileSize);
+
+            if(file){
+                fseek(file, digit->offset, SEEK_SET);
+                fread(buf, fileSize, 1, file);
+                fclose(file);
+
+                std::string s = std::string(buf, fileSize);
+                s = Record::strDecrypt(digit->key, s);
+
+                FILE *fileResult = fopen(fileNameToRead.c_str(), "wb+");
+
+                if(fileResult){
+                    fwrite(s.c_str(), s.size(), 1, fileResult);
+                    fclose(fileResult);
+                }
+            }
+
+            delete buf;
+        }
+    }
+
+    void DigitalRecord::insertDigitFile(std::string source, std::string key, DigitalContent *digit)
+    {
+        FILE *file = fopen(source.c_str(), "ab+");
+        if(file){
+            fseek(file, 0, SEEK_END);
+            int pos = ftell(file);
+            if(pos == 0){
+                char *header = new char[SIZE_HEADER];
+                const char *version = std::to_string(1).c_str();
+                memcpy(header, version, sizeof(version));
+                fwrite(header, SIZE_HEADER, 1, file);
+            }
+            fclose(file);
+        }
+
+        FILE *fmnFile = fopen(source.c_str(), "rb+");
+
+        if(fmnFile){
+            fseek(fmnFile, 0, SEEK_END);
+            fwrite(digit->fileName.c_str(), digit->fileName.size(), 1, fmnFile);
+
+            std::ifstream inputFile(digit->filePath, std::ios::in);
+            std::string content;
+            content.assign((std::istreambuf_iterator<char>(inputFile)), (std::istreambuf_iterator<char>()));
+            content = Record::strEncrypt(key, content);
+            long int fileSize = content.size();
+
+            ntw::Serializer serializer;
+            serializer << fileSize;
+            char sizeFile[8];
+            serializer.read(sizeFile, 8);
+            serializer.clear();
+
+            fwrite(sizeFile, 8, 1, fmnFile);
+
+            digit->offset = ftell(fmnFile);
+            digit->size = fileSize;
+            digit->key = key;
+
+            fwrite(content.c_str(), fileSize, 1, fmnFile);
+
+            fclose(fmnFile);
+        }
     }
 }

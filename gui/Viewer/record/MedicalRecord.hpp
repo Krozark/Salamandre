@@ -14,10 +14,10 @@ namespace salamandre
             MedicalRecord(const std::string path);
             MedicalRecord(const MedicalRecord&) = delete;
             MedicalRecord& operator=(const MedicalRecord&) = delete;
+            ~MedicalRecord();
 
             std::string serialize(std::string key);
             void unSerialize(std::string key, std::string string);
-            std::ios_base::openmode openMode();
 
             std::string getFileName(){
                 return this->fileName;

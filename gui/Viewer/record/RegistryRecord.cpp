@@ -9,6 +9,11 @@ namespace salamandre
         this->setFilePath(path);
     }
 
+    RegistryRecord::~RegistryRecord()
+    {
+
+    }
+
     std::string RegistryRecord::serialize(std::string key)
     {
         std::ostringstream os;
@@ -71,10 +76,5 @@ namespace salamandre
     std::string RegistryRecord::getAdress()
     {
         return this->adress;
-    }
-
-    std::ios_base::openmode RegistryRecord::openMode()
-    {
-        return std::ios::out | std::ios::trunc | std::ios::binary;
     }
 }

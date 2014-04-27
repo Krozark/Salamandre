@@ -14,6 +14,9 @@ namespace salamandre
     struct DigitalContent{
         std::string fileName;
         std::string filePath;
+        std::string filePathExport;
+        std::string key;
+        std::string sourcePath;
         u_int64_t offset;
         u_int64_t size;
     };
@@ -24,6 +27,7 @@ namespace salamandre
             DigitalRecord(const std::string path);
             DigitalRecord(const DigitalRecord&) = delete;
             DigitalRecord& operator=(const DigitalRecord&) = delete;
+            ~DigitalRecord();
 
             std::string serialize(std::string key){
                 (void) key;
@@ -33,7 +37,6 @@ namespace salamandre
                 (void) key;
                 (void) string;
             }
-            std::ios_base::openmode openMode();
 
             void save(std::string key);
             void load(std::string key);
@@ -41,89 +44,12 @@ namespace salamandre
             friend std::ostream& operator<<(std::ostream& os, const DigitalRecord& digital)
             {
                 (void) digital;
-                /*
-                int nbFile = digital.vFileToAdd.size();
-                unsigned lenContent, lenName;
-
-                for(int i = 0; i < nbFile; ++i){
-                    std::string s = digital.vFileToAdd.at(i)->fileName;
-                    std::ifstream inputFile(digital.vFileToAdd.at(i)->filePath.c_str(), std::ios::in);
-
-                    std::string content;
-                    content.assign((std::istreambuf_iterator<char>(inputFile)), (std::istreambuf_iterator<char>()));
-                    content = Record::strEncrypt(digital.key, content);
-
-                    lenContent = content.size();
-                    lenName = s.size();
-
-                    os.write(reinterpret_cast<const char*>(&lenName), sizeof(lenName));
-                    os.write(s.c_str(), lenName);
-
-                    os.write(reinterpret_cast<const char*>(&lenContent), sizeof(lenContent));
-                    os.write(content.c_str(), lenContent);
-
-                    std::remove(digital.vFileToAdd.at(i)->filePath.c_str());
-                }
-                */
-
                 return os;
             }
 
             friend std::istream& operator>>(std::istream& is, DigitalRecord& digital)
             {
                 (void) digital;
-                /*
-                unsigned lgth;
-                char* buf;
-                u_int32_t cpt = 0;
-                u_int64_t offset = 0;
-
-                is.seekg (0, is.end);
-                u_int64_t length = is.tellg();
-                is.seekg (0, is.beg);
-
-                std::cout << "size : " << std::to_string(length) << std::endl;
-
-                std::string s;
-
-                while(offset < length){
-                    DigitalContent *digitalFile = new DigitalContent();
-
-                    is.read(reinterpret_cast<char*>(&lgth), sizeof(lgth));
-
-                    offset += sizeof(lgth);
-
-                    digitalFile->offset = offset;
-                    digitalFile->size = lgth;
-
-                    offset += lgth;
-
-                    cpt = ((cpt+1) % 2);
-
-                    if(lgth > 0){
-                        if(cpt == 1){
-                            buf = new char[lgth];
-                            is.read(buf, lgth);
-
-                            s.assign(buf, lgth);
-                            digitalFile->fileName = s;
-                            delete[] buf;
-
-                            digital.vFile.push_back(digitalFile);
-                        }
-                        else{
-                            is.seekg(offset);
-                        }
-                    }
-                }
-
-                cpt = digital.vFile.size();
-
-                for(u_int32_t i = 0; i < cpt; ++i){
-                    std::cout << digital.vFile.at(i)->fileName << std::endl;
-                }
-                */
-
                 return is;
             }
 
@@ -131,6 +57,8 @@ namespace salamandre
                 return this->fileName;
             }
 
+            static void extractDigitFile(std::string source, DigitalContent *digit);
+            static void insertDigitFile(std::string source, std::string key, DigitalContent *digit);
             const static std::string fileName;
 
             std::string key;

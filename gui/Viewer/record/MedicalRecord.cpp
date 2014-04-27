@@ -9,6 +9,11 @@ namespace salamandre
         this->setFilePath(path);
     }
 
+    MedicalRecord::~MedicalRecord()
+    {
+
+    }
+
     std::string MedicalRecord::serialize(std::string key)
     {
         std::ostringstream os;
@@ -31,10 +36,5 @@ namespace salamandre
     void MedicalRecord::setContent(std::string content)
     {
         this->fileContent = content;
-    }
-
-    std::ios_base::openmode MedicalRecord::openMode()
-    {
-        return std::ios::out | std::ios::trunc | std::ios::binary;
     }
 }
