@@ -4,11 +4,15 @@ set(SRCROOT ${PROJECT_SOURCE_DIR}/src/${CMAKE_PROJECT_NAME})
 #ROOT files
 set(ROOT_SRC
 	${SRCROOT}/stats.cpp
-    ${SRCROOT}/node.cpp
+        ${SRCROOT}/node.cpp
+        ${SRCROOT}/discover.cpp
+        ${SRCROOT}/broadcast.cpp
 )
 set(ROOT_HEADER
-	${INCROOT}/stats.hpp
+        ${INCROOT}/stats.hpp
         ${INCROOT}/node.hpp
+        ${INCROOT}/discover.hpp
+        ${INCROOT}/broadcast.hpp
 )
 set(ROOT_FILES
     ${ROOT_HEADER}

@@ -3,6 +3,9 @@
 
 //#include <iostream>
 
+
+using namespace salamandre::stats;
+
 int main()
 {
     Stats::init();

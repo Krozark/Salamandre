@@ -4,6 +4,8 @@ orm::Bdd& orm::Bdd::Default = def;
 
 #include <Salamandre-stats/stats.hpp>
 
+using namespace salamandre::stats;
+
 float Stats::default_robustesse = 99.9f;
 
 void Stats::init()
