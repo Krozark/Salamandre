@@ -38,6 +38,16 @@ ListView::ListView(QString sourceFMN, QWidget *parent) :
     this->connect(this->threadToRead, SIGNAL(fileExtracted(QString)), SLOT(readExtractFile(QString)));;
 }
 
+ListView::~ListView()
+{
+    delete this->threadToRead;
+    delete this->threadToUpload;
+    delete this->modelListFile;
+    delete this->contextMenu;
+    delete this->actionOpen;
+    delete this->actionUpload;
+}
+
 void ListView::dropEvent(QDropEvent *event)
 {
     const QMimeData* mimeData = event->mimeData();

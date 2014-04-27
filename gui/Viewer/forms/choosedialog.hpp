@@ -30,6 +30,7 @@ public:
     salamandre::Patient* getPatient();
 
     void accept();
+    void reject();
     
 private slots:
     void on_radioButton_newClientData_clicked();

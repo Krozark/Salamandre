@@ -25,6 +25,7 @@ MainWindow::MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient,
 MainWindow::~MainWindow()
 {
     this->clearPatient();
+    delete this->doctor;
 
     delete ui;
 }
@@ -190,7 +191,7 @@ void MainWindow::saveFMT()
 void MainWindow::saveFMN()
 {
     salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
-    record->save(this->doctor->getPass().toStdString());
+    record->save();
     this->listViewDigitalFiles->needToSave = false;
 }
 

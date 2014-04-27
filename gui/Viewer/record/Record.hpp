@@ -10,7 +10,7 @@
 
 #include <Socket/Serializer.hpp>
 
-#define SIZE_HEADER 64
+#define SIZE_HEADER 8
 
 namespace salamandre
 {

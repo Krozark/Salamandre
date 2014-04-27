@@ -19,6 +19,7 @@ class ListView : public QListView
     Q_OBJECT
 public:
     explicit ListView(QString sourceDirFMN, QWidget *parent = 0);
+    ~ListView();
 
     void dropEvent(QDropEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);

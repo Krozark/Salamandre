@@ -52,15 +52,15 @@ namespace salamandre
         std::string str = this->serialize(key);
         std::ofstream outputFile(this->getFilePath().c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
 
-        char *header = new char[SIZE_HEADER];
-        const char *version = std::to_string(this->getVersionNumber()+1).c_str();
-        memcpy(header, version, sizeof(version));
+        ntw::Serializer serializer;
+        long int version = this->getVersionNumber()+1;
+        serializer << version;
+        char buf[SIZE_HEADER];
+        serializer.read(buf, SIZE_HEADER);
 
         outputFile.seekp(0, outputFile.beg);
-        outputFile.write(header, SIZE_HEADER);
+        outputFile.write(buf, SIZE_HEADER);
         outputFile.seekp(0, outputFile.end);
-
-        delete[] header;
 
         outputFile << str;
     }
@@ -83,7 +83,12 @@ namespace salamandre
             char header[SIZE_HEADER];
             fseek(file, 0, SEEK_SET);
             fread(header, SIZE_HEADER, 1, file);
-            this->setVersionNumber(std::stoll(header));
+
+            ntw::Serializer serializer;
+            serializer.write(header, SIZE_HEADER);
+            long int version;
+            serializer >> version;
+            this->setVersionNumber(version);
             fclose(file);
         }
     }

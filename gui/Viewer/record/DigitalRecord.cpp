@@ -11,17 +11,19 @@ namespace salamandre
 
     DigitalRecord::~DigitalRecord()
     {
-
+        int sizeFile = this->vFile.size();
+        for(int i = 0; i < sizeFile; ++i){
+            delete this->vFile.at(i);
+        }
     }
 
-    void DigitalRecord::save(std::string key)
+    void DigitalRecord::save()
     {
-        if(this->vFileToAdd.size() == 0)
-            return;
-
-        char *header = new char[SIZE_HEADER];
-        const char *version = std::to_string(this->getVersionNumber()+1).c_str();
-        memcpy(header, version, sizeof(version));
+        ntw::Serializer serializer;
+        long int version = this->getVersionNumber()+1;
+        serializer << version;
+        char buf[SIZE_HEADER];
+        serializer.read(buf, SIZE_HEADER);
 
         FILE *fmnFile = fopen(this->getFilePath().c_str(), "ab+");
         fclose(fmnFile);
@@ -30,13 +32,8 @@ namespace salamandre
         fseek(digitFile, 0, SEEK_END);
         if(digitFile){
             fseek(digitFile, 0, SEEK_SET);
-            fwrite(header, SIZE_HEADER, 1, digitFile);
+            fwrite(buf, SIZE_HEADER, 1, digitFile);
             fclose(digitFile);
-
-            for(u_int32_t i = 0; i < this->vFileToAdd.size(); ++i){
-                DigitalRecord::insertDigitFile(this->getFilePath(), key, this->vFileToAdd.at(i));
-                remove(this->vFileToAdd.at(i)->filePath.c_str());
-            }
         }
     }
 
@@ -53,7 +50,11 @@ namespace salamandre
             fseek(digitFile, 0, SEEK_SET);
             fread(header, SIZE_HEADER, 1, digitFile);
 
-            this->setVersionNumber(std::stoll(header));
+            ntw::Serializer serializer;
+            serializer.write(header, SIZE_HEADER);
+            long int version;
+            serializer >> version;
+            this->setVersionNumber(version);
 
             curOffset += SIZE_HEADER;
 

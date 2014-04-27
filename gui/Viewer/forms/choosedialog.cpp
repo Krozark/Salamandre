@@ -14,10 +14,10 @@ chooseDialog::chooseDialog(salamandre::Doctor *doctor, QWidget *parent) :
     this->doctor = doctor;
     this->patient = new salamandre::Patient();
 
-    if(this->doctor->getType() == salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST){
-        this->model = new QStandardItemModel();
-        this->filterModel = new QSortFilterProxyModel();
+    this->model = new QStandardItemModel();
+    this->filterModel = new QSortFilterProxyModel();
 
+    if(this->doctor->getType() == salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST){
         QDir dir(this->doctor->getDirPath());
         if(!dir.exists()){
             QMessageBox::critical(this, "Erreur critique", "Une erreur critique s'est produite.");
@@ -70,7 +70,16 @@ chooseDialog::chooseDialog(salamandre::Doctor *doctor, QWidget *parent) :
 
 chooseDialog::~chooseDialog()
 {
+    delete this->model;
+    delete this->filterModel;
     delete ui;
+}
+
+void chooseDialog::reject()
+{
+    delete this->doctor;
+    delete this->patient;
+    QDialog::reject();
 }
 
 void chooseDialog::accept()

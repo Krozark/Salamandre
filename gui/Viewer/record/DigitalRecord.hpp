@@ -38,7 +38,7 @@ namespace salamandre
                 (void) string;
             }
 
-            void save(std::string key);
+            void save();
             void load(std::string key);
 
             friend std::ostream& operator<<(std::ostream& os, const DigitalRecord& digital)
@@ -62,7 +62,6 @@ namespace salamandre
             const static std::string fileName;
 
             std::string key;
-            std::vector<DigitalContent*> vFileToAdd;
             std::vector<DigitalContent*> vFile;
         protected:
 

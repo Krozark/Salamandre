@@ -3,6 +3,10 @@
 namespace salamandre {
     Patient::Patient()
     {
+        this->confidentialRecord = nullptr;
+        this->digitalRecord = nullptr;
+        this->medicalRecord = nullptr;
+        this->registryRecord = nullptr;
     }
 
     Patient::~Patient()
