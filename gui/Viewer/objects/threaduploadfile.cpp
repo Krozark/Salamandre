@@ -28,7 +28,6 @@ void threadUploadFile::run()
 
     while(!this->uploadFileList.isEmpty()){
         nbDigitalFile = record->vFile.size();
-        std::cout << "nb digital files : " << nbDigitalFile << std::endl;
 
         salamandre::DigitalContent *digit = this->uploadFileList.at(0);
         this->uploadFileList.pop_front();

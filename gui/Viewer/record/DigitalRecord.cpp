@@ -57,11 +57,7 @@ namespace salamandre
 
             curOffset += SIZE_HEADER;
 
-
-            std::cout << "load FMN" << std::endl;
-
             while(curOffset < offset){
-                //std::cout << "reading first size : " << ftell(digitFile) << std::endl;
                 std::string name;
 
                 int c;
@@ -72,11 +68,8 @@ namespace salamandre
 
                 fseek(digitFile, -1, SEEK_CUR);
 
-                //std::cout << "reading second size : " << ftell(digitFile) << std::endl;
-
                 DigitalContent *fileContent = new DigitalContent();
                 fileContent->fileName = name;
-                std::cout << name << std::endl;
 
                 this->vFile.push_back(fileContent);
 
@@ -102,7 +95,7 @@ namespace salamandre
             fclose(digitFile);
         }
         else{
-            std::cout << "error to open file " << this->getFilePath().c_str() << std::endl;
+            std::cerr << "error to open file " << this->getFilePath().c_str() << std::endl;
         }
     }
 

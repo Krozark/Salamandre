@@ -46,7 +46,7 @@ l’adresse, . . . , et surtout, un numero d’identification)
                 serializer.write(registry.sex.c_str(), size);
 
                 int sizeSer = serializer.size();
-                std::cout << "size serializer : " << sizeSer << std::endl;
+
                 char buf[sizeSer];
                 serializer.read(&buf, sizeSer);
                 os.write(buf, sizeSer);
@@ -60,8 +60,6 @@ l’adresse, . . . , et surtout, un numero d’identification)
                 is.seekg(0, is.end);
                 int sizeIs = is.tellg();
                 is.seekg(0, is.beg);
-
-                std::cout << "size read : " << sizeIs << std::endl;
 
                 char buf[sizeIs];
                 is.read(buf, sizeIs);

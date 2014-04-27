@@ -70,8 +70,6 @@ namespace salamandre
         this->loadHeader();
 
         std::ifstream inputFile(this->getFilePath().c_str(), std::ios::in | std::ios::binary);
-        std::cout << "opening " << this->getFileName() << " version n°" << this->getVersionNumber() << std::endl;
-
         std::string str((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
         this->unSerialize(key, str.substr(SIZE_HEADER, str.size()-SIZE_HEADER));
 
@@ -88,16 +86,6 @@ namespace salamandre
             this->setVersionNumber(std::stoll(header));
             fclose(file);
         }
-        /*
-        std::ifstream inputFile(this->getFilePath().c_str(), std::ios::in | std::ios::binary);
-
-        char *header = new char[SIZE_HEADER];
-        inputFile.read(header, SIZE_HEADER);
-        std::string strHeader(header);
-        delete[] header;
-
-        this->setVersionNumber(std::stoll(strHeader));
-        ***/
     }
 
     void Record::setVersionNumber(long long versionNumber)

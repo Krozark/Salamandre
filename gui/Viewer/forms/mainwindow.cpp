@@ -175,22 +175,23 @@ void MainWindow::saveFCT()
 {
     salamandre::ConfidentialRecord *record = this->patient->getConfidentialRecord();
     record->setContent(this->ui->plainTextEdit_confidentialTextPatient->toPlainText().toStdString());
-
     record->save(this->doctor->getPass().toStdString());
+    this->saveFCTNeeded = false;
 }
 
 void MainWindow::saveFMT()
 {
     salamandre::MedicalRecord *record = this->patient->getMedicalRecord();
     record->setContent(this->ui->plainTextEdit_medicalTextPatient->toPlainText().toStdString());
-
     record->save(this->doctor->getPass().toStdString());
+    this->saveFMTNeeded = false;
 }
 
 void MainWindow::saveFMN()
 {
     salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
     record->save(this->doctor->getPass().toStdString());
+    this->listViewDigitalFiles->needToSave = false;
 }
 
 void MainWindow::refreshDigitalFile()
@@ -212,15 +213,6 @@ void MainWindow::refreshDigitalFile()
 
 void MainWindow::checkNeedSave()
 {
-    if(this->checkNeedSaveFCT())
-        qDebug() << "save fct needed";
-    if(this->checkNeedSaveFEC())
-        qDebug() << "save fec needed";
-    if(this->checkNeedSaveFMN())
-        qDebug() << "save fmn needed";
-    if(this->checkNeedSaveFMT())
-        qDebug() << "save fmt needed";
-
     bool needToSave = this->checkNeedSaveFCT() || this->checkNeedSaveFEC() || this->checkNeedSaveFMN() || this->checkNeedSaveFMT();
 
     if(needToSave){

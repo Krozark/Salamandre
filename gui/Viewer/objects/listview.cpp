@@ -102,8 +102,6 @@ void ListView::startReading()
         if(index.isValid()){
             salamandre::DigitalContent *digitFile = this->modelListFile->item(index.row(), 0)->data().value<salamandre::DigitalContent*>();
             digitFile->filePathExport = this->sourceDirFMN.toStdString().append("/tmp/");
-            qDebug() << "start reading file : " << QString::fromStdString(digitFile->fileName) << " of size : " << digitFile->size << " in offset : " << digitFile->offset << " export in tmp dir : " << QString::fromStdString(digitFile->filePathExport);
-
             this->threadToRead->addFileToExport(digitFile);
         }
     }
@@ -112,8 +110,6 @@ void ListView::startReading()
 void ListView::startUpload()
 {
     QString dir = QFileDialog::getExistingDirectory(this, tr("Choisissez le répertoire de destination"), QDir::homePath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-
-    qDebug() << "starting upload to : " << dir;
 
     QModelIndexList listIndex = this->selectedIndexes();
 
@@ -125,7 +121,6 @@ void ListView::startUpload()
             QModelIndex index = listIndex.at(i); // just one index because list is in one selected line
             if(index.isValid()){
                 salamandre::DigitalContent *digitFile = this->modelListFile->item(index.row(), 0)->data().value<salamandre::DigitalContent*>();
-                qDebug() << "start reading file : " << QString::fromStdString(digitFile->fileName) << " of size : " << digitFile->size << " in offset : " << digitFile->offset;
                 digitFile->filePathExport = (dir+"/").toStdString();
                 this->threadToUpload->addFileToExport(digitFile);
             }
