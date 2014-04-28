@@ -50,9 +50,6 @@ private:
     QSortFilterProxyModel *filterModel;
     salamandre::Doctor *doctor;
     salamandre::Patient *patient;
-
-    void createNewRecords();
-    void loadAllRecords();
 };
 
 #endif // CHOOSEDIALOG_HPP

@@ -12,7 +12,7 @@ chooseDialog::chooseDialog(salamandre::Doctor *doctor, QWidget *parent) :
     ui->setupUi(this);
 
     this->doctor = doctor;
-    this->patient = new salamandre::Patient();
+    this->patient = nullptr;
 
     this->model = new QStandardItemModel();
     this->filterModel = new QSortFilterProxyModel();
@@ -84,24 +84,28 @@ void chooseDialog::reject()
 
 void chooseDialog::accept()
 {
+    QString idPatient = "";
+    salamandre::Patient::TypePatient typePatient = salamandre::Patient::TypePatient::NEW_PATIENT;
+
     switch(this->ui->stackedWidget->currentIndex()){
     case salamandre::Doctor::TypeDoctor::NEW_DOCTOR:
-        this->patient->setId(this->ui->lineEdit_newMedecinAndClientData->text());
-        this->patient->setType(salamandre::Patient::TypePatient::NEW_PATIENT);
+        idPatient = this->ui->lineEdit_newMedecinAndClientData->text();
+        typePatient = salamandre::Patient::TypePatient::NEW_PATIENT;
         break;
     case salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST:
         if(this->ui->radioButton_availablePatient->isChecked()){
             QItemSelectionModel *index = this->ui->listView_availablePatient->selectionModel();
-            this->patient->setId(this->model->item(index->currentIndex().row())->data().toString());
-            this->patient->setType(salamandre::Patient::TypePatient::PATIENT_ALREADY_EXIST);
+            idPatient = this->model->item(index->currentIndex().row())->data().toString();
+            typePatient = salamandre::Patient::TypePatient::PATIENT_ALREADY_EXIST;
         }
         else if(this->ui->radioButton_newClientData->isChecked()){
-            this->patient->setId(this->ui->lineEdit_newClientData->text());
-            this->patient->setType(salamandre::Patient::TypePatient::NEW_PATIENT);
+            idPatient = this->ui->lineEdit_newClientData->text();
+            typePatient = salamandre::Patient::TypePatient::NEW_PATIENT;
+
         }
         else if(this->ui->radioButton_getDataClient->isChecked()){
-            this->patient->setId(this->ui->lineEdit_getDataClient->text());
-            this->patient->setType(salamandre::Patient::TypePatient::PATIENT_ALREADY_EXIST);
+            idPatient = this->ui->lineEdit_getDataClient->text();
+            typePatient = salamandre::Patient::TypePatient::PATIENT_ALREADY_EXIST;
         }
         break;
     default:
@@ -110,60 +114,18 @@ void chooseDialog::accept()
         break;
     }
 
-    this->patient->setDirPath(this->doctor->getDirPath()+"/"+this->patient->getId());
-    QDir dirPatient(this->patient->getDirPath());
+    QString dirPathPatient = this->doctor->getDirPath()+"/"+idPatient;
+    QDir dirPatient(dirPathPatient);
 
     if(!dirPatient.exists()){
         dirPatient.mkdir(dirPatient.path());
     }
 
-    if(this->patient->getType() == salamandre::Patient::TypePatient::NEW_PATIENT){
-        this->createNewRecords();
-    }
-    else{
-        this->loadAllRecords();
-    }
+    this->patient = new salamandre::Patient(dirPathPatient);
+    this->patient->setId(idPatient);
+    this->patient->setType(typePatient);
 
     QDialog::accept();
-}
-
-void chooseDialog::loadAllRecords()
-{
-    QStringList fileFilter = QStringList() << QString::fromStdString(salamandre::ConfidentialRecord::fileName)
-                                           << QString::fromStdString(salamandre::MedicalRecord::fileName)
-                                           << QString::fromStdString(salamandre::DigitalRecord::fileName)
-                                           << QString::fromStdString(salamandre::RegistryRecord::fileName);
-
-    QDir dirPatient(this->patient->getDirPath());
-    QFileInfoList listFileInfo = dirPatient.entryInfoList(fileFilter, QDir::Files | QDir::NoDotAndDotDot);
-
-    int nbFile = listFileInfo.size();
-
-    if(nbFile == 4){
-        this->patient->setConfidentialRecord(new salamandre::ConfidentialRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::ConfidentialRecord::fileName));
-        this->patient->setDigitalRecord(new salamandre::DigitalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::DigitalRecord::fileName));
-        this->patient->setMedicalRecord(new salamandre::MedicalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::MedicalRecord::fileName));
-        this->patient->setRegistryRecord(new salamandre::RegistryRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::RegistryRecord::fileName));
-    }
-    else{
-        this->patient->setConfidentialRecord(new salamandre::ConfidentialRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::ConfidentialRecord::fileName));
-        this->patient->setDigitalRecord(new salamandre::DigitalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::DigitalRecord::fileName));
-        this->patient->setMedicalRecord(new salamandre::MedicalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::MedicalRecord::fileName));
-        this->patient->setRegistryRecord(new salamandre::RegistryRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::RegistryRecord::fileName));
-
-        for(int i = 0; i < nbFile; ++i){
-        }
-    }
-}
-
-void chooseDialog::createNewRecords()
-{
-    std::string key = this->doctor->getPass().toStdString();
-
-    this->patient->setConfidentialRecord(new salamandre::ConfidentialRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::ConfidentialRecord::fileName));
-    this->patient->setDigitalRecord(new salamandre::DigitalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::DigitalRecord::fileName));
-    this->patient->setMedicalRecord(new salamandre::MedicalRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::MedicalRecord::fileName));
-    this->patient->setRegistryRecord(new salamandre::RegistryRecord(this->patient->getDirPath().toStdString()+"/"+salamandre::RegistryRecord::fileName));
 }
 
 salamandre::Patient* chooseDialog::getPatient()

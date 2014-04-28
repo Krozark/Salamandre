@@ -151,6 +151,9 @@ void MainWindow::loadFMN()
 
 void MainWindow::saveRecords()
 {
+    if(this->doctor->getType() == salamandre::Doctor::TypeDoctor::NEW_DOCTOR)
+        this->doctor->setType(salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST);
+
     this->saveFEC();
     this->saveFCT();
     this->saveFMT();
@@ -283,9 +286,8 @@ void MainWindow::on_actionNouveau_patient_triggered()
     QString id = QInputDialog::getText(this, QString("Salamandre"), QString("Entrer le numéro du nouveau patient"), QLineEdit::Normal, QString(), nullptr, Qt::Dialog, Qt::ImhDigitsOnly);
 
     if(!id.isEmpty()){
-        salamandre::Patient *newPatient = new salamandre::Patient();
+        salamandre::Patient *newPatient = new salamandre::Patient(doctor->getDirPath()+"/"+id);
         newPatient->setId(id);
-        newPatient->setDirPath(doctor->getDirPath()+"/"+id);
         QDir dirPatient = QDir(newPatient->getDirPath());
         if(!dirPatient.exists()){
             dirPatient.mkdir(dirPatient.path());

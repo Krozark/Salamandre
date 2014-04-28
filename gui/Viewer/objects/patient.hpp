@@ -18,7 +18,7 @@ namespace salamandre {
             PATIENT_ALREADY_EXIST
         };
 
-        Patient();
+        Patient(QString dirPath);
         ~Patient();
 
         void setDirPath(QString dirPath);

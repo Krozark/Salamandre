@@ -1,12 +1,14 @@
 #include "patient.hpp"
 
 namespace salamandre {
-    Patient::Patient()
+    Patient::Patient(QString dirPath)
     {
-        this->confidentialRecord = nullptr;
-        this->digitalRecord = nullptr;
-        this->medicalRecord = nullptr;
-        this->registryRecord = nullptr;
+        this->setDirPath(dirPath);
+
+        this->confidentialRecord = new salamandre::ConfidentialRecord(this->getDirPath().toStdString()+"/"+salamandre::ConfidentialRecord::fileName);
+        this->digitalRecord = new salamandre::DigitalRecord(this->getDirPath().toStdString()+"/"+salamandre::DigitalRecord::fileName);
+        this->medicalRecord = new salamandre::MedicalRecord(this->getDirPath().toStdString()+"/"+salamandre::MedicalRecord::fileName);
+        this->registryRecord = new salamandre::RegistryRecord(this->getDirPath().toStdString()+"/"+salamandre::RegistryRecord::fileName);
     }
 
     Patient::~Patient()
