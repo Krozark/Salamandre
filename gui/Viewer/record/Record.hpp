@@ -9,6 +9,7 @@
 #include <string>
 
 #include <Socket/Serializer.hpp>
+#include <zlib.h>
 
 #define SIZE_HEADER 8
 
@@ -32,6 +33,9 @@ namespace salamandre
 
         static const std::string strDecrypt(const std::string pass, std::string string);
         static const std::string strEncrypt(const std::string pass, const std::string string);
+
+        static const std::string strCompress(const std::string& str, int compressionlevel = Z_BEST_COMPRESSION);
+        static const std::string strDecompress(const std::string& str);
 
         std::string getFilePath();
         void setFilePath(std::string filePath);

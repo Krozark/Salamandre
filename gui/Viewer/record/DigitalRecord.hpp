@@ -2,7 +2,6 @@
 #define SALAMANDRE_FICHEDONNEESNUMERIQUES_HPP
 
 #include <record/Record.hpp>
-#include <objects/gzstream.hpp>
 #include <vector>
 
 namespace salamandre

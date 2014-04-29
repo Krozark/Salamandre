@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <stdio.h>
 
 threadUploadFile::threadUploadFile(salamandre::Patient *patient, salamandre::Doctor *doctor, QObject *parent) :
     QThread(parent)
@@ -46,6 +47,16 @@ void threadUploadFile::run()
 
         if(!exists){
             f.copy(this->destinationTmp+"/"+fileName);
+
+/*
+            ogzstream stream;
+            stream.open((this->destinationTmp.toStdString()+"/"+fileName.toStdString()+".gz").c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
+
+            std::ifstream file(digit->filePath.c_str(), std::ios::in | std::ios::binary);
+                stream << file.rdbuf();
+            stream.close();
+            */
+
             salamandre::DigitalRecord::insertDigitFile(this->destinationFmn.toStdString(), this->doctor->getPass().toStdString(), digit);
             record->vFile.push_back(digit);
             ++nbDigitalFile;

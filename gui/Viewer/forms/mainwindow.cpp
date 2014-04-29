@@ -9,6 +9,8 @@
 #include <QDate>
 #include <QFileDialog>
 
+#include <Salamandre-daemon/GuiFunctions.hpp>
+
 MainWindow::MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -17,7 +19,6 @@ MainWindow::MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient,
 
     this->doctor = doctor;
     this->patient = patient;
-
 
     this->init();
 }
