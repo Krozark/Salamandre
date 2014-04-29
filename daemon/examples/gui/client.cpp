@@ -12,6 +12,7 @@
 #define BACK std::cout<<"Retour au menu précédant" <<std::endl;
 
 void run(ntw::cli::Client& cli);
+int check_status(ntw::cli::Client& cli);  
 
 int main(int argc,char* argv[])
 {
@@ -141,22 +142,8 @@ void run(ntw::cli::Client& client)
                 for(auto& file : file_to_signal)
                 {
                     client.call<void>(salamandre::gui::func::newFile,id_medecin,id_patient,file);
-                    int status = client.request_sock.getStatus();
-                    switch(status)
-                    {
-                        case salamandre::gui::status::STOP :
-                        {
-                            std::cerr<<"[ERROR] The server is probably down."<<std::endl;
-                            std::cout<<"[Recv] Stop"<<std::endl
-                                <<"The programme will now stop"<<std::endl;
-                            return;
-                        }break;
-                        default :
-                        {
-                            std::cout<<"[ERROR] Recv server code <"<<status<<"> whene sending file : "<<salamandre::gui::statusToString(status)<<std::endl;
-                            /// server error???
-                        }break;
-                    }
+                    if(check_status(client) < 0);
+                        exit(0);
                     client.request_sock.clear();
                 }
                 file_to_signal.clear();
@@ -183,5 +170,30 @@ void run(ntw::cli::Client& client)
             }break;
 
         }
+    }
+}
+
+int check_status(ntw::cli::Client& client)
+{
+    int status = client.request_sock.getStatus();
+    switch(status)
+    {
+        case salamandre::gui::status::STOP :
+        {
+            std::cerr<<"[ERROR] The server is probably down."<<std::endl;
+            std::cout<<"[Recv] Stop"<<std::endl
+                <<"The programme will now stop"<<std::endl;
+            return -1;
+        }break;
+        case ntw::FuncWrapper::Status::st::ok :
+        {
+            return 0;
+        }
+        default :
+        {
+            std::cout<<"[ERROR] Recv server code <"<<status<<"> whene sending file : "<<salamandre::gui::statusToString(status)<<std::endl;
+            /// server error???
+            return 1;
+        }break;
     }
 }
