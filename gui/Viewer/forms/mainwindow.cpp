@@ -54,6 +54,11 @@ void MainWindow::init()
     this->ui->lineEdit_numericalPatientNumber->setText(this->patient->getId());
 
     this->loadRecords();
+
+    this->ui->actionNouveau_patient->setShortcut(QKeySequence("Ctrl+n"));
+    this->ui->actionEnregistrer->setShortcut(QKeySequence("Ctrl+s"));
+    this->ui->actionChanger_de_patient->setShortcut(QKeySequence("Ctrl+o"));
+    this->ui->actionQuitter->setShortcut(QKeySequence("Ctrl+q"));
 }
 
 void MainWindow::startDownloadClientData(int clientNumber)
@@ -163,40 +168,49 @@ void MainWindow::saveRecords()
 
 void MainWindow::saveFEC()
 {
-    salamandre::RegistryRecord *record = this->patient->getRegistryRecord();
-    record->setAdress(this->ui->lineEdit_patientAdress->text().toStdString());
-    record->setBirthDate(this->ui->dateTimeEdit_patientBirthDate->dateTime().toString("yyyy-MM-ddThh:mm:ss").toStdString());
-    record->setFirstName(this->ui->lineEdit_patientFirstName->text().toStdString());
-    record->setLastName(this->ui->lineEdit_patientLastName->text().toStdString());
-    if(this->ui->radioButton_patientSexMale->isChecked())
-        record->setSex("M");
-    else
-        record->setSex("F");
+    if(this->checkNeedSaveFEC()){
+        salamandre::RegistryRecord *record = this->patient->getRegistryRecord();
+        record->setAdress(this->ui->lineEdit_patientAdress->text().toStdString());
+        record->setBirthDate(this->ui->dateTimeEdit_patientBirthDate->dateTime().toString("yyyy-MM-ddThh:mm:ss").toStdString());
+        record->setFirstName(this->ui->lineEdit_patientFirstName->text().toStdString());
+        record->setLastName(this->ui->lineEdit_patientLastName->text().toStdString());
+        if(this->ui->radioButton_patientSexMale->isChecked())
+            record->setSex("M");
+        else
+            record->setSex("F");
 
-    record->save(this->doctor->getPass().toStdString());
+        record->save(this->doctor->getPass().toStdString());
+    }
 }
 
 void MainWindow::saveFCT()
 {
-    salamandre::ConfidentialRecord *record = this->patient->getConfidentialRecord();
-    record->setContent(this->ui->plainTextEdit_confidentialTextPatient->toPlainText().toStdString());
-    record->save(this->doctor->getPass().toStdString());
-    this->saveFCTNeeded = false;
+    if(this->checkNeedSaveFCT()){
+        salamandre::ConfidentialRecord *record = this->patient->getConfidentialRecord();
+        record->setContent(this->ui->plainTextEdit_confidentialTextPatient->toPlainText().toStdString());
+        record->save(this->doctor->getPass().toStdString());
+        this->saveFCTNeeded = false;
+    }
 }
 
 void MainWindow::saveFMT()
 {
-    salamandre::MedicalRecord *record = this->patient->getMedicalRecord();
-    record->setContent(this->ui->plainTextEdit_medicalTextPatient->toPlainText().toStdString());
-    record->save(this->doctor->getPass().toStdString());
-    this->saveFMTNeeded = false;
+    if(this->checkNeedSaveFMT()){
+        salamandre::MedicalRecord *record = this->patient->getMedicalRecord();
+        record->setContent(this->ui->plainTextEdit_medicalTextPatient->toPlainText().toStdString());
+        record->save(this->doctor->getPass().toStdString());
+        this->saveFMTNeeded = false;
+    }
 }
 
 void MainWindow::saveFMN()
 {
-    salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
-    record->save();
-    this->listViewDigitalFiles->needToSave = false;
+    if(this->checkNeedSaveFMN()){
+        salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
+        record->save();
+        this->listViewDigitalFiles->needToSave = false;
+    }
+
 }
 
 void MainWindow::refreshDigitalFile()
@@ -231,12 +245,22 @@ void MainWindow::checkNeedSave()
             // restore FMN.
             salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
 
-            QFile fileFMN(QString::fromStdString(record->getFilePath()));
-            if(fileFMN.exists())
-                fileFMN.remove();
+            QString stringTmpFileFMN = this->patient->getDirPath()+"/tmp/"+QString::fromStdString(record->getFileName());
+            QString stringFileFMN = QString::fromStdString(record->getFilePath());
+            QString stringFileFMNTmp = QString::fromStdString(record->getFilePath())+"_tmp";
 
-            QFile f(this->patient->getDirPath()+"/tmp/"+QString::fromStdString(record->getFileName()));
-            f.copy(QString::fromStdString(record->getFilePath()));
+            QFile f(stringTmpFileFMN);
+            QFile fileFMN(stringFileFMN);
+            if(fileFMN.exists() && f.exists()){
+                if(fileFMN.rename(stringFileFMNTmp)){
+                    if(f.copy(stringFileFMN)){
+                        fileFMN.remove();
+                    }
+                }
+            }
+            else{
+                fileFMN.remove();
+            }
         }
     }
 
@@ -327,7 +351,6 @@ void MainWindow::on_actionEnregistrer_triggered()
 
 void MainWindow::on_actionQuitter_triggered()
 {
-    this->checkNeedSave();
     this->close();
 }
 
