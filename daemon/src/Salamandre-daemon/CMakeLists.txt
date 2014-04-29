@@ -14,6 +14,7 @@ set(ROOT_HEADER
     ${INCROOT}/Daemon.hpp
     ${INCROOT}/FileManager.hpp
     ${INCROOT}/GuiFunctions.hpp
+    ${INCROOT}/GuiFunctions.tpl
     ${INCROOT}/ServerBroadcast.hpp
     ${INCROOT}/ServerFunctions.hpp
     ${INCROOT}/std.hpp

@@ -83,20 +83,20 @@ namespace salamandre
         return res;
     }
 
-    std::string FileManager::makeNewFilePath(int id_medecin,int id_patient,const std::string& filename)
+    std::string FileManager::makeNewFilePath(int id_medecin,int id_patient,const std::string& filename,const std::string& folder)
     {
         std::string res;
         if(id_patient >0 and filename != "")
-            res = std::join("/",std::vector<std::string>({new_file_dir_path,
+            res = std::join("/",std::vector<std::string>({folder,
                                                          std::to_string(id_medecin),
                                                          std::to_string(id_patient),
                                                          filename}));
         else if(id_patient >0)
-            res = std::join("/",std::vector<std::string>({new_file_dir_path,
+            res = std::join("/",std::vector<std::string>({folder,
                                                          std::to_string(id_medecin),
                                                          std::to_string(id_patient)}));
         else
-            res = std::join("/",std::vector<std::string>({new_file_dir_path,
+            res = std::join("/",std::vector<std::string>({folder,
                                                          std::to_string(id_medecin)}));
 
         return res;

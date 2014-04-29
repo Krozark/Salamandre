@@ -45,7 +45,7 @@ namespace salamandre
              * \param filepath the filename
              * \return true if success
              */
-            static std::string makeNewFilePath(int id_medecin,int id_patient = -1,const std::string& filename = "");
+            static std::string makeNewFilePath(int id_medecin,int id_patient = -1,const std::string& filename = "",const std::string& folder=FileManager::new_file_dir_path);
 
 
 

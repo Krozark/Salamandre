@@ -4,7 +4,6 @@
 #include <Socket/client/Client.hpp>
 
 #include <Salamandre-daemon/GuiFunctions.hpp>
-#include <Salamandre-daemon/FileManager.hpp>
 #include <Salamandre-daemon/std.hpp>
 
 #include <sstream>
@@ -23,10 +22,12 @@ namespace test
         return rand()%(max-min+1) + min;
     }
 
-    void createFile(int id_medecin,int id_patient,const std::string& filename)
+    void createFile(int id_medecin,int id_patient,const std::string& filename,std::vector<std::string>& file_paths)
     {
         //compute the path
-        std::string path_origin = salamandre::FileManager::makeNewFilePath(id_medecin,id_patient);
+        std::string path_origin = std::join("/",std::vector<std::string>({ROOT_DIR,
+                                                         std::to_string(id_medecin),
+                                                         std::to_string(id_patient)}));
         //create new dir if not exist
         std::createDir(path_origin);
 
@@ -42,6 +43,29 @@ namespace test
             ::fwrite(buf, 1, BUFSIZ, source);
         //end
         fclose(source);
+        file_paths.push_back(filename);
+    }
+
+    void moveForSave(int id_medecin,int id_patient,const std::string& filename,std::vector<std::string>& file_to_signal)
+    {
+        std::string path_origin = std::join("/",std::vector<std::string>({ROOT_DIR,
+                                                         std::to_string(id_medecin),
+                                                         std::to_string(id_patient),
+                                                         filename}));
+
+        std::string path_dest = std::join("/",std::vector<std::string>({"datas/tosave",
+                                                         std::to_string(id_medecin),
+                                                         std::to_string(id_patient),
+                                                         filename}));
+        std::createDir(path_dest);
+        path_dest+="/"+filename;
+
+        std::cout<<"Save file "<<path_origin<<" to "<<path_dest<<std::endl;
+
+        if(::rename(path_origin.c_str(),path_dest.c_str()) != 0)
+            std::cerr<<"[Error] on move "<<path_origin<<" to "<<path_dest<<std::endl;
+        else
+            file_to_signal.push_back(filename);
     }
     
     void sendNewFile(ntw::cli::Client& client)
@@ -50,10 +74,10 @@ namespace test
         int id_patient = random(0,1000);
 
         auto init_files = [=](){
-            createFile(id_medecin,id_patient,"test1");
+        /*    createFile(id_medecin,id_patient,"test1");
             createFile(id_medecin,id_patient,"test2");
             createFile(id_medecin,id_patient,"test3");
-            createFile(id_medecin,id_patient,"test4");
+            createFile(id_medecin,id_patient,"test4");*/
         };
 
         //all params

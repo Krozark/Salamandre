@@ -37,7 +37,7 @@ namespace gui
      * \brief Convert status code to string for human
      * \return a string for humans
      */
-    std::string statusToString(salamandre::gui::status code);
+    inline std::string statusToString(int code);
 
     /***
      * \brief The distpatch function
@@ -72,4 +72,5 @@ namespace gui
     bool funcIsInUpdate(ntw::SocketSerialized& sock,int id_medecin, int id_patient,std::string filename);
 }
 }
+#include <Salamandre-daemon/GuiFunctions.tpl>
 #endif
