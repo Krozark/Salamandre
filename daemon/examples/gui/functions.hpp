@@ -35,13 +35,6 @@ namespace test
      *
      */
     void moveForSave(int id_medecin,int id_patient,const std::string& filename,std::vector<std::string>& file_to_signal);
-
-    /**
-     * \brief start the client
-     * \param client the client to start
-     */
-    void sendNewFile(ntw::cli::Client& client);
-
 }
 
 #endif

@@ -142,8 +142,22 @@ void run(ntw::cli::Client& client)
                 {
                     client.call<void>(salamandre::gui::func::newFile,id_medecin,id_patient,file);
                     int status = client.request_sock.getStatus();
-                    if(status != ntw::FuncWrapper::Status::st::ok)
-                        std::cout<<"[ERROR]"<<status<<" whene sending file : "<<salamandre::gui::statusToString(status)<<std::endl;
+                    switch(status)
+                    {
+                        case salamandre::gui::status::STOP :
+                        {
+                            std::cerr<<"[ERROR] The server is probably down."<<std::endl;
+                            std::cout<<"[Recv] Stop"<<std::endl
+                                <<"The programme will now stop"<<std::endl;
+                            return;
+                        }break;
+                        default :
+                        {
+                            std::cout<<"[ERROR] Recv server code <"<<status<<"> whene sending file : "<<salamandre::gui::statusToString(status)<<std::endl;
+                            /// server error???
+                        }break;
+                    }
+                    client.request_sock.clear();
                 }
                 file_to_signal.clear();
             }break;
