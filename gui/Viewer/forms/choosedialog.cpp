@@ -77,7 +77,6 @@ chooseDialog::~chooseDialog()
 
 void chooseDialog::reject()
 {
-    delete this->doctor;
     delete this->patient;
     QDialog::reject();
 }

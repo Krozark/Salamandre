@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QDate>
 #include <QFileDialog>
+#include <QProcess>
 
 #include <Salamandre-daemon/GuiFunctions.hpp>
 
@@ -54,6 +55,8 @@ void MainWindow::init()
     this->ui->lineEdit_numericalPatientNumber->setText(this->patient->getId());
 
     this->loadRecords();
+
+    this->doctor->setType(salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST);
 
     this->ui->actionNouveau_patient->setShortcut(QKeySequence("Ctrl+n"));
     this->ui->actionEnregistrer->setShortcut(QKeySequence("Ctrl+s"));
@@ -352,6 +355,12 @@ void MainWindow::on_actionEnregistrer_triggered()
 void MainWindow::on_actionQuitter_triggered()
 {
     this->close();
+}
+
+void MainWindow::on_actionD_connection_triggered()
+{
+    this->on_actionQuitter_triggered();
+    QProcess::startDetached(QApplication::applicationFilePath());
 }
 
 void MainWindow::startUploadDigitalFile(QStringList listFile)

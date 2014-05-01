@@ -381,7 +381,7 @@
      <x>0</x>
      <y>0</y>
      <width>864</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
@@ -394,6 +394,8 @@
     <addaction name="actionEnregistrer"/>
     <addaction name="actionChanger_de_patient"/>
     <addaction name="separator"/>
+    <addaction name="actionD_connection"/>
+    <addaction name="separator"/>
     <addaction name="actionQuitter"/>
    </widget>
    <addaction name="menuFichier"/>
@@ -401,12 +403,12 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNouveau_patient">
    <property name="text">
-    <string>Nouveau patient</string>
+    <string>Nouveau patient ...</string>
    </property>
   </action>
   <action name="actionChanger_de_patient">
    <property name="text">
-    <string>Ouvrir patient</string>
+    <string>Ouvrir patient ...</string>
    </property>
   </action>
   <action name="actionEnregistrer">
@@ -420,6 +422,11 @@
    </property>
    <property name="menuRole">
     <enum>QAction::QuitRole</enum>
+   </property>
+  </action>
+  <action name="actionD_connection">
+   <property name="text">
+    <string>Déconnexion ...</string>
    </property>
   </action>
  </widget>

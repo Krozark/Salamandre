@@ -92,33 +92,39 @@ namespace salamandre
         return outstring;
     }
 
-    void Record::encrypt(const std::string pass)
+    void Record::encrypt(const std::string pass, const std::string filePath)
     {
-        CryptoPP::FileSource(getFilePath().c_str(), true,
-                               new CryptoPP::DefaultEncryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::FileSink((getFilePath()+".eas").c_str())));
+        std::cout << "start to encrypt file : " << filePath << std::endl;
+        CryptoPP::FileSource(filePath.c_str(), true,
+                               new CryptoPP::DefaultEncryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::FileSink((filePath+".tmp").c_str())));
+        std::cout << "end to encrypt file" << std::endl;
     }
 
     Record::~Record(){}
 
-    void Record::decrypt(const std::string pass)
+    void Record::decrypt(const std::string pass, const std::string filePath)
     {
-        CryptoPP::FileSource((getFilePath()+".eas").c_str(), true,
-                               new CryptoPP::DefaultDecryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::FileSink(getFilePath().c_str())));
+        std::cout << "start to decrypt file : " << filePath << std::endl;
+        CryptoPP::FileSource((filePath).c_str(), true,
+                               new CryptoPP::DefaultDecryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::FileSink((filePath.substr(0, filePath.size()-4).c_str()))));
+        std::cout << "end to decrypt file" << std::endl;
     }
 
-    const std::string Record::strEncrypt(const std::string pass, const std::string string)
+    const std::string Record::strEncrypt(const std::string pass, const std::string *string)
     {
         std::string output;
-        CryptoPP::StringSource(string, true, new CryptoPP::DefaultEncryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::HexEncoder(new CryptoPP::StringSink(output))));
-
+        std::cout << "start to encrypt string" << std::endl;
+        CryptoPP::StringSource(*string, true, new CryptoPP::DefaultEncryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::HexEncoder(new CryptoPP::StringSink(output))));
+        std::cout << "end of encrypt string" << std::endl;
         return Record::strCompress(output);
     }
 
-    const std::string Record::strDecrypt(const std::string pass, std::string string)
+    const std::string Record::strDecrypt(const std::string pass, std::string *string)
     {
         std::string output;
-        CryptoPP::StringSource(Record::strDecompress(string), true, new CryptoPP::HexDecoder(new CryptoPP::DefaultDecryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::StringSink(output))));
-
+        std::cout << "start of decrypt string" << std::endl;
+        CryptoPP::StringSource(Record::strDecompress(*string), true, new CryptoPP::HexDecoder(new CryptoPP::DefaultDecryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::StringSink(output))));
+        std::cout << "end of decrypt string" << std::endl;
         return output;
     }
 
@@ -156,7 +162,8 @@ namespace salamandre
 
         std::ifstream inputFile(this->getFilePath().c_str(), std::ios::in | std::ios::binary);
         std::string str((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
-        this->unSerialize(key, str.substr(SIZE_HEADER, str.size()-SIZE_HEADER));
+        std::string subStr = str.substr(SIZE_HEADER, str.size()-SIZE_HEADER);
+        this->unSerialize(key, &subStr);
 
         inputFile.close();
     }

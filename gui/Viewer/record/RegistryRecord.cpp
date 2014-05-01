@@ -18,13 +18,14 @@ namespace salamandre
     {
         std::ostringstream os;
         os << *this;
-        return this->strEncrypt(key, os.str());
+        std::string s = os.str();
+        return this->strEncrypt(key, &s);
     }
 
-    void RegistryRecord::unSerialize(std::string key, std::string string)
+    void RegistryRecord::unSerialize(std::string key, std::string *string)
     {
         std::istringstream is;
-        is.str(this->strDecrypt(key,string));
+        is.str(this->strDecrypt(key, string));
         is >> *this;
     }
 

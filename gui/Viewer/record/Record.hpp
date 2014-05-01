@@ -28,11 +28,11 @@ namespace salamandre
         Record& operator=(const Record&) = delete;
         virtual ~Record() = 0;
 
-        void encrypt(const std::string pass);
-        void decrypt(const std::string pass);
+        static void encrypt(const std::string pass, const std::string filePath);
+        static void decrypt(const std::string pass, const std::string filePath);
 
-        static const std::string strDecrypt(const std::string pass, std::string string);
-        static const std::string strEncrypt(const std::string pass, const std::string string);
+        static const std::string strDecrypt(const std::string pass, std::string *string);
+        static const std::string strEncrypt(const std::string pass, const std::string *string);
 
         static const std::string strCompress(const std::string& str, int compressionlevel = Z_BEST_COMPRESSION);
         static const std::string strDecompress(const std::string& str);
@@ -41,7 +41,7 @@ namespace salamandre
         void setFilePath(std::string filePath);
 
         virtual std::string serialize(std::string key) = 0;
-        virtual void unSerialize(std::string key, std::string string) = 0;
+        virtual void unSerialize(std::string key, std::string *string) = 0;
         virtual std::string getFileName() = 0;
 
         void save(std::string key);

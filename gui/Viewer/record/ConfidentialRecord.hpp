@@ -18,7 +18,7 @@ medical prises par le medecin. La fiche comporte une zone de texte et le numero 
             ~ConfidentialRecord();
 
             std::string serialize(std::string key);
-            void unSerialize(std::string key, std::string string);
+            void unSerialize(std::string key, std::string *string);
 
             std::string getFileName(){
                 return this->fileName;

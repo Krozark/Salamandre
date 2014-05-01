@@ -32,7 +32,7 @@ namespace salamandre
                 (void) key;
                 return "";
             }
-            void unSerialize(std::string key, std::string string){
+            void unSerialize(std::string key, std::string *string){
                 (void) key;
                 (void) string;
             }

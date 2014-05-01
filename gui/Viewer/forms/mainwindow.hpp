@@ -70,6 +70,7 @@ private slots:
     void on_toolButton_numericalImporter_clicked();
     void on_plainTextEdit_confidentialTextPatient_textChanged();
     void on_plainTextEdit_medicalTextPatient_textChanged();
+    void on_actionD_connection_triggered();
 };
 
 #endif // MAINWINDOW_HPP

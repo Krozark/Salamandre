@@ -1,5 +1,7 @@
 #include <record/DigitalRecord.hpp>
 
+#include <math.h>
+
 namespace salamandre
 {
     const std::string DigitalRecord::fileName = "FMN";
@@ -112,28 +114,38 @@ namespace salamandre
                 fclose(fileToRead);
         }
         else{
-            FILE *file = fopen((source+"/"+salamandre::DigitalRecord::fileName).c_str(), "rb");
+            FILE *fileFMN = fopen((source+"/"+salamandre::DigitalRecord::fileName).c_str(), "rb");
+            FILE *fileEncrypt = fopen((source+"/tmp/"+digit->fileName+".tmp").c_str(), "ab+");
 
             u_int64_t fileSize = digit->size;
-            char *buf = (char*) malloc(sizeof(char)*fileSize);
 
-            if(file){
-                fseek(file, digit->offset, SEEK_SET);
-                fread(buf, fileSize, 1, file);
-                fclose(file);
+            int needLoop = fileSize / BUFSIZ;
+            int rest = fileSize - (BUFSIZ*needLoop);
 
-                std::string s = std::string(buf, fileSize);
-                s = Record::strDecrypt(digit->key, s);
+            char buf[BUFSIZ];
+            char bufEnd[rest];
 
-                FILE *fileResult = fopen(fileNameToRead.c_str(), "wb+");
+            std::cout << "read ofset : " << digit->offset << " : size : " << digit->size << std::endl;
 
-                if(fileResult){
-                    fwrite(s.c_str(), s.size(), 1, fileResult);
-                    fclose(fileResult);
+            if(fileFMN){
+                fseek(fileFMN, digit->offset, SEEK_SET);
+                fseek(fileEncrypt, 0, SEEK_SET);
+
+                for(int i  = 0; i < needLoop; ++i){
+                    fread(buf, BUFSIZ, 1, fileFMN);
+                    fwrite(buf, BUFSIZ, 1, fileEncrypt);
                 }
-            }
 
-            delete buf;
+                fread(bufEnd, rest, 1, fileFMN);
+                fwrite(bufEnd, rest, 1, fileEncrypt);
+
+                fclose(fileFMN);
+                fclose(fileEncrypt);
+
+                Record::decrypt(digit->key, source+"/tmp/"+digit->fileName+".tmp");
+
+                remove((source+"/tmp/"+digit->fileName+".tmp").c_str());
+            }
         }
     }
 
@@ -144,10 +156,12 @@ namespace salamandre
             fseek(file, 0, SEEK_END);
             int pos = ftell(file);
             if(pos == 0){
-                char *header = new char[SIZE_HEADER];
-                const char *version = std::to_string(1).c_str();
-                memcpy(header, version, sizeof(version));
-                fwrite(header, SIZE_HEADER, 1, file);
+                ntw::Serializer serializer;
+                long int version = 1;
+                serializer << version;
+                char buf[SIZE_HEADER];
+                serializer.read(buf, SIZE_HEADER);
+                fwrite(buf, SIZE_HEADER, 1, file);
             }
             fclose(file);
         }
@@ -158,11 +172,12 @@ namespace salamandre
             fseek(fmnFile, 0, SEEK_END);
             fwrite(digit->fileName.c_str(), digit->fileName.size(), 1, fmnFile);
 
-            std::ifstream inputFile(digit->filePath, std::ios::in);
-            std::string content;
-            content.assign((std::istreambuf_iterator<char>(inputFile)), (std::istreambuf_iterator<char>()));
-            content = Record::strEncrypt(key, content);
-            long int fileSize = content.size();
+            Record::encrypt(key, digit->filePath);
+
+            FILE *fileEncrypt = fopen((digit->filePath+".tmp").c_str(), "rb");
+            fseek(fileEncrypt, 0, SEEK_END);
+            long int fileSize = ftell(fileEncrypt);
+            fseek(fileEncrypt, 0, SEEK_SET);
 
             ntw::Serializer serializer;
             serializer << fileSize;
@@ -176,9 +191,26 @@ namespace salamandre
             digit->size = fileSize;
             digit->key = key;
 
-            fwrite(content.c_str(), fileSize, 1, fmnFile);
+            std::cout << "write ofset : " << digit->offset << " : size : " << digit->size << std::endl;
 
+            int needLoop = fileSize / BUFSIZ;
+            int rest = fileSize - (BUFSIZ*needLoop);
+
+            char buf[BUFSIZ];
+            char bufEnd[rest];
+
+            for(int i = 0; i < needLoop; ++i){
+                fread(buf, BUFSIZ, 1, fileEncrypt);
+                fwrite(buf, BUFSIZ, 1, fmnFile);
+            }
+
+            fread(bufEnd, rest, 1, fileEncrypt);
+            fwrite(bufEnd, rest, 1, fmnFile);
+
+            fclose(fileEncrypt);
             fclose(fmnFile);
+
+            remove((digit->filePath+".tmp").c_str());
         }
     }
 }

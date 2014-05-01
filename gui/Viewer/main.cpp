@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
     res = chDialog->exec();
 
     if(res  == QDialog::Rejected){
+        delete doctor;
         return -1;
     }
 
