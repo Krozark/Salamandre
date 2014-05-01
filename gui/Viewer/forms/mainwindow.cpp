@@ -65,6 +65,7 @@ void MainWindow::init()
     this->ui->actionNouveau_patient->setShortcut(QKeySequence("Ctrl+n"));
     this->ui->actionEnregistrer->setShortcut(QKeySequence("Ctrl+s"));
     this->ui->actionChanger_de_patient->setShortcut(QKeySequence("Ctrl+o"));
+    this->ui->actionD_connection->setShortcut(QKeySequence("Ctrl+d"));
     this->ui->actionQuitter->setShortcut(QKeySequence("Ctrl+q"));
 }
 

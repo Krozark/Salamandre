@@ -91,6 +91,12 @@ void ListView::dragLeaveEvent(QDragLeaveEvent *event)
     event->accept();
 }
 
+void ListView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event);
+    this->startReading();
+}
+
 void ListView::resetStyle()
 {
     this->setStyleSheet("");

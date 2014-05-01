@@ -106,7 +106,7 @@ namespace salamandre
     {
         std::string fileNameToRead = digit->filePathExport;
 
-        std::cout << "extract file : " << digit->fileName << " to : " << fileNameToRead << std::endl;
+        std::cout << "extract file : " << digit->fileName << " to : " << source+"/tmp/"+digit->fileName+".tmp" << std::endl;
 
         FILE * fileToRead = fopen(fileNameToRead.c_str(), "rb");
 
@@ -142,10 +142,10 @@ namespace salamandre
                 fclose(fileFMN);
                 fclose(fileEncrypt);
 
-                Record::decrypt(digit->key, source+"/tmp/"+digit->fileName+".tmp", fileNameToRead);
+                //Record::decrypt(digit->key, source+"/tmp/"+digit->fileName+".tmp", fileNameToRead);
 
 
-                remove((source+"/tmp/"+digit->fileName+".tmp").c_str());
+                //remove((source+"/tmp/"+digit->fileName+".tmp").c_str());
             }
         }
     }

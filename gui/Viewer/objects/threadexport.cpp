@@ -18,6 +18,9 @@ void threadExport::run()
         this->exportFileList.pop_front();
 
         salamandre::DigitalRecord::extractDigitFile(this->source.toStdString(), fileToExport);
+        salamandre::Record::decrypt(fileToExport->key, this->source.toStdString()+"/tmp/"+fileToExport->fileName+".tmp", fileToExport->filePathExport);
+        remove((this->source.toStdString()+"/tmp/"+fileToExport->fileName+".tmp").c_str());
+
         emit fileExtracted(QString::fromStdString(fileToExport->filePathExport));
     }
 }

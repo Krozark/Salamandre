@@ -60,10 +60,10 @@ void threadUploadFile::run()
 
         emit setProgressText("Writting : " + fileName);
         salamandre::DigitalRecord::insertDigitFile(this->destinationFmn.toStdString(), digit);
-
+        remove((this->destinationTmp.toStdString()+"/"+fileName.toStdString()).c_str());
 
         record->vFile.push_back(digit);
-        QFile::remove(this->destinationTmp+"/"+fileName);
+
 
         ++nbDigitalFile;
 
