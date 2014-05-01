@@ -70,6 +70,8 @@ void MainWindow::init()
 
 void MainWindow::initStatusBar()
 {
+    this->ui->statusBar->setVisible(false);
+
     this->labelProcessNumber = new QLabel(this->ui->statusBar);
     this->labelSeparator = new QLabel("/", this->ui->statusBar);
     this->labelTotalNumber = new QLabel(this->ui->statusBar);
@@ -80,8 +82,8 @@ void MainWindow::initStatusBar()
     this->ui->statusBar->addWidget(this->labelProcessNumber, 1);
     this->ui->statusBar->addWidget(this->labelSeparator, 1);
     this->ui->statusBar->addWidget(this->labelTotalNumber, 1);
-    this->ui->statusBar->addWidget(this->progressBarProcessing, 3);
-    // total stretch is 6 so status bar width is separated in 6, if stretch of widget is 1, it take 16,67% of total width.
+    this->ui->statusBar->addWidget(this->progressBarProcessing, 17);
+    // total stretch is 10 so status bar width is separated in 10, if stretch of widget is 1, it take 10% of total width.
 
     this->connect(this->threadUpload, SIGNAL(fileInserted(int)), this, SLOT(refreshNumberInsertFile(int)));
     this->connect(this->threadUpload, SIGNAL(fileProcess(int)), this, SLOT(refreshNumberProcessFile(int)));
@@ -94,7 +96,6 @@ void MainWindow::initStatusBarValue()
     this->progressBarProcessing->setRange(0, 100);
     this->progressBarProcessing->setValue(0);
     this->progressBarProcessing->setTextVisible(true);
-    //this->progressBarProcessing->setFormat("");
 }
 
 void MainWindow::startDownloadClientData(int clientNumber)
@@ -290,7 +291,7 @@ void MainWindow::checkNeedSave()
             QFile fileFMN(stringFileFMN);
             if(fileFMN.exists() && f.exists()){
                 if(fileFMN.rename(stringFileFMNTmp)){
-                    if(f.copy(stringFileFMN)){
+                    if(f.rename(stringFileFMN)){
                         fileFMN.remove();
                     }
                 }
@@ -400,18 +401,23 @@ void MainWindow::on_actionD_connection_triggered()
 void MainWindow::startUploadDigitalFile(QStringList listFile)
 {
     u_int32_t nbFileToAdd = listFile.size();
-    QVector<salamandre::DigitalContent*> vFile;
 
-    for(u_int32_t i = 0; i < nbFileToAdd; ++i){
-        salamandre::DigitalContent *digitalContent = new salamandre::DigitalContent();
-        digitalContent->fileName = QFileInfo(listFile.at(i)).fileName().toStdString();
-        digitalContent->filePath = QString(this->patient->getDirPath()+QString("/tmp/")+QFileInfo(listFile.at(i)).fileName()).toStdString();
-        digitalContent->sourcePath = listFile.at(i).toStdString();
+    if(nbFileToAdd > 0){
+        if(!this->ui->statusBar->isVisible())
+            this->ui->statusBar->setVisible(true);
+        QVector<salamandre::DigitalContent*> vFile;
 
-        vFile.push_back(digitalContent);
+        for(u_int32_t i = 0; i < nbFileToAdd; ++i){
+            salamandre::DigitalContent *digitalContent = new salamandre::DigitalContent();
+            digitalContent->fileName = QFileInfo(listFile.at(i)).fileName().toStdString();
+            digitalContent->filePath = QString(this->patient->getDirPath()+QString("/tmp/")+QFileInfo(listFile.at(i)).fileName()).toStdString();
+            digitalContent->sourcePath = listFile.at(i).toStdString();
+
+            vFile.push_back(digitalContent);
+        }
+
+        this->threadUpload->addFileToUpload(vFile);
     }
-
-    this->threadUpload->addFileToUpload(vFile);
 }
 
 void MainWindow::clearPatient()

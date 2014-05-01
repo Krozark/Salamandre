@@ -13,6 +13,8 @@ connexionDialog::connexionDialog(QWidget *parent) :
 
     this->isNew = false;
     this->doctor = new salamandre::Doctor();
+
+    this->ui->label_doctorAlwaysRegister->setText("");
     this->ui->pushButton_next->setVisible(false);
     this->ui->stackedWidget->setCurrentIndex(0);
     this->checkToEnableConnection();
@@ -90,6 +92,8 @@ void connexionDialog::on_checkBox_userNew_stateChanged(int arg1)
         this->ui->pushButton_next->setVisible(false);
         this->ui->pushButton_connection->setVisible(true);
     }
+
+    this->checkToEnableConnection();
 }
 
 void connexionDialog::on_pushButton_next_clicked()
@@ -117,19 +121,43 @@ void connexionDialog::on_lineEdit_textChanged(const QString &arg1)
 
 void connexionDialog::checkToEnableConnection()
 {
+    this->ui->pushButton_connection->setEnabled(false);
+    this->ui->pushButton_next->setEnabled(false);
+
     if(!this->ui->lineEdit_userLogin->text().isEmpty() && !this->ui->lineEdit_userPassword->text().isEmpty()){
-        this->ui->pushButton_connection->setEnabled(true);
-        this->ui->pushButton_next->setEnabled(true);
-    }
-    else{
-        this->ui->pushButton_connection->setEnabled(false);
-        this->ui->pushButton_next->setEnabled(false);
+        QDir dir(QCoreApplication::applicationDirPath()+"/save/"+this->ui->lineEdit_userLogin->text());
+        if(dir.exists()){
+            if(this->ui->checkBox_userNew->isChecked()){
+                this->ui->label_doctorAlwaysRegister->setText("Ce numéro est déjà enregistré !");
+                this->ui->pushButton_connection->setEnabled(false);
+                this->ui->pushButton_next->setEnabled(false);
+            }
+            else{
+                this->ui->label_doctorAlwaysRegister->setText("");
+                this->ui->pushButton_connection->setEnabled(true);
+                this->ui->pushButton_next->setEnabled(false);
+            }
+
+        }
+        else{
+            if(this->ui->checkBox_userNew->isChecked()){
+                this->ui->label_doctorAlwaysRegister->setText("");
+                this->ui->pushButton_next->setEnabled(true);
+                this->ui->pushButton_connection->setEnabled(false);
+            }
+            else{
+                this->ui->label_doctorAlwaysRegister->setText("");
+                this->ui->pushButton_next->setEnabled(false);
+                this->ui->pushButton_connection->setEnabled(true);
+            }
+        }
     }
 }
 
 void connexionDialog::on_lineEdit_userLogin_textChanged(const QString &arg1)
 {
     Q_UNUSED(arg1);
+    this->ui->label_doctorAlwaysRegister->setText("");
     this->checkToEnableConnection();
 }
 
@@ -137,4 +165,29 @@ void connexionDialog::on_lineEdit_userPassword_textChanged(const QString &arg1)
 {
     Q_UNUSED(arg1);
     this->checkToEnableConnection();
+}
+
+void connexionDialog::on_lineEdit_userLogin_returnPressed()
+{
+    this->nextStep();
+}
+
+void connexionDialog::on_lineEdit_userPassword_returnPressed()
+{
+    this->nextStep();
+}
+
+void connexionDialog::nextStep()
+{
+    this->checkToEnableConnection();
+
+    if(this->ui->pushButton_connection->isEnabled())
+        this->on_pushButton_connection_clicked();
+    else if(this->ui->pushButton_next->isEnabled())
+        this->on_pushButton_next_clicked();
+}
+
+void connexionDialog::on_lineEdit_returnPressed()
+{
+    this->on_pushButton_connectionNewMedecin_clicked();
 }

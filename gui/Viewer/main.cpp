@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     int res = coDialog->exec();
 
     if(res == QDialog::Rejected){
-        return -1;
+        return 0;
     }
 
     salamandre::Doctor *doctor = coDialog->getDoctor();
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
     if(res  == QDialog::Rejected){
         delete doctor;
-        return -1;
+        return 0;
     }
 
     salamandre::Patient *patient = chDialog->getPatient();

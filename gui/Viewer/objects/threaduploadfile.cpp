@@ -42,7 +42,7 @@ void threadUploadFile::run()
         QString fileName = QFileInfo(f.fileName()).fileName();
         /*exists = false;
 
-        for(u_int32_t j = 0; j < nbDigitalFile; ++j){
+        for(u_int32_t j = 0; j < nbDigitalFile; ++j){ // check if file always exists
             salamandre::DigitalContent *digitFile = record->vFile.at(j);
             if(fileName.toStdString() == digitFile->fileName){
                 exists = true;

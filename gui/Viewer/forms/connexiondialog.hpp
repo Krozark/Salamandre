@@ -33,12 +33,18 @@ private slots:
     void on_lineEdit_textChanged(const QString &arg1);
     void on_lineEdit_userLogin_textChanged(const QString &arg1);
     void on_lineEdit_userPassword_textChanged(const QString &arg1);
+    void on_lineEdit_userLogin_returnPressed();
+    void on_lineEdit_userPassword_returnPressed();
+
+    void on_lineEdit_returnPressed();
 
 private:
     Ui::connexionDialog *ui;
 
     bool isNew;
     salamandre::Doctor *doctor;
+
+    void nextStep();
 };
 
 #endif // CONNEXIONDIALOG_HPP
