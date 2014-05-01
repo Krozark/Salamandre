@@ -17,6 +17,12 @@
    <iconset resource="../Viewer.qrc">
     <normaloff>:/icons/salamandre.png</normaloff>:/icons/salamandre.png</iconset>
   </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Rounded</enum>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
@@ -39,7 +45,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="iconSize">
        <size>
@@ -400,7 +406,22 @@
    </widget>
    <addaction name="menuFichier"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="styleSheet">
+    <string notr="true">/*QStatusBar{
+	border-top:2px inset rgb(88, 88, 88);
+	border-bottom:2px inset rgb(88, 88, 88);
+	background-color: rgb(181, 181, 181);
+}*/
+
+QStatusBar::item {
+   border: 0px solid;
+}</string>
+   </property>
+   <property name="sizeGripEnabled">
+    <bool>true</bool>
+   </property>
+  </widget>
   <action name="actionNouveau_patient">
    <property name="text">
     <string>Nouveau patient ...</string>

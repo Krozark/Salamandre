@@ -12,6 +12,8 @@
 
 #include <Salamandre-daemon/GuiFunctions.hpp>
 
+#define STATUS_BAR_HEIGHT 22
+
 MainWindow::MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -27,8 +29,8 @@ MainWindow::MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient,
 MainWindow::~MainWindow()
 {
     this->clearPatient();
-    delete this->doctor;
 
+    delete this->doctor;
     delete ui;
 }
 
@@ -55,13 +57,44 @@ void MainWindow::init()
     this->ui->lineEdit_numericalPatientNumber->setText(this->patient->getId());
 
     this->loadRecords();
-
     this->doctor->setType(salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST);
+
+    this->initStatusBar();
+    this->initStatusBarValue();
 
     this->ui->actionNouveau_patient->setShortcut(QKeySequence("Ctrl+n"));
     this->ui->actionEnregistrer->setShortcut(QKeySequence("Ctrl+s"));
     this->ui->actionChanger_de_patient->setShortcut(QKeySequence("Ctrl+o"));
     this->ui->actionQuitter->setShortcut(QKeySequence("Ctrl+q"));
+}
+
+void MainWindow::initStatusBar()
+{
+    this->labelProcessNumber = new QLabel(this->ui->statusBar);
+    this->labelSeparator = new QLabel("/", this->ui->statusBar);
+    this->labelTotalNumber = new QLabel(this->ui->statusBar);
+    this->progressBarProcessing = new QProgressBar(this->ui->statusBar);
+
+    this->ui->statusBar->setMaximumHeight(STATUS_BAR_HEIGHT);
+
+    this->ui->statusBar->addWidget(this->labelProcessNumber, 1);
+    this->ui->statusBar->addWidget(this->labelSeparator, 1);
+    this->ui->statusBar->addWidget(this->labelTotalNumber, 1);
+    this->ui->statusBar->addWidget(this->progressBarProcessing, 3);
+    // total stretch is 6 so status bar width is separated in 6, if stretch of widget is 1, it take 16,67% of total width.
+
+    this->connect(this->threadUpload, SIGNAL(fileInserted(int)), this, SLOT(refreshNumberInsertFile(int)));
+    this->connect(this->threadUpload, SIGNAL(fileProcess(int)), this, SLOT(refreshNumberProcessFile(int)));
+    this->connect(this->threadUpload, SIGNAL(uploadProgression(int)), this->progressBarProcessing, SLOT(setValue(int)));
+    this->connect(this->threadUpload, SIGNAL(setProgressText(QString)), this, SLOT(setProgressBarText(QString)));
+}
+
+void MainWindow::initStatusBarValue()
+{
+    this->progressBarProcessing->setRange(0, 100);
+    this->progressBarProcessing->setValue(0);
+    this->progressBarProcessing->setTextVisible(true);
+    //this->progressBarProcessing->setFormat("");
 }
 
 void MainWindow::startDownloadClientData(int clientNumber)
@@ -229,7 +262,8 @@ void MainWindow::refreshDigitalFile()
         digit = record->vFile.at(i);
         item = new QStandardItem(QString::fromStdString(digit->fileName));
         item->setData(QVariant::fromValue(digit));
-        this->listViewDigitalFiles->modelListFile->appendRow(item);
+        this->listViewDigitalFiles->modelListFile->setItem(i, 0, item);
+        this->listViewDigitalFiles->modelListFile->setItem(i, 1, new QStandardItem());
     }
 }
 
@@ -320,7 +354,7 @@ void MainWindow::on_actionNouveau_patient_triggered()
         if(!dirPatient.exists()){
             dirPatient.mkdir(dirPatient.path());
 
-            delete this->patient;
+            this->clearPatient();
             this->patient =  newPatient;
             this->init();
         }
@@ -385,6 +419,16 @@ void MainWindow::clearPatient()
     delete this->patient;
     delete this->threadUpload;
     delete this->listViewDigitalFiles;
+
+    this->ui->statusBar->removeWidget(this->labelProcessNumber);
+    this->ui->statusBar->removeWidget(this->labelSeparator);
+    this->ui->statusBar->removeWidget(this->labelTotalNumber);
+    this->ui->statusBar->removeWidget(this->progressBarProcessing);
+
+    delete this->labelProcessNumber;
+    delete this->labelSeparator;
+    delete this->labelTotalNumber;
+    delete this->progressBarProcessing;
 }
 
 void MainWindow::on_toolButton_numericalExporter_clicked()
@@ -412,4 +456,19 @@ void MainWindow::on_plainTextEdit_confidentialTextPatient_textChanged()
 void MainWindow::on_plainTextEdit_medicalTextPatient_textChanged()
 {
     this->saveFMTNeeded = true;
+}
+
+void MainWindow::refreshNumberInsertFile(int number)
+{
+    this->labelTotalNumber->setText(QString::number(number));
+}
+
+void MainWindow::refreshNumberProcessFile(int number)
+{
+    this->labelProcessNumber->setText(QString::number(number));
+}
+
+void MainWindow::setProgressBarText(QString text)
+{
+    this->progressBarProcessing->setFormat(text);
 }

@@ -57,7 +57,7 @@ namespace salamandre
             }
 
             static void extractDigitFile(std::string source, DigitalContent *digit);
-            static void insertDigitFile(std::string source, std::string key, DigitalContent *digit);
+            static void insertDigitFile(std::string source, DigitalContent *digit);
             const static std::string fileName;
 
             std::string key;

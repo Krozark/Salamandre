@@ -16,6 +16,10 @@ threadUploadFile::threadUploadFile(salamandre::Patient *patient, salamandre::Doc
     this->destinationTmp = this->patient->getDirPath()+"/tmp";
     this->destinationFmn = this->patient->getDirPath()+"/FMN";
 
+    this->totalInsertedFile = 0;
+    this->totalProcessFile = 0;
+    this->totalProgress = 0;
+
     QDir tmpDir = QDir(this->destinationTmp);
     if(!tmpDir.exists())
         tmpDir.mkdir(tmpDir.path());
@@ -25,9 +29,10 @@ void threadUploadFile::run()
 {
     salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
     u_int32_t nbDigitalFile;
-    bool exists;
+    //bool exists;
 
     while(!this->uploadFileList.isEmpty()){
+        ++this->totalProcessFile;
         nbDigitalFile = record->vFile.size();
 
         salamandre::DigitalContent *digit = this->uploadFileList.at(0);
@@ -35,7 +40,7 @@ void threadUploadFile::run()
 
         QFile f(QString::fromStdString(digit->sourcePath));
         QString fileName = QFileInfo(f.fileName()).fileName();
-        exists = false;
+        /*exists = false;
 
         for(u_int32_t j = 0; j < nbDigitalFile; ++j){
             salamandre::DigitalContent *digitFile = record->vFile.at(j);
@@ -45,25 +50,32 @@ void threadUploadFile::run()
             }
         }
 
-        if(!exists){
-            f.copy(this->destinationTmp+"/"+fileName);
+        if(!exists){*/
+        f.copy(this->destinationTmp+"/"+fileName);
 
-/*
-            ogzstream stream;
-            stream.open((this->destinationTmp.toStdString()+"/"+fileName.toStdString()+".gz").c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
+        digit->key = this->doctor->getPass().toStdString();
 
-            std::ifstream file(digit->filePath.c_str(), std::ios::in | std::ios::binary);
-                stream << file.rdbuf();
-            stream.close();
-            */
+        emit setProgressText("Encrypting : " + fileName);
+        salamandre::Record::encrypt(digit->key, digit->filePath);
 
-            salamandre::DigitalRecord::insertDigitFile(this->destinationFmn.toStdString(), this->doctor->getPass().toStdString(), digit);
-            record->vFile.push_back(digit);
-            ++nbDigitalFile;
-            QFile::remove(this->destinationTmp+"/"+fileName);
-            emit newFileInserted();
-        }
+        emit setProgressText("Writting : " + fileName);
+        salamandre::DigitalRecord::insertDigitFile(this->destinationFmn.toStdString(), digit);
+
+
+        record->vFile.push_back(digit);
+        QFile::remove(this->destinationTmp+"/"+fileName);
+
+        ++nbDigitalFile;
+
+        emit newFileInserted();
+        //}
+
+        this->totalProgress = (this->totalProcessFile * 100) / this->totalInsertedFile;
+        emit fileProcess(this->totalProcessFile);
+        emit uploadProgression(this->totalProgress);
     }
+
+    emit setProgressText("Import terminé !");
 }
 
 void threadUploadFile::addFileToUpload(QVector<salamandre::DigitalContent *> vFile)
@@ -76,9 +88,19 @@ void threadUploadFile::addFileToUpload(QVector<salamandre::DigitalContent *> vFi
 
 void threadUploadFile::addFileToUpload(salamandre::DigitalContent *file)
 {
+    ++this->totalInsertedFile;
+    emit fileInserted(this->totalInsertedFile);
     this->uploadFileList << file;
 
     if(!this->isRunning()){
+        this->totalInsertedFile -= this->totalProcessFile;
+        this->totalProcessFile = 0;
+        this->totalProgress = 0;
+
+        emit fileInserted(this->totalInsertedFile);
+        emit fileProcess(this->totalProcessFile);
+        emit uploadProgression(this->totalProcessFile);
+
         this->start(QThread::HighPriority);
     }
 }

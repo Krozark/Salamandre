@@ -102,11 +102,10 @@ namespace salamandre
 
     Record::~Record(){}
 
-    void Record::decrypt(const std::string pass, const std::string filePath)
+    void Record::decrypt(const std::string pass, const std::string filePathSrc, std::string filePathTo)
     {
-        std::cout << "start to decrypt file : " << filePath << std::endl;
-        CryptoPP::FileSource((filePath).c_str(), true,
-                               new CryptoPP::DefaultDecryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::FileSink((filePath.substr(0, filePath.size()-4).c_str()))));
+        std::cout << "start to decrypt file : " << filePathSrc << std::endl;
+        CryptoPP::FileSource((filePathSrc).c_str(), true, new CryptoPP::DefaultDecryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::FileSink(filePathTo.c_str())));
         std::cout << "end to decrypt file" << std::endl;
     }
 

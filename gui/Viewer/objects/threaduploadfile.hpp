@@ -25,13 +25,20 @@ private:
     salamandre::Patient *patient;
     salamandre::Doctor *doctor;
 
+    int totalInsertedFile;
+    int totalProcessFile;
+    int totalProgress;
+
     void run();
 private slots:
 
     
 signals:
     void newFileInserted();
-    
+    void fileInserted(int);
+    void fileProcess(int);
+    void uploadProgression(int);
+    void setProgressText(QString text);
 public slots:
     
 };

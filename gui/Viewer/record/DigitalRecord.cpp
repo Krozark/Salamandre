@@ -104,7 +104,7 @@ namespace salamandre
 
     void DigitalRecord::extractDigitFile(std::string source, DigitalContent *digit)
     {
-        std::string fileNameToRead = digit->filePathExport.append(digit->fileName);
+        std::string fileNameToRead = digit->filePathExport;
 
         std::cout << "extract file : " << digit->fileName << " to : " << fileNameToRead << std::endl;
 
@@ -142,14 +142,15 @@ namespace salamandre
                 fclose(fileFMN);
                 fclose(fileEncrypt);
 
-                Record::decrypt(digit->key, source+"/tmp/"+digit->fileName+".tmp");
+                Record::decrypt(digit->key, source+"/tmp/"+digit->fileName+".tmp", fileNameToRead);
+
 
                 remove((source+"/tmp/"+digit->fileName+".tmp").c_str());
             }
         }
     }
 
-    void DigitalRecord::insertDigitFile(std::string source, std::string key, DigitalContent *digit)
+    void DigitalRecord::insertDigitFile(std::string source, DigitalContent *digit)
     {
         FILE *file = fopen(source.c_str(), "ab+");
         if(file){
@@ -172,7 +173,7 @@ namespace salamandre
             fseek(fmnFile, 0, SEEK_END);
             fwrite(digit->fileName.c_str(), digit->fileName.size(), 1, fmnFile);
 
-            Record::encrypt(key, digit->filePath);
+            //Record::encrypt(key, digit->filePath);
 
             FILE *fileEncrypt = fopen((digit->filePath+".tmp").c_str(), "rb");
             fseek(fileEncrypt, 0, SEEK_END);
@@ -189,7 +190,7 @@ namespace salamandre
 
             digit->offset = ftell(fmnFile);
             digit->size = fileSize;
-            digit->key = key;
+            //digit->key = key;
 
             std::cout << "write ofset : " << digit->offset << " : size : " << digit->size << std::endl;
 

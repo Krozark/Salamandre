@@ -7,6 +7,8 @@
 #include <objects/threaduploadfile.hpp>
 
 #include <QMainWindow>
+#include <QLabel>
+#include <QProgressBar>
 
 namespace Ui {
 class MainWindow;
@@ -19,8 +21,6 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient, QWidget *parent = 0);
     ~MainWindow();
-
-    void init();
 private:
     Ui::MainWindow *ui;
 
@@ -31,7 +31,17 @@ private:
 
     bool saveFCTNeeded, saveFMTNeeded;
 
+    // status bar objects.
+    QProgressBar *progressBarProcessing;
+    QLabel *labelTotalNumber;
+    QLabel *labelSeparator;
+    QLabel *labelProcessNumber;
+
     threadUploadFile *threadUpload;
+
+    void init();
+    void initStatusBar();
+    void initStatusBarValue();
 
     void startDownloadClientData(int clientNumber = -1);
     void loadRecords();
@@ -59,6 +69,9 @@ private:
 private slots:
     void startUploadDigitalFile(QStringList listFile);
     void refreshDigitalFile();
+    void refreshNumberProcessFile(int number);
+    void refreshNumberInsertFile(int number);
+    void setProgressBarText(QString text);
 
     void on_actionQuitter_triggered();
     void on_actionNouveau_patient_triggered();

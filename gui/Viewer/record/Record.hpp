@@ -29,7 +29,7 @@ namespace salamandre
         virtual ~Record() = 0;
 
         static void encrypt(const std::string pass, const std::string filePath);
-        static void decrypt(const std::string pass, const std::string filePath);
+        static void decrypt(const std::string pass, const std::string filePathSrc, std::string filePathTo);
 
         static const std::string strDecrypt(const std::string pass, std::string *string);
         static const std::string strEncrypt(const std::string pass, const std::string *string);

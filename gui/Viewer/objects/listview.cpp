@@ -111,7 +111,7 @@ void ListView::startReading()
         QModelIndex index = listIndex.at(0); // just one index for reading available to avoid read a lot a file in single time
         if(index.isValid()){
             salamandre::DigitalContent *digitFile = this->modelListFile->item(index.row(), 0)->data().value<salamandre::DigitalContent*>();
-            digitFile->filePathExport = this->sourceDirFMN.toStdString().append("/tmp/");
+            digitFile->filePathExport = this->sourceDirFMN.toStdString()+"/tmp/"+digitFile->fileName;
             this->threadToRead->addFileToExport(digitFile);
         }
     }
@@ -131,7 +131,7 @@ void ListView::startUpload()
             QModelIndex index = listIndex.at(i); // just one index because list is in one selected line
             if(index.isValid()){
                 salamandre::DigitalContent *digitFile = this->modelListFile->item(index.row(), 0)->data().value<salamandre::DigitalContent*>();
-                digitFile->filePathExport = (dir+"/").toStdString();
+                digitFile->filePathExport = dir.toStdString()+"/"+digitFile->fileName;
                 this->threadToUpload->addFileToExport(digitFile);
             }
         }
