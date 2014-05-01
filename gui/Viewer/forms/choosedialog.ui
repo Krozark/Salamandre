@@ -48,7 +48,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page_3">
       <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -74,7 +74,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_newMedecinAndClientData"/>
+          <widget class="QLineEdit" name="lineEdit_newMedecinAndClientData">
+           <property name="inputMethodHints">
+            <set>Qt::ImhDigitsOnly</set>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -199,6 +203,9 @@
              <property name="enabled">
               <bool>false</bool>
              </property>
+             <property name="inputMethodHints">
+              <set>Qt::ImhDigitsOnly</set>
+             </property>
             </widget>
            </item>
           </layout>
@@ -231,6 +238,9 @@
             <widget class="QLineEdit" name="lineEdit_getDataClient">
              <property name="enabled">
               <bool>false</bool>
+             </property>
+             <property name="inputMethodHints">
+              <set>Qt::ImhDigitsOnly</set>
              </property>
             </widget>
            </item>

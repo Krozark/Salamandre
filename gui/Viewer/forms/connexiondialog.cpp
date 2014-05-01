@@ -18,10 +18,14 @@ connexionDialog::connexionDialog(QWidget *parent) :
     this->ui->pushButton_next->setVisible(false);
     this->ui->stackedWidget->setCurrentIndex(0);
     this->checkToEnableConnection();
+
+    this->validator = new QIntValidator(nullptr);
+    this->ui->lineEdit_userLogin->setValidator(validator);
 }
 
 connexionDialog::~connexionDialog()
 {
+    delete this->validator;
     delete ui;
 }
 

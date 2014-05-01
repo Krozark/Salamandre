@@ -16,6 +16,12 @@ chooseDialog::chooseDialog(salamandre::Doctor *doctor, QWidget *parent) :
 
     this->model = new QStandardItemModel();
     this->filterModel = new QSortFilterProxyModel();
+    this->validator = new QIntValidator(nullptr);
+
+    this->ui->lineEdit_getDataClient->setValidator(this->validator);
+    this->ui->lineEdit_newClientData->setValidator(this->validator);
+    this->ui->lineEdit_newMedecinAndClientData->setValidator(this->validator);
+    this->ui->lineEdit_researchPatient->setValidator(this->validator);
 
     if(this->doctor->getType() == salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST){
         QDir dir(this->doctor->getDirPath());

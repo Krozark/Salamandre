@@ -4,6 +4,7 @@
 #include <objects/doctor.hpp>
 
 #include <QDialog>
+#include <QIntValidator>
 
 namespace Ui {
 class connexionDialog;
@@ -43,6 +44,8 @@ private:
 
     bool isNew;
     salamandre::Doctor *doctor;
+
+    QIntValidator *validator;
 
     void nextStep();
 };

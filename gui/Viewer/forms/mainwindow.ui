@@ -54,7 +54,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <property name="iconSize">
        <size>
@@ -467,6 +467,23 @@ QStatusBar::item {
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>tabWidgetFiles</tabstop>
+  <tabstop>lineEdit_patientIdNumber</tabstop>
+  <tabstop>lineEdit_patientLastName</tabstop>
+  <tabstop>lineEdit_patientFirstName</tabstop>
+  <tabstop>dateTimeEdit_patientBirthDate</tabstop>
+  <tabstop>radioButton_patientSexMale</tabstop>
+  <tabstop>radioButton_patientSexFemale</tabstop>
+  <tabstop>lineEdit_patientAdress</tabstop>
+  <tabstop>lineEdit_confidentialPatientNumber</tabstop>
+  <tabstop>plainTextEdit_confidentialTextPatient</tabstop>
+  <tabstop>lineEdit_medicalPatientNumber</tabstop>
+  <tabstop>plainTextEdit_medicalTextPatient</tabstop>
+  <tabstop>lineEdit_numericalPatientNumber</tabstop>
+  <tabstop>toolButton_numericalImporter</tabstop>
+  <tabstop>toolButton_numericalExporter</tabstop>
+ </tabstops>
  <resources>
   <include location="../Viewer.qrc"/>
  </resources>

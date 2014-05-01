@@ -7,6 +7,7 @@
 #include <QDialog>
 #include <QSortFilterProxyModel>
 #include <QStandardItemModel>
+#include <QIntValidator>
 
 namespace Ui {
 class chooseDialog;
@@ -48,6 +49,7 @@ private:
     Ui::chooseDialog *ui;
     QStandardItemModel *model;
     QSortFilterProxyModel *filterModel;
+    QIntValidator *validator;
     salamandre::Doctor *doctor;
     salamandre::Patient *patient;
 };
