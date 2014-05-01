@@ -13,6 +13,8 @@
 #include <unistd.h>
 #include <netdb.h>
 #include <cstring>
+#include <Salamandre-stats/stats.hpp>
+
 
 namespace salamandre {
 namespace stats {
@@ -41,18 +43,19 @@ namespace stats {
 
         void start();
         void stop();
-        void dispatch();
-        void send(Message message);
+        void dispatch(Message message, std::string source_ip);
+        void send(const Message message);
 
     private:
         void setupSocket();
         void receive();
-        void * serialize(Message message);
+        SerializedMessage * serialize(const Message message);
         Message deserialize(void * buffer);
 
         int port;
         int listen_port;
         std::thread thread_receive;
+        int listen_socket = 0;
         int socket = 0;
         bool running = false;
         struct sockaddr_in destination;
