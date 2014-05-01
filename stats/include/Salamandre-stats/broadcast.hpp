@@ -41,13 +41,13 @@ namespace stats {
     public:
         Broadcast(int port, int listen_port);
 
-        void start();
-        void stop();
+        bool start();
+        bool stop();
         void dispatch(Message message, std::string source_ip);
         void send(const Message message);
 
     private:
-        void setupSocket();
+        bool setupSocket();
         void receive();
         SerializedMessage * serialize(const Message message);
         Message deserialize(void * buffer);
