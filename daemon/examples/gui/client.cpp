@@ -2,11 +2,10 @@
 ///data base
 #include <Socket/client/Client.hpp>
 #include <Socket/server/Server.hpp>
-#include <Salamandre-daemon/GuiFunctions.hpp>
 #include <Socket/FuncWrapper.hpp>
+#include <Salamandre-daemon/GuiFunctions.hpp>
 
 #include <iostream>
-
 
 #define SERVER_PORT 4321
 
@@ -14,9 +13,9 @@
 #define BACK std::cout<<"Retour au menu précédant" <<std::endl;
 
 void run(ntw::cli::Client& cli);
-int check_status(ntw::cli::Client& cli);  
+int check_status(ntw::cli::Client& cli);///< return 0 if ok, -1 if srv down, 1 on other errors (and print it)
 
-int notification_dispatch(int id,ntw::SocketSerialized& request);
+int notification_dispatch(int id,ntw::SocketSerialized& request);///< dispatch function for notifier
 
 
 int main(int argc,char* argv[])
@@ -242,6 +241,7 @@ int notification_dispatch(int id,ntw::SocketSerialized& request)
         return res;
 }
 
+///\todo TODO
 namespace salamandre
 {
 namespace gui {
