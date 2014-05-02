@@ -19,7 +19,11 @@ namespace gui
     enum func {
         newFile = 1, ///< to call whene the gui add files to save
         sync, ///< to call whene un sync is need
-        isInUpdate ///< is in update
+        isInUpdate, ///< is in update
+        setGuiNotificationPort,///< set the notification port to use
+        ///NOTIFICATIONS
+        fileIsSend, ///< send a notification to the gui with the info of sended file
+        fileIsRecv ///< send a notification to the gui with the info of recv file
     };
 
     /**
@@ -70,6 +74,28 @@ namespace gui
      * \param filepath the filename (if empty, all files are get)
      */
     bool funcIsInUpdate(ntw::SocketSerialized& sock,int id_medecin, int id_patient,std::string filename);
+
+    ///////////// NOTIFICATIONS ///////////////////
+    //This fuctions have to be implemented in the gui side
+
+    /**
+     * \brief Sent to the gui information about the file that has been send
+     * \param sock the socket
+     * \param id_medecin the medecin id
+     * \param id_patient the patient id
+     * \param filepath the filename
+     */
+    void funcFileIsSend(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename);
+
+    /**
+     * \brief Sent to the gui information about the file that has been recv from  metwork
+     * \param sock the socket
+     * \param id_medecin the medecin id
+     * \param id_patient the patient id
+     * \param filepath the filename
+     */
+    void funcFileIsRecv(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename);
+
 }
 }
 #include <Salamandre-daemon/GuiFunctions.tpl>

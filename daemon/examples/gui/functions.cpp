@@ -12,11 +12,6 @@
 
 namespace test
 {
-    void init()
-    {
-        ::srand(time(NULL));
-    }
-
     int random(int min,int max)
     {
         return rand()%(max-min+1) + min;
@@ -67,49 +62,4 @@ namespace test
         else
             file_to_signal.push_back(filename);
     }
-    
-    void sendNewFile(ntw::cli::Client& client)
-    {
-        int id_medecin = random(0,1000);
-        int id_patient = random(0,1000);
-
-        auto init_files = [=](){
-        /*    createFile(id_medecin,id_patient,"test1");
-            createFile(id_medecin,id_patient,"test2");
-            createFile(id_medecin,id_patient,"test3");
-            createFile(id_medecin,id_patient,"test4");*/
-        };
-
-        //all params
-        /*init_files();
-        client.call<void>(salamandre::gui::func::newFile,id_medecin,id_patient,"test1");
-        client.call<void>(salamandre::gui::func::newFile,id_medecin,id_patient,"test2");
-        client.call<void>(salamandre::gui::func::newFile,id_medecin,id_patient,"test3");
-        client.call<void>(salamandre::gui::func::newFile,id_medecin,id_patient,"test4");*/
-        //no filename
-        init_files();
-        client.call<void>(salamandre::gui::func::newFile,id_medecin,id_patient,"");
-        //no patient
-        /*init_files();
-        client.call<void>(salamandre::gui::func::newFile,id_medecin,-1,"");*/
-
-        short int status = client.request_sock.getStatus();
-        switch(status)
-        {
-            case salamandre::gui::status::STOP :
-                {
-                    std::cerr<<" : The server is probably down."<<std::endl;
-                    std::cout<<"[Recv] Stop"<<std::endl
-                        <<"The programme will now stop"<<std::endl;
-                    client.request_sock.clear();
-                }break;
-            default :
-                {
-                    std::cout<<"[Recv] Server error code:"<<status<<":"<<salamandre::gui::statusToString((salamandre::gui::status)status)<<std::endl;
-                    client.request_sock.clear();
-                    /// server error???
-                }break;
-        }
-    }
-
 }

@@ -20,10 +20,6 @@ namespace ntw
 namespace test
 {
 
-    void init();
-    
-    int random(int min,int max);
-    
     /**
      * \param id_medecin the medecin id
      * \param id_patient the patient id
