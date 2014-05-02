@@ -1,0 +1,15 @@
+Le serveur de broadcast est à bouger dans le daemom
+J'avais déja fait toute la base du broadcast
+tu as des gros truc WTF dans ton code:
+    dans une class tu ne fait JAMAIS:
+        int budule = 42;
+    la seul exeption est:
+        static const int bidule = 42;
+
+    tu les initialise dans le constructeur. Je suis même pas sure que ca face partit de la norme cpp.
+
+Tu peut éviter des new, en initialisant les objet dans le constructeur de la clase tel que :
+    Klass(... args) : obj1(param), obj2(param) {
+        //init klass
+    }
+
