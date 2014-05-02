@@ -2,16 +2,8 @@
 
 using namespace salamandre::stats;
 
-Discover::Discover(int listen_port) {
-    this->listen_port = listen_port;
-    this->broadcast = new Broadcast(this->target_port, this->listen_port);
+Discover::Discover(int listen_port) :target_port(24532), listen_port(listen_port), broadcast(target_port, listen_port), socket(0), running(false) {
     std::cout << "Discover initialized" << std::endl;
-}
-
-
-Discover::~Discover() {
-    delete this->broadcast;
-    this->broadcast = NULL;
 }
 
 
@@ -23,7 +15,7 @@ void Discover::send() {
 
     std::chrono::seconds duration(30);
     while(this->running) {
-        this->broadcast->send(message);
+        this->broadcast.send(message);
         std::this_thread::sleep_for(duration);
     }
 
@@ -39,7 +31,7 @@ bool Discover::start() {
     std::cout << "Starting sending thread..." << std::endl;
     this->running = true;
     this->thread_send = std::thread(&Discover::send, this);
-    this->broadcast->start();
+    this->broadcast.start();
 
     return true;
 }
@@ -50,7 +42,7 @@ bool Discover::stop() {
     if(this->thread_send.joinable()) {
         this->thread_send.join();
     }
-    this->broadcast->stop();
+    this->broadcast.stop();
 
     return true;
 }

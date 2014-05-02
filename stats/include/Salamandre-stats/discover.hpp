@@ -28,12 +28,12 @@ namespace salamandre {
                 bool stop();
                 void send();
             private:
-                Broadcast * broadcast = NULL;
-                std::thread thread_send;
-                int target_port = 24532;
+                int target_port;
                 int listen_port;
-                int socket = 0;
-                bool running = false;
+                Broadcast broadcast;
+                int socket;
+                bool running;
+                std::thread thread_send;
 
         };
 

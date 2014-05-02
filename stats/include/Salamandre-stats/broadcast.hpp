@@ -54,12 +54,11 @@ namespace stats {
 
         int port;
         int listen_port;
-        std::thread thread_receive;
-        int listen_socket = 0;
-        int socket = 0;
-        bool running = false;
+        int listen_socket;
+        int socket;
+        bool running;
         struct sockaddr_in destination;
-        char message[64];
+        std::thread thread_receive;
     };
 }
 }

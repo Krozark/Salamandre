@@ -3,10 +3,8 @@
 namespace salamandre {
 namespace stats {
 
-Broadcast::Broadcast(int port, int listen_port)
+Broadcast::Broadcast(int port, int listen_port) : port(port), listen_port(listen_port), listen_socket(0), socket(0), running(false)
 {
-    this->port = port;
-    this->listen_port = listen_port;
     std::cout << "Broadcast initialized on port: " << port << " with listen_port: " << listen_port << std::endl;
 }
 
