@@ -2,7 +2,6 @@
 #define SALAMANDRE_DAEMON_HPP
 
 #include <Socket/server/Server.hpp>
-#include <Socket/client/Client.hpp>
 
 /**
  * \brief namespace for the project
@@ -55,7 +54,6 @@ namespace salamandre
 
         private:
             ntw::srv::Server gui_server; ///< the gui socket listener
-            ntw::cli::Client gui_client_notif_sender; ///< the socket that send notification to the client.
             ntw::srv::Server file_server; ///< the external daemon socket listener
 
             //void on_new_file_client(ntw::srv::Server& self,ntw::srv::Client& client);
