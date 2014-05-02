@@ -13,6 +13,7 @@ namespace salamandre
         sock_listen(ntw::Socket::Dommaine::IP,ntw::Socket::Type::UDP),
         sock_send(ntw::Socket::Dommaine::IP,ntw::Socket::UDP)
     {
+        //TODO init socket
     }
 
     void ServerBroadcast::start()
