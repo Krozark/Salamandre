@@ -1,12 +1,14 @@
 #include "functions.hpp"
 ///data base
 #include <Socket/client/Client.hpp>
+#include <Socket/server/Server.hpp>
 #include <Salamandre-daemon/GuiFunctions.hpp>
+#include <Socket/FuncWrapper.hpp>
 
 #include <iostream>
 
 
-#define SERVER_PORT 1
+#define SERVER_PORT 4321
 
 #define PRINT_ERROR std::cout<<"Aucune action corespond à la demmande \""<<c<<"\""<<std::endl
 #define BACK std::cout<<"Retour au menu précédant" <<std::endl;
@@ -14,9 +16,12 @@
 void run(ntw::cli::Client& cli);
 int check_status(ntw::cli::Client& cli);  
 
+int notification_dispatch(int id,ntw::SocketSerialized& request);
+
+
 int main(int argc,char* argv[])
 {
-    if(argc < SERVER_PORT+1)
+    if(argc < 2)
     {
         std::cout<<"Usage are: "<<argv[0]<<" <server-port>"<<std::endl;
         return 1;
@@ -25,15 +30,32 @@ int main(int argc,char* argv[])
 
     ntw::Socket::init();
     ntw::cli::Client client;
-    if(client.connect("127.0.0.1",atoi(argv[SERVER_PORT])) != NTW_ERROR_CONNEXION)
+    if(client.connect("127.0.0.1",atoi(argv[1])) != NTW_ERROR_CONNEXION)
     {
+        //init notification listener
+        ntw::srv::Server notification_srv(SERVER_PORT,"127.0.0.1",notification_dispatch,1,1);
+        //notification_srv.on_new_client = void (*)(ntw::srv::Server& self,ntw::srv::Client& client);
+        //notification_srv.on_delete_client = void (*)(ntw::srv::Server& self,ntw::srv::Client& client);
+        notification_srv.start();
+
+        //set the connect port on daémon side
+        client.call<void>(salamandre::gui::func::setGuiNotificationPort,SERVER_PORT);
+        if(check_status(client) < 0)
+            exit(0);
+
+        //start
         run(client);
+
+        //wait for end
+        notification_srv.stop();
+        notification_srv.wait();
     }
 
     ntw::Socket::close();
 
     return 0;
 }
+
 
 void run(ntw::cli::Client& client)
 {
@@ -142,7 +164,7 @@ void run(ntw::cli::Client& client)
                 for(auto& file : file_to_signal)
                 {
                     client.call<void>(salamandre::gui::func::newFile,id_medecin,id_patient,file);
-                    if(check_status(client) < 0);
+                    if(check_status(client) < 0)
                         exit(0);
                     client.request_sock.clear();
                 }
@@ -196,4 +218,42 @@ int check_status(ntw::cli::Client& client)
             return 1;
         }break;
     }
+}
+
+int notification_dispatch(int id,ntw::SocketSerialized& request)
+{
+        int res= ntw::FuncWrapper::Status::st::wrong_id;
+        std::cout<<"[notification_dispatch] id:"<<id<<std::endl<<std::flush;
+        switch(id)
+        {
+            case salamandre::gui::func::fileIsSend :
+            { 
+                res = ntw::FuncWrapper::srv::exec(salamandre::gui::funcFileIsSend,request);
+            }break;
+            case salamandre::gui::func::fileIsRecv :
+            {
+                res = ntw::FuncWrapper::srv::exec(salamandre::gui::funcFileIsRecv,request);
+            }break;
+            default:
+            {
+                std::cout<<"[notification_dispatch] Function id not found"<<std::endl;                
+            }break;
+        }
+        return res;
+}
+
+namespace salamandre
+{
+namespace gui {
+
+    void funcFileIsSend(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename)
+    {
+        std::cout<<"File send:"<<id_medecin<<"/"<<id_patient<<"/"<<filename<<std::endl;
+    }
+
+    void funcFileIsRecv(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename)
+    {
+        std::cout<<"File recv:"<<id_medecin<<"/"<<id_patient<<"/"<<filename<<std::endl;
+    }
+}
 }

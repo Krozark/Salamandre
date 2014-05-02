@@ -3,6 +3,7 @@
 #include <Salamandre-daemon/FileManager.hpp>
 
 #include <Socket/FuncWrapper.hpp>
+#include <Socket/client/Client.hpp>
 
 #include <iostream>
 
@@ -10,6 +11,7 @@ namespace salamandre
 {
 namespace gui
 {
+    ntw::cli::Client gui_client_notif_sender; ///< the socket that send notification to the client.
 
     int dispatch(int id,ntw::SocketSerialized& request)
     {
@@ -29,6 +31,10 @@ namespace gui
             case func::isInUpdate :
             {
                 res = ntw::FuncWrapper::srv::exec(funcIsInUpdate,request);
+            }break;
+            case func::setGuiNotificationPort :
+            {
+                res = ntw::FuncWrapper::srv::exec(funcSetGuiNotificationPort,request);
             }break;
             default:
             {
@@ -75,6 +81,10 @@ namespace gui
         return status;
     }
 
-
+    void funcSetGuiNotificationPort(ntw::SocketSerialized& sock,unsigned int port)
+    {
+        gui_client_notif_sender.disconnect();
+        gui_client_notif_sender.connect("127.0.0.1",port);
+    }
 }   
 }
