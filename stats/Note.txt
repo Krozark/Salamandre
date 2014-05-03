@@ -1,16 +1,26 @@
 Le serveur de broadcast est à bouger dans le daemom
 J'avais déja fait toute la base du broadcast
+
 => Tu m'avais dis de le faire, donc je l'ai fais. Faudra voir ce qu'on garde comme code.
+
 <=  Pas de soucis, pour ca, je te laisse le faire comme convenu, j'aivais juste fait une base en espérant faire gagner du temps. Met le ou tu veux du coup.
 Faudra par contre juste que tu me dise comment l'initialiser depuis le daemon. Limite, tu peux faire comme je fait pour sam, un executable qui sert de test et demo.
 Pour le broad cast, j'ai besoin d'un truc (je sais pas  comment tu as géré ca:)
 - La gui va me demmander une syncro sur (avec des params)
 - je vais donc demmander un broadcast, avec en data (int salamandre::srv::iLostMyData,int id_medecin,int id_patient,std::string filename,unsigned int mySrvPortv4). salamandre::srv::iLostMyData = 2 actuellement. c'est un simple id de fonction.
 - Il faudrais donc que quand le serveur de broadcast recois ce message, un appel sur salamandre::srv::funcILostMyData(id_medecin,id_patient,filename,port,ipv4) soit fait (évantuelement dans un thead détaché pour éviter que ca bloque de ton côté. Ca véréfira si le fichié demmandé est présent, et établira une connection entre les 2 PC pour le transfert. Ca peut prendre plusieur minutes le temps que l'appel à la fonction finisse.)
+
 => Je pense que la classe de broadcast serait mieux dans ton module "daemon", faudra voir ensemble comment on merge ça.
 J'ai fais fonctionner le broadcast dans l'exemple, tu peux y jeter un oeil.
 J'ai créer une classe Message et SerializedMessage pour le broadcast, il faudra ajouter des params dedans pour les params que tu veux. Tu es sûr que tu as besoin du nom de fichier ? On a pas seulement 4 différents et en faire un enum ? c'est juste histoire d'avoir un message à taille fixe, c'est plus facile à gérer.
 À la récecption de ce message, on pourrait créer un thread et le détacher, pour éviter que ça bloque comme tu dis.
+
+<= J'ai jetter un coup d'oeil tkt, mais comme j'ai pas vu comment faire pour avoir n params ... (t'occupe par du ServerBroadcast dans mon module, je tenet jute d'ajouter ca dans mom module de socket en fait).
+Pour ce qui est des fichiers, effectivement ca pourraite se foutre en Int, le truc c'est que je recois les infos de la gui, et j'y touche jamais, affin d'éviter de future changements, d'ou le fait que ce soit un string.
+du coup, dans mes socket, ca avait la tronche la: (int size, short int status, int function_id, T ... params_for_function)  pour pouvoir mettre se qu'on voulais.
+La je fille chercher un fer a souler, pour réparrer un disque dur, et je revien.
+Pour 18h je suis la, et sur gtalk. On vois ca à ce moment là?
+Pour ce qui est du thread, ca me parrais bien.
 
 
 ------------------------------------------------
