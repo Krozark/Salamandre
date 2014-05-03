@@ -50,7 +50,10 @@ namespace salamandre
 
             char header[SIZE_HEADER];
             fseek(digitFile, 0, SEEK_SET);
-            fread(header, SIZE_HEADER, 1, digitFile);
+
+            size_t readSize;
+            if((readSize = fread(header, SIZE_HEADER, 1, digitFile)) == 0)
+                std::cerr << "attempt to read " << SIZE_HEADER << " but " << readSize << " have been read" << std::endl;
 
             ntw::Serializer serializer;
             serializer.write(header, SIZE_HEADER);
@@ -78,7 +81,9 @@ namespace salamandre
 
                 char size[8];
 
-                fread(size, 8, 1, digitFile);
+                if((readSize = fread(size, 8, 1, digitFile)) == 0)
+                    std::cerr << "attempt to read " << 8 << " but " << readSize << " have been read" << std::endl;
+
                 ntw::Serializer serializer;
                 serializer.write(size, 8);
 
@@ -131,21 +136,22 @@ namespace salamandre
                 fseek(fileFMN, digit->offset, SEEK_SET);
                 fseek(fileEncrypt, 0, SEEK_SET);
 
+                size_t readSize;
+
                 for(int i  = 0; i < needLoop; ++i){
-                    fread(buf, BUFSIZ, 1, fileFMN);
+                    if((readSize = fread(buf, BUFSIZ, 1, fileFMN)) == 0)
+                        std::cerr << "attempt to read " << BUFSIZ << " but " << readSize << " have been read" << std::endl;
+
                     fwrite(buf, BUFSIZ, 1, fileEncrypt);
                 }
 
-                fread(bufEnd, rest, 1, fileFMN);
+                if((readSize = fread(bufEnd, rest, 1, fileFMN)) == 0)
+                    std::cerr << "attempt to read " << rest << " but " << readSize << " have been read" << std::endl;
+
                 fwrite(bufEnd, rest, 1, fileEncrypt);
 
                 fclose(fileFMN);
                 fclose(fileEncrypt);
-
-                //Record::decrypt(digit->key, source+"/tmp/"+digit->fileName+".tmp", fileNameToRead);
-
-
-                //remove((source+"/tmp/"+digit->fileName+".tmp").c_str());
             }
         }
     }
@@ -173,8 +179,6 @@ namespace salamandre
             fseek(fmnFile, 0, SEEK_END);
             fwrite(digit->fileName.c_str(), digit->fileName.size(), 1, fmnFile);
 
-            //Record::encrypt(key, digit->filePath);
-
             FILE *fileEncrypt = fopen((digit->filePath+".tmp").c_str(), "rb");
             fseek(fileEncrypt, 0, SEEK_END);
             long int fileSize = ftell(fileEncrypt);
@@ -190,7 +194,6 @@ namespace salamandre
 
             digit->offset = ftell(fmnFile);
             digit->size = fileSize;
-            //digit->key = key;
 
             std::cout << "write ofset : " << digit->offset << " : size : " << digit->size << std::endl;
 
@@ -200,12 +203,18 @@ namespace salamandre
             char buf[BUFSIZ];
             char bufEnd[rest];
 
+            size_t readSize;
+
             for(int i = 0; i < needLoop; ++i){
-                fread(buf, BUFSIZ, 1, fileEncrypt);
+                if((readSize = fread(buf, BUFSIZ, 1, fileEncrypt)) == 0)
+                    std::cerr << "attempt to read " << BUFSIZ << " but " << readSize << " have been read" << std::endl;
+
                 fwrite(buf, BUFSIZ, 1, fmnFile);
             }
 
-            fread(bufEnd, rest, 1, fileEncrypt);
+            if((readSize = fread(bufEnd, rest, 1, fileEncrypt)) == 0)
+                std::cerr << "attempt to read " << rest << " but " << readSize << " have been read" << std::endl;
+
             fwrite(bufEnd, rest, 1, fmnFile);
 
             fclose(fileEncrypt);

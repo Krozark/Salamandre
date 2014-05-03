@@ -2,7 +2,7 @@
 
 sockSender::sockSender()
 {
-    this->srvPort = srvPort;
+    this->srvPort = DEFAULT_SERVEUR_PORT;
     this->srvIpAddress = DEFAULT_IP;
 }
 

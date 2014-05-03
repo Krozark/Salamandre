@@ -44,6 +44,12 @@ void MainWindow::init()
     this->listViewDigitalFiles = new ListView(this->patient->getDirPath(), nullptr);
     this->threadUpload = new threadUploadFile(this->patient, this->doctor, nullptr);
 
+    QDir dir(this->patient->getDirPath()+"/tmp");
+    if(dir.exists()){
+        dir.removeRecursively();
+        dir.mkdir(dir.path());
+    }
+
     this->connect(this->listViewDigitalFiles, SIGNAL(dropFile(QStringList)), SLOT(startUploadDigitalFile(QStringList)));
     this->connect(this->threadUpload, SIGNAL(newFileInserted()), this, SLOT(refreshDigitalFile()));
 

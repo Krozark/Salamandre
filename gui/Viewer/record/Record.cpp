@@ -173,7 +173,11 @@ namespace salamandre
         if(file){
             char header[SIZE_HEADER];
             fseek(file, 0, SEEK_SET);
-            fread(header, SIZE_HEADER, 1, file);
+
+            size_t readSize;
+
+            if((readSize = fread(header, SIZE_HEADER, 1, file)) == 0)
+                std::cerr << "attempt to read " << SIZE_HEADER << " but " << readSize << " have been read" << std::endl;
 
             ntw::Serializer serializer;
             serializer.write(header, SIZE_HEADER);
