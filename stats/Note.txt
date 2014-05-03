@@ -3,6 +3,13 @@ J'avais déja fait toute la base du broadcast
 => Tu m'avais dis de le faire, donc je l'ai fais. Faudra voir ce qu'on garde comme code.
 <=  Pas de soucis, pour ca, je te laisse le faire comme convenu, j'aivais juste fait une base en espérant faire gagner du temps. Met le ou tu veux du coup.
 Faudra par contre juste que tu me dise comment l'initialiser depuis le daemon. Limite, tu peux faire comme je fait pour sam, un executable qui sert de test et demo.
+Pour le broad cast, j'ai besoin d'un truc (je sais pas  comment tu as géré ca:)
+- La gui va me demmander une syncro sur (avec des params)
+- je vais donc demmander un broadcast, avec en data (int salamandre::srv::iLostMyData,int id_medecin,int id_patient,std::string filename,unsigned int mySrvPortv4). salamandre::srv::iLostMyData = 2 actuellement. c'est un simple id de fonction.
+- Il faudrais donc que quand le serveur de broadcast recois ce message, un appel sur salamandre::srv::funcILostMyData(id_medecin,id_patient,filename,port,ipv4) soit fait (évantuelement dans un thead détaché pour éviter que ca bloque de ton côté. Ca véréfira si le fichié demmandé est présent, et établira une connection entre les 2 PC pour le transfert. Ca peut prendre plusieur minutes le temps que l'appel à la fonction finisse.)
+
+
+------------------------------------------------
 
 tu as des gros truc WTF dans ton code:
     dans une class tu ne fait JAMAIS:
@@ -14,9 +21,3 @@ tu as des gros truc WTF dans ton code:
 => Regarde ça alors : http://www.stroustrup.com/C++11FAQ.html#member-init
 <= A ok, je savais pas. C'est paratique quand tu as plein deconstructeur du coup, mais c'est quand même bizard. Ca fait très python je trouve pour le coup.
 Toujours pratique à savoir. Dans l'idée du cpp, tu initialise rien dans le corps d'une classe à par les inline/templates (qui sont du coup souvent bougés dans des .tpl/.inl). Enfin, là en s'en foux, mais pour d'éventuels gros projets futures, c'est bon à savoir.
-
-Tu peut éviter des new, en initialisant les objet dans le constructeur de la clase tel que :
-    Klass(... args) : obj1(param), obj2(param) {
-        //init klass
-    }
-=> C'est ce que j'ai fais maintenant

@@ -3,6 +3,7 @@
 
 #include <Socket/SocketSerialized.hpp>
 #include <string>
+#include <thread>
 
 namespace salamandre
 {
@@ -16,10 +17,17 @@ namespace salamandre
             //function ids in ServerFunctions.hpp
 
             void start();
+            void wait();
             void stop();
+
+            void sendThisIsMyInfo(int port);
+
+            void sendILostMyData(int id_medecin,int id_patient,std::string filename,int port);
 
         private:
             void start_thread();
+
+            std::thread thread;
 
             const int port;
             bool run;
@@ -31,7 +39,7 @@ namespace salamandre
              */
             void funcThisIsMyInfos(ntw::SocketSerialized& from,int port);
             
-            void funcILostMyData(ntw::SocketSerialized& from,int id_medecin,int id_patient,std::string filename);
+            void funcILostMyData(ntw::SocketSerialized& from,int id_medecin,int id_patient,std::string filename,int port);
     };
 }
 #endif

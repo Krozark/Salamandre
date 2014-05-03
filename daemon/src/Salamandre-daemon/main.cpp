@@ -1,4 +1,5 @@
 #include <Salamandre-daemon/Daemon.hpp>
+#include <Salamandre-daemon/ServerBroadcast.hpp>
 
 #include <iostream>
 #include <csignal>
@@ -9,13 +10,16 @@
 #define SERVER_PORT 2
 #define NB_ARGS (SERVER_PORT + 1)
 
-salamandre::Daemon* server = nullptr;
+namespace salamandre
+{
+    Daemon* daemon = nullptr;
+}
 
 void stop_server_handler(int sig)
 {
     std::cout<<"Recv signal "<<sig<<". Stoping server.\n Please wait."<<std::endl;
-    if(server)
-        server->stop();
+    if(salamandre::daemon)
+        salamandre::daemon->stop();
 }
 
 
@@ -23,6 +27,32 @@ int main(int argc,char* argv[])
 {
     int gui_port = 3842;
     int server_port = 3843;
+    int broadcast_port = 4835;
+
+
+    salamandre::ServerBroadcast broadcast(broadcast_port);
+
+    broadcast.start();
+    
+    broadcast.sendThisIsMyInfo(server_port);
+
+    char c=0;
+    std::cout<<"quitter?[q]\n>";
+    std::cin>>c;
+    while(c != 'q')
+    {
+        std::string filename;
+        std::cout<<"filename\n>";
+        std::cin>>filename;
+
+        broadcast.sendILostMyData(1,2,filename,server_port);
+        std::cout<<"quitter?[q]\n>";
+    }
+
+    broadcast.wait();
+    
+    return 0;
+
 
     if(argc < NB_ARGS)
     {
@@ -48,13 +78,13 @@ int main(int argc,char* argv[])
     try
     {
         salamandre::Daemon::init();
-        
-        server = new salamandre::Daemon(gui_port,server_port);
-        server->start();
-        server->wait();
 
-        delete server;
-        server = nullptr;
+        salamandre::daemon = new salamandre::Daemon(gui_port,server_port);
+        salamandre::daemon->start();
+        salamandre::daemon->wait();
+
+        delete salamandre::daemon;
+        salamandre::daemon = nullptr;
 
         salamandre::Daemon::close();
 

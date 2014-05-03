@@ -8,6 +8,8 @@
 
 namespace salamandre
 {
+    class Daemon;
+    extern Daemon* daemon; ///<The current daemon
 /**
  * \brief namespace for the  local calls (with the gui)
  */

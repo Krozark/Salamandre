@@ -1,9 +1,8 @@
 #include <Salamandre-daemon/GuiFunctions.hpp>
-
 #include <Salamandre-daemon/FileManager.hpp>
+#include <Salamandre-daemon/Daemon.hpp>
 
 #include <Socket/FuncWrapper.hpp>
-#include <Socket/client/Client.hpp>
 
 #include <iostream>
 
@@ -11,7 +10,6 @@ namespace salamandre
 {
 namespace gui
 {
-    ntw::cli::Client gui_client_notif_sender; ///< the socket that send notification to the client.
 
     int dispatch(int id,ntw::SocketSerialized& request)
     {
@@ -67,6 +65,7 @@ namespace gui
     void funcSync(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename)
     {
         sock.setStatus(gui::status::TODO);
+        //daemon->broadcast.askFor
     }
 
     bool funcIsInUpdate(ntw::SocketSerialized& sock,int id_medecin, int id_patient,std::string filename)
@@ -78,13 +77,14 @@ namespace gui
         }
         bool status = false;
         ///\todo TODO
+        sock.setStatus(gui::status::TODO);
         return status;
     }
 
     void funcSetGuiNotificationPort(ntw::SocketSerialized& sock,unsigned int port)
     {
-        gui_client_notif_sender.disconnect();
-        gui_client_notif_sender.connect("127.0.0.1",port);
+        daemon->gui_client_notif_sender.disconnect();
+        daemon->gui_client_notif_sender.connect("127.0.0.1",port);
     }
 }   
 }
