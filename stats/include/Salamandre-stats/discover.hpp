@@ -23,7 +23,6 @@ namespace salamandre {
         {
             public:
                 Discover(int listen_port);
-                ~Discover();
                 bool start();
                 bool stop();
                 void send();

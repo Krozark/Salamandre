@@ -11,7 +11,7 @@ void Discover::send() {
     std::cout << "Thread sending started" << std::endl;
     Message message;
     message.type = MESSAGE_PRESENCE;
-    message.data = this->listen_port;
+    message.my_port = this->listen_port;
 
     std::chrono::seconds duration(30);
     while(this->running) {

@@ -32,7 +32,10 @@ SerializedMessage * Broadcast::serialize(const Message message) {
     SerializedMessage * output = new SerializedMessage();
     strcpy(output->program_identifier, SALAMANDRE_PROGRAM_ID);
     output->type = htonl(message.type);
-    output->data = htonl(message.data);
+    output->my_port = htonl(message.my_port);
+    output->id_medecin = htonl(message.id_medecin);
+    output->id_patient = htonl(message.id_patient);
+    ::strcpy(output->filename, message.filename);
 
     return output;
 }
@@ -45,7 +48,10 @@ Message Broadcast::deserialize(void * buffer) {
         return message;
     }
     message.type = ntohl(input->type);
-    message.data = ntohl(input->data);
+    message.my_port = ntohl(input->my_port);
+    message.id_medecin = ntohl(input->id_medecin);
+    message.id_patient = ntohl(input->id_patient);
+    ::strcpy(message.filename, input->filename);
 
     return message;
 }
@@ -59,7 +65,7 @@ void Broadcast::send(const Message message) {
 
     ::sendto(this->socket, buffer, sizeof(SerializedMessage), 0, (sockaddr*)&this->destination, sizeof(struct sockaddr_in));
 
-    std::cout << "Message of type: " << message.type << " with data: " << message.data << " sent." << std::endl;
+    std::cout << "Message of type: " << message.type << " with data: " << message.my_port << " sent." << std::endl;
 
     delete buffer;
 }
@@ -90,18 +96,18 @@ void Broadcast::receive() {
     int nbBytes;
     while (this->running) {
         nbBytes = ::recvfrom(listen_socket, buffer, sizeof(buffer), 0, (sockaddr *)&source, &source_length);
-        if(nbBytes == (int)source_length) {
+        if(nbBytes ==  sizeof(buffer)) {
             message = this->deserialize(buffer);
             ::inet_ntop(AF_INET, &(source.sin_addr), source_ip, INET_ADDRSTRLEN);
 
-            std::cout << "Message of type: " << message.type << " with data: " << message.data << " received from: " << source_ip << std::endl;
+            std::cout << "Message of type: " << message.type << " with data: " << message.my_port << " received from: " << source_ip << std::endl;
 
             this->dispatch(message, std::string(source_ip));
         } else if (nbBytes < 0) {
             perror("An error occured while receiving: ");
             this->running = false;
         } else {
-            std::cerr << "No data received or wrong size : " << nbBytes << "/" << source_length << std::endl;
+            std::cerr << "No data received or wrong size : " << nbBytes << "/" <<  sizeof(buffer) << std::endl;
         }
     }
     close(this->listen_socket);
@@ -112,10 +118,12 @@ void Broadcast::receive() {
 void Broadcast::dispatch(Message message, std::string source_ip) {
     switch(message.type) {
         case MESSAGE_PRESENCE:
-            std::cout << "Adding node " << source_ip << ":" << message.data << std::endl;
-            Stats::add_node(source_ip, message.data);
+            std::cout << "Adding node " << source_ip << ":" << message.my_port << std::endl;
+            Stats::add_node(source_ip, message.my_port);
             break;
         case MESSAGE_RECOVER:
+            //std::thread = thread_recover(salamandre::srv::iLostMyData, message.medecin_id, message.patient_id, std::string(message.filename), message.my_port);
+            //thread.recover.detach();
             break;
         case MESSAGE_INVALID:
         default: // Invalid message

@@ -28,12 +28,22 @@ namespace stats {
     };
     typedef struct message_struct {
         unsigned int type;
-        int data;
+        // For Presence
+        int my_port;
+        // For Recover
+        int id_medecin;
+        int id_patient;
+        char filename[4];
     } Message;
     typedef struct serialized_message_stuct {
         char program_identifier[8];
         unsigned int type;
-        int data;
+        // For Presence
+        int my_port;
+        // For Recover
+        int id_medecin;
+        int id_patient;
+        char filename[4];
     } SerializedMessage;
 
     class Broadcast
