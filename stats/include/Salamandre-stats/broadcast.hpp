@@ -27,22 +27,22 @@ namespace stats {
         MESSAGE_RECOVER = 20
     };
     typedef struct message_struct {
-        unsigned int type;
+        uint32_t type;
         // For Presence
-        int my_port;
+        uint32_t my_port;
         // For Recover
-        int id_medecin;
-        int id_patient;
+        uint32_t id_medecin;
+        uint32_t id_patient;
         char filename[4];
     } Message;
     typedef struct serialized_message_stuct {
         char program_identifier[8];
-        unsigned int type;
+        uint32_t type;
         // For Presence
-        int my_port;
+        uint32_t my_port;
         // For Recover
-        int id_medecin;
-        int id_patient;
+        uint32_t id_medecin;
+        uint32_t id_patient;
         char filename[4];
     } SerializedMessage;
 
