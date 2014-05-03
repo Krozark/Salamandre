@@ -6,6 +6,7 @@
 #include <Salamandre-daemon/GuiFunctions.hpp>
 
 #include <iostream>
+#include <list>
 
 #define SERVER_PORT 4321
 
@@ -40,7 +41,10 @@ int main(int argc,char* argv[])
         //set the connect port on daémon side
         client.call<void>(salamandre::gui::func::setGuiNotificationPort,SERVER_PORT);
         if(check_status(client) < 0)
-            exit(0);
+        {
+            std::cout<<"Error on init notification server"<<std::endl;
+            exit(1);
+        }
 
         //start
         run(client);
@@ -164,16 +168,193 @@ void run(ntw::cli::Client& client)
                 {
                     client.call<void>(salamandre::gui::func::newFile,id_medecin,id_patient,file);
                     if(check_status(client) < 0)
-                        exit(0);
+                    {
+                        std::cout<<"ERROR on send new file info("<<file<<")"<<std::endl;
+                        exit(2);
+                    }
                     client.request_sock.clear();
                 }
                 file_to_signal.clear();
             }break;
             case '4'://recupération
             {
+                while(c != 'q' and c != 'Q')
+                {
+                    std::cout<< 
+                        "----------------------------\n"
+                        "--- Fichiers à récupérer ---\n"
+                        "----------------------------\n"
+                        "\t[1] test1\n"
+                        "\t[2] test2\n"
+                        "\t[3] test3\n"
+                        "\t[4] test4\n"
+                        "\t[5] test[1~4]\n"
+                        "\t[6] Autre nom\n"
+                        "\t[7] Tous ceux du patient\n"
+                        "\t[8] Tous ceux du medecin\n"
+                        "\t[Q/q] Retour\n>";
+
+                    std::cin>>c;
+                    std::cout<<std::endl;
+                    std::list<std::string> files;
+
+                    switch(c)
+                    {
+                        case '1'://test1
+                        {
+                            files.push_back("test1");
+                        }break;
+                        case '2'://test2
+                        {
+                            files.push_back("test2");
+                        }break;
+                        case '3'://test3
+                        {
+                            files.push_back("test3");
+                        }break;
+                        case '4'://test4
+                        {
+                            files.push_back("test4");
+                        }break;
+                        case '5'://test[1~4]
+                        {
+                            files.push_back("test1");
+                            files.push_back("test2");
+                            files.push_back("test3");
+                            files.push_back("test4");
+                        }break;
+                        case '6'://autre
+                        {
+                            std::cout<<"Nom du fichier à créer\n>";
+                            std::string s;
+                            std::cin>>s;
+                            files.push_back(s);
+                        }break;
+                        case '7': //Tous ceux du patient
+                        {
+                            client.call<void>(salamandre::gui::func::sync,id_medecin,id_patient,"");
+                            if(check_status(client) < 0)
+                            {
+                                std::cout<<"ERROR on ask for an sync on all file of the patient ("<<id_patient<<")"<<std::endl;
+                                exit(3);
+                            }
+                            client.request_sock.clear();
+                        }break;
+                        case '8':/// Tous ceux du medecin
+                        {
+                            client.call<void>(salamandre::gui::func::sync,id_medecin,-1,"");
+                            if(check_status(client) < 0)
+                            {
+                                std::cout<<"ERROR on ask for an sync on all file of the medecin ("<<id_medecin<<")"<<std::endl;
+                                exit(4);
+                            }
+                            client.request_sock.clear();
+
+                        }break;
+                        case 'q'://quitter
+                        case 'Q':
+                        {
+                            BACK;
+                        }break;
+                        default:
+                        {
+                            PRINT_ERROR;
+                        }break;
+                    }
+                    //ask for sync on files
+                    for(auto& file : files)
+                    {
+                        client.call<void>(salamandre::gui::func::sync,id_medecin,id_patient,file);
+                        if(check_status(client) < 0)
+                        {
+                            std::cout<<"ERROR on ask for an sync on file("<<file<<")"<<std::endl;
+                            exit(5);
+                        }
+                        client.request_sock.clear();
+                    }
+                }
+
             }break;
             case '5': ///update en cour
             {
+                while(c != 'q' and c != 'Q')
+                {
+                    std::cout<< 
+                        "----------------------\n"
+                        "--- Update en cour ---\n"
+                        "----------------------\n"
+                        "\t[1] test1\n"
+                        "\t[2] test2\n"
+                        "\t[3] test3\n"
+                        "\t[4] test4\n"
+                        "\t[5] Autre nom\n"
+                        "\t[6] Tous ceux du patient\n"
+                        "\t[7] Tous ceux du medecin\n"
+                        "\t[Q/q] Retour\n>";
+
+                    std::cin>>c;
+                    std::cout<<std::endl;
+                    std::list<std::string> files;
+
+
+                    bool up = false;
+
+                    switch(c)
+                    {
+                        case '1'://test1
+                        {
+                            up = client.call<bool>(salamandre::gui::func::sync,id_medecin,id_patient,"test1");
+                        }break;
+                        case '2'://test2
+                        {
+                            up = client.call<bool>(salamandre::gui::func::sync,id_medecin,id_patient,"test2");
+                        }break;
+                        case '3'://test3
+                        {
+                            up = client.call<bool>(salamandre::gui::func::sync,id_medecin,id_patient,"test3");
+                        }break;
+                        case '4'://test4
+                        {
+                            up = client.call<bool>(salamandre::gui::func::sync,id_medecin,id_patient,"test4");
+                        }break;
+                        case '5'://autre
+                        {
+                            std::cout<<"Nom du fichier à créer\n>";
+                            std::string s;
+                            std::cin>>s;
+                            up = client.call<bool>(salamandre::gui::func::sync,id_medecin,id_patient,s);
+                        }break;
+                        case '6': //Tous ceux du patient
+                        {
+                            up = client.call<bool>(salamandre::gui::func::sync,id_medecin,id_patient,"");
+                        }break;
+                        case '7':/// Tous ceux du medecin
+                        {
+                            up = client.call<bool>(salamandre::gui::func::sync,id_medecin-1,"");
+                        }break;
+                        case 'q'://quitter
+                        case 'Q':
+                        {
+                            BACK;
+                        }break;
+                        default:
+                        {
+                            PRINT_ERROR;
+                        }break;
+                    }
+
+                    if(c>=1 and c <=6)
+                    {
+                        if(check_status(client) < 0)
+                        {
+                            std::cout<<"ERROR on ask for is_update"<<std::endl;
+                            exit(2);
+                        }
+                        else
+                            std::cout<<"Update: "<<(up?"Oui":"Non")<<std::endl;
+                        client.request_sock.clear();
+                    }
+                } 
             }break;
             case '6': //print file list
             {
