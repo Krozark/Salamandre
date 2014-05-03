@@ -12,13 +12,13 @@ namespace salamandre
         sock_listen(ntw::Socket::Dommaine::IP,ntw::Socket::Type::UDP,IPPROTO_UDP),
         sock_send(ntw::Socket::Dommaine::IP,ntw::Socket::UDP,IPPROTO_UDP)
     {
-        sock_send.connect("127.255.255.255",port);
-        sock_send.setBroadcast(true);
-
         sock_listen.connect(port);
-        //sock_listen.setBroadcast(true);
         sock_listen.setReusable(true);
         sock_listen.bind();
+
+        sock_send.setBroadcast(true);
+        sock_send.connect("127.255.255.255",port);
+
     }
 
     void ServerBroadcast::start()
@@ -42,14 +42,11 @@ namespace salamandre
 
     void ServerBroadcast::sendILostMyData(int id_medecin,int id_patient,std::string filename,int port)
     {
-        sock_send<<"test";
-        /*
         sock_send<<(int)salamandre::srv::iLostMyData
             <<id_medecin
             <<id_patient
             <<filename
             <<port;
-        */
         std::cout<<sock_send<<std::endl;
         sock_send.sendCl();
     }
