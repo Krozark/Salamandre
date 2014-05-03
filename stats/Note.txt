@@ -7,6 +7,10 @@ Pour le broad cast, j'ai besoin d'un truc (je sais pas  comment tu as géré ca:
 - La gui va me demmander une syncro sur (avec des params)
 - je vais donc demmander un broadcast, avec en data (int salamandre::srv::iLostMyData,int id_medecin,int id_patient,std::string filename,unsigned int mySrvPortv4). salamandre::srv::iLostMyData = 2 actuellement. c'est un simple id de fonction.
 - Il faudrais donc que quand le serveur de broadcast recois ce message, un appel sur salamandre::srv::funcILostMyData(id_medecin,id_patient,filename,port,ipv4) soit fait (évantuelement dans un thead détaché pour éviter que ca bloque de ton côté. Ca véréfira si le fichié demmandé est présent, et établira une connection entre les 2 PC pour le transfert. Ca peut prendre plusieur minutes le temps que l'appel à la fonction finisse.)
+=> Je pense que la classe de broadcast serait mieux dans ton module "daemon", faudra voir ensemble comment on merge ça.
+J'ai fais fonctionner le broadcast dans l'exemple, tu peux y jeter un oeil.
+J'ai créer une classe Message et SerializedMessage pour le broadcast, il faudra ajouter des params dedans pour les params que tu veux. Tu es sûr que tu as besoin du nom de fichier ? On a pas seulement 4 différents et en faire un enum ? c'est juste histoire d'avoir un message à taille fixe, c'est plus facile à gérer.
+À la récecption de ce message, on pourrait créer un thread et le détacher, pour éviter que ça bloque comme tu dis.
 
 
 ------------------------------------------------
@@ -21,3 +25,4 @@ tu as des gros truc WTF dans ton code:
 => Regarde ça alors : http://www.stroustrup.com/C++11FAQ.html#member-init
 <= A ok, je savais pas. C'est paratique quand tu as plein deconstructeur du coup, mais c'est quand même bizard. Ca fait très python je trouve pour le coup.
 Toujours pratique à savoir. Dans l'idée du cpp, tu initialise rien dans le corps d'une classe à par les inline/templates (qui sont du coup souvent bougés dans des .tpl/.inl). Enfin, là en s'en foux, mais pour d'éventuels gros projets futures, c'est bon à savoir.
+=> Yep, sauf que quand tu fais ça en python ça en fait des propriétés statiques, les vraies propriétés ça se fait dans le constructeur. J'avais fais ça par habitude en PHP pour initialiser des valeurs par défault. Maintenant c'est fait au constructeur et c'est mieux comme ça.
