@@ -13,15 +13,11 @@ namespace salamandre
         sock_send(ntw::Socket::Dommaine::IP,ntw::Socket::UDP,IPPROTO_UDP)
     {
         sock_listen.connect("127.255.255.255",port);
-        //sock_listen.connect(port);
         sock_listen.setReusable(true);
         sock_listen.bind();
 
-        //sock_send.connect(port);
         sock_send.connect(port);
-        //sock_send.setReusable(true);
         sock_send.setBroadcast(true);
-        //sock_send.bind();
         sock_send.connect("255.255.255.255",port);
 
     }
