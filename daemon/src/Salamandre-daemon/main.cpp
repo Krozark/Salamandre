@@ -28,7 +28,7 @@ int main(int argc,char* argv[])
     int gui_port = 3842;
     int server_port = 3843;
 
-    /*int broadcast_port = 5001;
+    int broadcast_port = 5001;
 
 
     salamandre::ServerBroadcast broadcast(broadcast_port);
@@ -53,7 +53,7 @@ int main(int argc,char* argv[])
     broadcast.wait();
     
     return 0;
-    */
+    
 
 
     if(argc < NB_ARGS)

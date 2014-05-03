@@ -12,12 +12,17 @@ namespace salamandre
         sock_listen(ntw::Socket::Dommaine::IP,ntw::Socket::Type::UDP,IPPROTO_UDP),
         sock_send(ntw::Socket::Dommaine::IP,ntw::Socket::UDP,IPPROTO_UDP)
     {
-        sock_listen.connect(port);
+        sock_listen.connect("127.255.255.255",port);
+        //sock_listen.connect(port);
         sock_listen.setReusable(true);
         sock_listen.bind();
 
+        //sock_send.connect(port);
+        sock_send.connect(port);
+        //sock_send.setReusable(true);
         sock_send.setBroadcast(true);
-        sock_send.connect("127.255.255.255",port);
+        //sock_send.bind();
+        sock_send.connect("255.255.255.255",port);
 
     }
 
@@ -37,7 +42,8 @@ namespace salamandre
     {
         sock_send<<(int)salamandre::srv::thisIsMyInfos
             <<port;
-        sock_send.sendCl();
+        sock_send.send(sock_listen);
+        sock_send.clear();
     }
 
     void ServerBroadcast::sendILostMyData(int id_medecin,int id_patient,std::string filename,int port)
@@ -47,8 +53,9 @@ namespace salamandre
             <<id_patient
             <<filename
             <<port;
-        std::cout<<sock_send<<std::endl;
-        sock_send.sendCl();
+        std::cout<<"Send:"<<sock_send<<std::endl;
+        sock_send.send(sock_listen);
+        sock_send.clear();
     }
 
     void ServerBroadcast::start_thread()
@@ -58,7 +65,7 @@ namespace salamandre
             sock_listen.clear();
             ntw::SocketSerialized from(ntw::Socket::Dommaine::IP,ntw::Socket::Type::UDP);
             from.connect(port);
-            sock_listen.receive();
+            sock_listen.receive(from);
             std::cout<<sock_listen<<std::endl;
             int id;
             sock_listen>>id;
@@ -94,14 +101,12 @@ namespace salamandre
 
     void ServerBroadcast::funcThisIsMyInfos(ntw::SocketSerialized& from,int port)
     {
-        std::string from_ip = from.getIp();
-        std::cout<<"funcThisIsMyInfos"<<std::endl;
+        std::cout<<"funcThisIsMyInfos From:"<<from.getIp()<<", Port"<<port<<std::endl;
     }
 
     void ServerBroadcast::funcILostMyData(ntw::SocketSerialized& from,int id_medecin,int id_patient,std::string filename,int port)
     {
-        std::cout<<"funcILostMyData"<<std::endl;
-
+        std::cout<<"funcILostMyData from:"<<from.getIp()<<" id_medecin:"<<id_medecin<<" id_patient:"<<id_patient<<" filename:"<<filename<<" port:"<<port<<std::endl;
     }
     
 }
