@@ -77,7 +77,6 @@ namespace salamandre
             ntw::SocketSerialized from(ntw::Socket::Dommaine::IP,ntw::Socket::Type::UDP);
             from.connect(port);
             sock_listen.receive(from);
-            std::cout<<sock_listen<<std::endl;
             int id;
             sock_listen>>id;
 
