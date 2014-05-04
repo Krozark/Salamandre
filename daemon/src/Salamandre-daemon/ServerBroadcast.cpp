@@ -2,7 +2,9 @@
 #include <Salamandre-daemon/ServerFunctions.hpp>
 #include <Socket/FuncWrapper.hpp>
 
+#include <Salamandre-stats/stats.hpp>
 
+#include <chrono>
 
 namespace salamandre
 {
@@ -23,16 +25,27 @@ namespace salamandre
 
     }
 
+    void ServerBroadcast::init()
+    {
+        stats::Stats::init();
+    }
+
+    void ServerBroadcast::close()
+    {
+        stats::Stats::close();
+    }
+
     void ServerBroadcast::start()
     {
         run = true;
-        this->thread = std::thread(&ServerBroadcast::start_thread,this);
-        //thread for broadcast.sendThisIsMyInfo(server_port);
+        this->thread[0] = std::thread(&ServerBroadcast::start_listener,this);
+        this->thread[1] = std::thread(&ServerBroadcast::start_sender,this);
     }
 
     void ServerBroadcast::wait()
     {
-        this->thread.join();
+        this->thread[0].join();
+        this->thread[1].join();
     }
 
     
@@ -56,7 +69,7 @@ namespace salamandre
         sock_send.clear();
     }
 
-    void ServerBroadcast::start_thread()
+    void ServerBroadcast::start_listener()
     {
         while(run)
         {
@@ -92,6 +105,16 @@ namespace salamandre
         }
     }
 
+    void ServerBroadcast::start_sender()
+    {
+        std::chrono::seconds duration(30);
+        while(run)
+        {
+            sendThisIsMyInfo();
+            std::this_thread::sleep_for(duration);
+        }
+    }
+
     void ServerBroadcast::stop()
     {
         run = false;
@@ -99,8 +122,9 @@ namespace salamandre
 
     void ServerBroadcast::funcThisIsMyInfos(ntw::SocketSerialized& from,int port)
     {
-        std::cout<<"funcThisIsMyInfos From:"<<from.getIp()<<", Port"<<port<<std::endl;
-        ///TODO add in node
+        std::cout<<"Recv info from:"<<from.getIp()<<", Port"<<port<<std::endl;
+        ///\todo TODO check if this is me
+        stats::Stats::add_node(from.getIp(),port);
     }
 
     void ServerBroadcast::funcILostMyData(ntw::SocketSerialized& from,int id_medecin,int id_patient,std::string filename,int port)

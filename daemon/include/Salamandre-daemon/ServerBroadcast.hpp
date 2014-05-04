@@ -16,6 +16,9 @@ namespace salamandre
 
             //function ids in ServerFunctions.hpp
 
+            static void init();
+            static void close();
+
             void start();
             void wait();
             void stop();
@@ -25,9 +28,10 @@ namespace salamandre
             void sendILostMyData(int id_medecin,int id_patient,std::string filename);
 
         private:
-            void start_thread();
+            void start_listener();
+            void start_sender();
 
-            std::thread thread;
+            std::thread thread[2]; //[0] = listener, [1] = sender for info
 
             const int port;
             const int server_port;

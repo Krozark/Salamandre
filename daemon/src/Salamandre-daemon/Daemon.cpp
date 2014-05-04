@@ -3,7 +3,6 @@
 #include <Salamandre-daemon/GuiFunctions.hpp>
 #include <Salamandre-daemon/ServerFunctions.hpp>
 
-#include <Salamandre-stats/stats.hpp>
 
 namespace salamandre
 {
@@ -38,27 +37,12 @@ namespace salamandre
     void Daemon::init()
     {
         ntw::Socket::init();
-        stats::Stats::init();
-
-        stats::Node::clear();
-
-        stats::Stats::add_node(std::string("127.0.0.1"), 3000);
-        stats::Stats::add_node(std::string("127.0.0.1"), 3500);
-        stats::Stats::add_node(std::string("127.0.0.1"), 4000);
-        stats::Stats::add_node(std::string("127.0.0.1"), 4500);
-        stats::Stats::add_node(std::string("127.0.0.1"), 5000);
-        stats::Stats::add_node(std::string("127.0.0.1"), 5500);
-        stats::Stats::add_node(std::string("127.0.0.1"), 6000);
-        stats::Stats::add_node(std::string("127.0.0.1"), 6500);
-        stats::Stats::add_node(std::string("127.0.0.1"), 7000);
-        stats::Stats::add_node(std::string("127.0.0.1"), 7500);
-        stats::Stats::add_node(std::string("127.0.0.1"), 8000);
-        stats::Stats::add_node(std::string("127.0.0.1"), 8500);
+        ServerBroadcast::init();
     }
 
     void Daemon::close()
     {
+        ServerBroadcast::close();
         ntw::Socket::close();
-        stats::Stats::close();
     }
 }
