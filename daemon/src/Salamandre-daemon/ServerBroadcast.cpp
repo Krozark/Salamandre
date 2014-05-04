@@ -8,7 +8,7 @@
 
 namespace salamandre
 {
-    ServerBroadcast::ServerBroadcast(int port,int server_port):
+    ServerBroadcast::ServerBroadcast(int port,int server_port,bool local):
         port(port),
         server_port(server_port),
         run(false),
@@ -19,7 +19,10 @@ namespace salamandre
         sock_listen.setReusable(true);
         sock_listen.bind();
 
-        sock_send.connect("255.255.255.255", port);
+        if(local)
+            sock_send.connect("127.255.255.255", port);
+        else
+            sock_send.connect("255.255.255.255", port);
         if(!sock_send.setBroadcast(true))
         {
             perror("Unable to set enable broadcast: ");

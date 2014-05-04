@@ -23,7 +23,7 @@ namespace salamandre
              * \param listen_gui_port the port for the gui
              * \param listen_port the port to listen the others deamon
             */
-            Daemon(int listen_gui_port, int listen_port, int broadcast_port);
+            Daemon(int listen_gui_port, int listen_port, int broadcast_port,bool local=false);
             Daemon(const Daemon&) = delete;
             Daemon& operator=(const Daemon&) = delete;
 

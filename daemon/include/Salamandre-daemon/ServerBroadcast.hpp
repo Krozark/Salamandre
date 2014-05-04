@@ -10,7 +10,7 @@ namespace salamandre
     class ServerBroadcast
     {
         public:
-            ServerBroadcast(int port,int server_port);
+            ServerBroadcast(int port,int server_port,bool local);
             ServerBroadcast(const ServerBroadcast&) = delete;
             ServerBroadcast& operator=(const ServerBroadcast&) = delete;
 
