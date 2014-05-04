@@ -45,7 +45,9 @@ namespace salamandre
     void ServerBroadcast::wait()
     {
         this->thread[0].join();
+        std::cout<<"BroadCast listener close"<<std::endl;
         this->thread[1].join();
+        std::cout<<"BroadCast sender close"<<std::endl;
     }
 
     
@@ -71,7 +73,7 @@ namespace salamandre
 
     void ServerBroadcast::start_listener()
     {
-        while(run)
+        while(this->run)
         {
             sock_listen.clear();
             ntw::SocketSerialized from(ntw::Socket::Dommaine::IP,ntw::Socket::Type::UDP);
@@ -107,11 +109,23 @@ namespace salamandre
 
     void ServerBroadcast::start_sender()
     {
-        std::chrono::seconds duration(30);
-        while(run)
+        const std::chrono::seconds duration(30);
+        const std::chrono::milliseconds step(500);
+
+        std::chrono::milliseconds elapsed_time(0);
+
+        sendThisIsMyInfo();
+
+        while(this->run)
         {
-            sendThisIsMyInfo();
-            std::this_thread::sleep_for(duration);
+            if (elapsed_time > duration)
+            {
+                sendThisIsMyInfo();
+                elapsed_time = std::chrono::milliseconds(0);
+            }
+            std::this_thread::sleep_for(step);
+            elapsed_time += step;
+            std::cout<<"1 step"<<std::endl;
         }
     }
 

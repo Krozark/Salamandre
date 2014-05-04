@@ -58,5 +58,5 @@ INSTALL(TARGETS ${CMAKE_PROJECT_NAME}-static
 	DESTINATION lib
 )
 
-add_executable(daemon main.cpp ${FILES_HEADER} ${FILES_SRC})
-target_link_libraries(daemon ${LIBS})
+add_executable(salamandre-daemon main.cpp ${FILES_HEADER} ${FILES_SRC})
+target_link_libraries(salamandre-daemon ${LIBS})
