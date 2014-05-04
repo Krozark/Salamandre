@@ -65,7 +65,7 @@ namespace gui
     void funcSync(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename)
     {
         sock.setStatus(gui::status::TODO);
-        //daemon->broadcast.askFor
+        daemon->broadcaster.sendILostMyData(id_medecin,id_patient,filename);
     }
 
     bool funcIsInUpdate(ntw::SocketSerialized& sock,int id_medecin, int id_patient,std::string filename)
