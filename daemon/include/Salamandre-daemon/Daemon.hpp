@@ -3,6 +3,7 @@
 
 #include <Socket/server/Server.hpp>
 #include <Socket/client/Client.hpp>
+#include <Salamandre-daemon/ServerBroadcast.hpp>
 #include <Salamandre-daemon/FileManager.hpp>
 
 /**
@@ -22,7 +23,7 @@ namespace salamandre
              * \param listen_gui_port the port for the gui
              * \param listen_port the port to listen the others deamon
             */
-            Daemon(int listen_gui_port, int listen_port);
+            Daemon(int listen_gui_port, int listen_port, int broadcast_port);
             Daemon(const Daemon&) = delete;
             Daemon& operator=(const Daemon&) = delete;
 
@@ -56,8 +57,11 @@ namespace salamandre
 
         //private:
             ntw::srv::Server gui_server; ///< the gui socket listener
-            ntw::srv::Server file_server; ///< the external daemon socket listener
             ntw::cli::Client gui_client_notif_sender; ///< the socket that send notification to the client.
+
+            ntw::srv::Server file_server; ///< the external daemon socket listener
+
+            salamandre::ServerBroadcast broadcaster;
             //BroadCast broadcast
 
             //void on_new_file_client(ntw::srv::Server& self,ntw::srv::Client& client);

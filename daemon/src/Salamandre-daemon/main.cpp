@@ -27,33 +27,7 @@ int main(int argc,char* argv[])
 {
     int gui_port = 3842;
     int server_port = 3843;
-
     int broadcast_port = 5001;
-
-
-    salamandre::ServerBroadcast broadcast(broadcast_port);
-
-    broadcast.start();
-    
-    broadcast.sendThisIsMyInfo(server_port);
-
-    char c=0;
-    std::cout<<"quitter?[q]\n>";
-    std::cin>>c;
-    while(c != 'q')
-    {
-        std::string filename;
-        std::cout<<"filename\n>";
-        std::cin>>filename;
-
-        broadcast.sendILostMyData(1,2,filename,server_port);
-        std::cout<<"quitter?[q]\n>";
-    }
-
-    broadcast.wait();
-    
-    return 0;
-    
 
 
     if(argc < NB_ARGS)
@@ -81,7 +55,7 @@ int main(int argc,char* argv[])
     {
         salamandre::Daemon::init();
 
-        salamandre::daemon = new salamandre::Daemon(gui_port,server_port);
+        salamandre::daemon = new salamandre::Daemon(gui_port,server_port,broadcast_port);
         salamandre::daemon->start();
         salamandre::daemon->wait();
 

@@ -6,8 +6,9 @@
 
 namespace salamandre
 {
-    ServerBroadcast::ServerBroadcast(int port):
+    ServerBroadcast::ServerBroadcast(int port,int server_port):
         port(port),
+        server_port(server_port),
         run(false),
         sock_listen(ntw::Socket::Dommaine::IP,ntw::Socket::Type::UDP,IPPROTO_UDP),
         sock_send(ntw::Socket::Dommaine::IP,ntw::Socket::UDP,IPPROTO_UDP)
@@ -26,6 +27,7 @@ namespace salamandre
     {
         run = true;
         this->thread = std::thread(&ServerBroadcast::start_thread,this);
+        //thread for broadcast.sendThisIsMyInfo(server_port);
     }
 
     void ServerBroadcast::wait()
@@ -34,21 +36,21 @@ namespace salamandre
     }
 
     
-    void ServerBroadcast::sendThisIsMyInfo(int port)
+    void ServerBroadcast::sendThisIsMyInfo()
     {
         sock_send<<(int)salamandre::srv::thisIsMyInfos
-            <<port;
+            <<server_port;
         sock_send.send(sock_listen);
         sock_send.clear();
     }
 
-    void ServerBroadcast::sendILostMyData(int id_medecin,int id_patient,std::string filename,int port)
+    void ServerBroadcast::sendILostMyData(int id_medecin,int id_patient,std::string filename)
     {
         sock_send<<(int)salamandre::srv::iLostMyData
             <<id_medecin
             <<id_patient
             <<filename
-            <<port;
+            <<server_port;
         std::cout<<"Send:"<<sock_send<<std::endl;
         sock_send.send(sock_listen);
         sock_send.clear();
@@ -98,11 +100,14 @@ namespace salamandre
     void ServerBroadcast::funcThisIsMyInfos(ntw::SocketSerialized& from,int port)
     {
         std::cout<<"funcThisIsMyInfos From:"<<from.getIp()<<", Port"<<port<<std::endl;
+        ///TODO add in node
     }
 
     void ServerBroadcast::funcILostMyData(ntw::SocketSerialized& from,int id_medecin,int id_patient,std::string filename,int port)
     {
         std::cout<<"funcILostMyData from:"<<from.getIp()<<" id_medecin:"<<id_medecin<<" id_patient:"<<id_patient<<" filename:"<<filename<<" port:"<<port<<std::endl;
+        std::thread t(salamandre::srv::funcILostMyData,id_medecin,id_patient,filename,port,from.getIp());
+        t.detach();
     }
     
 }

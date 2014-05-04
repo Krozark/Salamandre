@@ -10,7 +10,7 @@ namespace salamandre
     class ServerBroadcast
     {
         public:
-            ServerBroadcast(int port);
+            ServerBroadcast(int port,int server_port);
             ServerBroadcast(const ServerBroadcast&) = delete;
             ServerBroadcast& operator=(const ServerBroadcast&) = delete;
 
@@ -20,9 +20,9 @@ namespace salamandre
             void wait();
             void stop();
 
-            void sendThisIsMyInfo(int port);
+            void sendThisIsMyInfo();
 
-            void sendILostMyData(int id_medecin,int id_patient,std::string filename,int port);
+            void sendILostMyData(int id_medecin,int id_patient,std::string filename);
 
         private:
             void start_thread();
@@ -30,6 +30,7 @@ namespace salamandre
             std::thread thread;
 
             const int port;
+            const int server_port;
             bool run;
             ntw::SocketSerialized sock_listen;
             ntw::SocketSerialized sock_send;

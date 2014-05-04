@@ -7,39 +7,32 @@
 
 namespace salamandre
 {
-    Daemon::Daemon(int listen_gui_port,int listen_port): 
+    Daemon::Daemon(int listen_gui_port,int listen_port,int broadcast_port): 
         gui_server(listen_gui_port,"127.0.0.1",salamandre::gui::dispatch,1,1),
-        file_server(listen_port,"",salamandre::srv::dispatch,100)
+        file_server(listen_port,"",salamandre::srv::dispatch,100),
+        broadcaster(broadcast_port,listen_port)
     {
     }
 
     void Daemon::start()
     {
-        std::cout<<"[gui] start: please wait."<<std::endl;
         gui_server.start();
-        std::cout<<"[gui] started"<<std::endl;
-
-        std::cout<<"[srv] start: please wait."<<std::endl;
         file_server.start();
-        std::cout<<"[srv] started"<<std::endl;
+        broadcaster.start();
     }
 
     void Daemon::wait()
     {
         gui_server.wait();
-        std::cout<<"[gui] is now down"<<std::endl;
-
         file_server.wait();
-        std::cout<<"[srv] is now down"<<std::endl;
+        broadcaster.wait();
     }
 
     void Daemon::stop()
     {
-        std::cout<<"[gui] stop: send signal."<<std::endl;
         gui_server.stop();
-
-        std::cout<<"[srv] stop: send signal."<<std::endl;
         file_server.stop();
+        broadcaster.stop();
     }
 
     void Daemon::init()
