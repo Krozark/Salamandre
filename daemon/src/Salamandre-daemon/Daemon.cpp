@@ -45,27 +45,27 @@ namespace salamandre
     void Daemon::init()
     {
         ntw::Socket::init();
-        Stats::init();
+        stats::Stats::init();
 
-        Node::clear();
+        stats::Node::clear();
 
-        Stats::add_node(std::string("127.0.0.1"), 3000);
-        Stats::add_node(std::string("127.0.0.1"), 3500);
-        Stats::add_node(std::string("127.0.0.1"), 4000);
-        Stats::add_node(std::string("127.0.0.1"), 4500);
-        Stats::add_node(std::string("127.0.0.1"), 5000);
-        Stats::add_node(std::string("127.0.0.1"), 5500);
-        Stats::add_node(std::string("127.0.0.1"), 6000);
-        Stats::add_node(std::string("127.0.0.1"), 6500);
-        Stats::add_node(std::string("127.0.0.1"), 7000);
-        Stats::add_node(std::string("127.0.0.1"), 7500);
-        Stats::add_node(std::string("127.0.0.1"), 8000);
-        Stats::add_node(std::string("127.0.0.1"), 8500);
+        stats::Stats::add_node(std::string("127.0.0.1"), 3000);
+        stats::Stats::add_node(std::string("127.0.0.1"), 3500);
+        stats::Stats::add_node(std::string("127.0.0.1"), 4000);
+        stats::Stats::add_node(std::string("127.0.0.1"), 4500);
+        stats::Stats::add_node(std::string("127.0.0.1"), 5000);
+        stats::Stats::add_node(std::string("127.0.0.1"), 5500);
+        stats::Stats::add_node(std::string("127.0.0.1"), 6000);
+        stats::Stats::add_node(std::string("127.0.0.1"), 6500);
+        stats::Stats::add_node(std::string("127.0.0.1"), 7000);
+        stats::Stats::add_node(std::string("127.0.0.1"), 7500);
+        stats::Stats::add_node(std::string("127.0.0.1"), 8000);
+        stats::Stats::add_node(std::string("127.0.0.1"), 8500);
     }
 
     void Daemon::close()
     {
         ntw::Socket::close();
-        Stats::close();
+        stats::Stats::close();
     }
 }

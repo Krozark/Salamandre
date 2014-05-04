@@ -62,7 +62,7 @@ namespace salamandre
             if(flock(::fileno(source),LOCK_EX) == 0)
             {
                 //get list of dest on network
-                auto dests = Stats::get_nodes();
+                auto dests = stats::Stats::get_nodes();
                 //send them
                 if(dests.size() > 0)
                 {
