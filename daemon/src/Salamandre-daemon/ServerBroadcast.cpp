@@ -45,9 +45,7 @@ namespace salamandre
     void ServerBroadcast::wait()
     {
         this->thread[0].join();
-        std::cout<<"BroadCast listener close"<<std::endl;
         this->thread[1].join();
-        std::cout<<"BroadCast sender close"<<std::endl;
     }
 
     
@@ -125,13 +123,13 @@ namespace salamandre
             }
             std::this_thread::sleep_for(step);
             elapsed_time += step;
-            std::cout<<"1 step"<<std::endl;
         }
     }
 
     void ServerBroadcast::stop()
     {
         run = false;
+        sock_listen.shutdown();
     }
 
     void ServerBroadcast::funcThisIsMyInfos(ntw::SocketSerialized& from,int port)

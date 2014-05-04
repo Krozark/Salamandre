@@ -23,11 +23,8 @@ namespace salamandre
     void Daemon::wait()
     {
         gui_server.wait();
-        std::cout<<"Gui server close"<<std::endl;
         file_server.wait();
-        std::cout<<"file server close"<<std::endl;
         broadcaster.wait();
-        std::cout<<"broadcaster server close"<<std::endl;
     }
 
     void Daemon::stop()
