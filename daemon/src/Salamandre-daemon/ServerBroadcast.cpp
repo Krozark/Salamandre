@@ -12,17 +12,18 @@ namespace salamandre
         port(port),
         server_port(server_port),
         run(false),
-        sock_listen(ntw::Socket::Dommaine::IP,ntw::Socket::Type::UDP,IPPROTO_UDP),
-        sock_send(ntw::Socket::Dommaine::IP,ntw::Socket::UDP,IPPROTO_UDP)
+        sock_listen(ntw::Socket::Dommaine::IP,ntw::Socket::Type::UDP, IPPROTO_UDP),
+        sock_send(ntw::Socket::Dommaine::IP,ntw::Socket::Type::UDP, IPPROTO_UDP)
     {
-        sock_listen.connect("0.0.0.0",port);
+        sock_listen.connect(port);
         sock_listen.setReusable(true);
         sock_listen.bind();
 
-        sock_send.connect(port);
-        sock_send.setBroadcast(true);
-        sock_send.connect("255.255.255.255",port);
-
+        sock_send.connect("255.255.255.255", port);
+        if(!sock_send.setBroadcast(true))
+        {
+            perror("Unable to set enable broadcast: ");
+        }
     }
 
     void ServerBroadcast::init()
@@ -53,7 +54,7 @@ namespace salamandre
     {
         sock_send<<(int)salamandre::srv::thisIsMyInfos
             <<server_port;
-        sock_send.send(sock_listen);
+        sock_send.send();
         sock_send.clear();
     }
 
@@ -65,7 +66,7 @@ namespace salamandre
             <<filename
             <<server_port;
         std::cout<<"Send:"<<sock_send<<std::endl;
-        sock_send.send(sock_listen);
+        sock_send.send();
         sock_send.clear();
     }
 
