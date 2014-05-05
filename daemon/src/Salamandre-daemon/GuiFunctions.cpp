@@ -4,6 +4,7 @@
 
 #include <Socket/FuncWrapper.hpp>
 
+#include <unistd.h>
 #include <iostream>
 
 namespace salamandre
@@ -33,6 +34,10 @@ namespace gui
             case func::setGuiNotificationPort :
             {
                 res = ntw::FuncWrapper::srv::exec(funcSetGuiNotificationPort,request);
+            }break;
+            case func::getMyPath :
+            {
+                res = ntw::FuncWrapper::srv::exec(funcGetMyPath,request);
             }break;
             default:
             {
@@ -79,6 +84,15 @@ namespace gui
         ///\todo TODO
         sock.setStatus(gui::status::TODO);
         return status;
+    }
+
+    std::string funcGetMyPath(ntw::SocketSerialized& sock)
+    {
+        sock.setStatus(gui::status::TODO);
+        char* path = ::get_current_dir_name();
+        std::string res(path);
+        ::free(path);
+        return res;
     }
 
     void funcSetGuiNotificationPort(ntw::SocketSerialized& sock,unsigned int port)

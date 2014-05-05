@@ -24,6 +24,7 @@ namespace gui
         sync, ///< to call whene un sync is need
         isInUpdate, ///< is in update
         setGuiNotificationPort,///< set the notification port to use
+        getMyPath, ///<get my current path
 
         ///NOTIFICATIONS, daemon send, gui recv
         fileIsSend, ///< send a notification to the gui with the info of sended file
@@ -83,6 +84,8 @@ namespace gui
      * \brief Set the port to use for the notification sock
      */
     void funcSetGuiNotificationPort(ntw::SocketSerialized& sock,unsigned int port);
+
+    std::string funcGetMyPath(ntw::SocketSerialized& sock);
 
     ///////////// NOTIFICATIONS ///////////////////
     //This fuctions have to be implemented in the gui side
