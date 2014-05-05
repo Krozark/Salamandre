@@ -72,6 +72,8 @@ void run(ntw::cli::Client& client)
     std::vector<std::string> file_paths;
     std::vector<std::string> file_to_signal;
 
+    std::string daemon_path = client.call<std::string>(salamandre::gui::func::getMyPath);
+
     char c = 0;
     while(c!= 'Q' and c != 'q')
     {
@@ -85,6 +87,7 @@ void run(ntw::cli::Client& client)
             "\t[4] Demmander une récupération de ficher\n"
             "\t[5] Verifier si une update est en cour\n"
             "\t[6] Voir la liste des fichier à sauver\n"
+            "\t[7] Voir le path du server\n"
             "\t[Q/q] Quitter\n>";
 
         std::cin>>c;
@@ -360,6 +363,10 @@ void run(ntw::cli::Client& client)
             {
                 for(auto& file : file_paths)
                     std::cout<<"-\""<<ROOT_DIR<<id_medecin<<"/"<<id_patient<<"/"<<file<<"\""<<std::endl;
+            }break;
+            case '7': //print daemon_path
+            {
+                std::cout<<"Daemon path : \""<<daemon_path<<"\""<<std::endl;
             }break;
             case 'q': //quitter
             case 'Q':
