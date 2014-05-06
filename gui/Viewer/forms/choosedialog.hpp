@@ -45,6 +45,8 @@ private slots:
     void on_lineEdit_getDataClient_textChanged(const QString &arg1);
     void on_lineEdit_researchPatient_textChanged(const QString &arg1);
 
+    void on_pushButton_resfreshPatient_clicked();
+
 private:
     Ui::chooseDialog *ui;
     QStandardItemModel *model;

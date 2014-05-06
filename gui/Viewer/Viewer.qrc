@@ -12,5 +12,6 @@
         <file>icons/controls/download.png</file>
         <file>icons/controls/open.png</file>
         <file>icons/controls/upload.png</file>
+        <file>icons/controls/waiting.gif</file>
     </qresource>
 </RCC>

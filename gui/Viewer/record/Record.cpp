@@ -10,6 +10,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <sys/file.h>
 
 namespace salamandre
 {
@@ -125,6 +126,34 @@ namespace salamandre
         CryptoPP::StringSource(Record::strDecompress(*string), true, new CryptoPP::HexDecoder(new CryptoPP::DefaultDecryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::StringSink(output))));
         std::cout << "end of decrypt string" << std::endl;
         return output;
+    }
+
+    void Record::copyFile(FILE *fSrc, FILE *fDest)
+    {
+        flock(fileno(fDest), LOCK_EX);
+
+        fseek(fSrc, 0, SEEK_END);
+        u_int64_t sizeFileSrc = ftell(fSrc);
+        size_t readSize;
+
+        int nbCopy = sizeFileSrc / BUFSIZ;
+        int rest = sizeFileSrc - nbCopy * BUFSIZ;
+
+        fseek(fSrc, 0, SEEK_SET);
+
+        for(int i = 0; i < nbCopy; ++i){
+            char buf[BUFSIZ];
+            if((readSize = fread(buf, BUFSIZ, 1, fSrc)) == 0)
+                std::cerr << "attempt to read " << BUFSIZ << " but " << readSize << " have been read" << std::endl;
+            fwrite(buf, BUFSIZ, 1, fDest);
+        }
+
+        char buf[rest];
+        if((readSize = fread(buf, rest, 1, fSrc)) == 0)
+            std::cerr << "attempt to read " << rest << " but " << readSize << " have been read" << std::endl;
+        fwrite(buf, rest, 1, fDest);
+
+        flock(fileno(fDest), LOCK_UN);
     }
 
     std::string Record::getFilePath()

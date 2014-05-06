@@ -4,7 +4,9 @@ SOURCES += objects/doctor.cpp \
     objects/threaduploadfile.cpp \
     objects/threadexport.cpp \
     objects/socksender.cpp \
-    objects/sockreceiver.cpp
+    objects/sockreceiver.cpp \
+    objects/settings.cpp \
+    objects/threadsave.cpp
 
 HEADERS += objects/doctor.hpp \
     objects/patient.hpp \
@@ -12,4 +14,6 @@ HEADERS += objects/doctor.hpp \
     objects/threaduploadfile.hpp \
     objects/threadexport.hpp \
     objects/socksender.hpp \
-    objects/sockreceiver.hpp
+    objects/sockreceiver.hpp \
+    objects/settings.hpp \
+    objects/threadsave.hpp

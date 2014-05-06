@@ -15,10 +15,12 @@ include("./forms/forms.pri")
 include("./objects/objects.pri")
 include("./record/record.pri")
 
-#include("../../daemon/include/Salamandre-daemon/GuiFunctions.hpp")
 INCLUDEPATH += ../../daemon/include/
 
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS_DEBUG -= -g
+QMAKE_CXXFLAGS_DEBUG += -pg
+QMAKE_CXXFLAGS += -std=c++11 -O3
+
 LIBS += -lcryptopp -lz -lsocket
 
 SOURCES += main.cpp

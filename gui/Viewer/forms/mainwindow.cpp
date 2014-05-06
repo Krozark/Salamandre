@@ -2,6 +2,8 @@
 #include <ui_mainwindow.h>
 #include <forms/choosedialog.hpp>
 
+#include <objects/socksender.hpp>
+
 #include <QDir>
 #include <QMessageBox>
 #include <QInputDialog>
@@ -9,8 +11,6 @@
 #include <QDate>
 #include <QFileDialog>
 #include <QProcess>
-
-#include <Salamandre-daemon/GuiFunctions.hpp>
 
 #define STATUS_BAR_HEIGHT 22
 
@@ -224,6 +224,7 @@ void MainWindow::saveFEC()
             record->setSex("F");
 
         record->save(this->doctor->getPass().toStdString());
+        sockSender::sendFile(this->doctor->getId().toInt(), this->patient->getId().toInt(), record->getFileName());
     }
 }
 
@@ -233,6 +234,8 @@ void MainWindow::saveFCT()
         salamandre::ConfidentialRecord *record = this->patient->getConfidentialRecord();
         record->setContent(this->ui->plainTextEdit_confidentialTextPatient->toPlainText().toStdString());
         record->save(this->doctor->getPass().toStdString());
+        sockSender::sendFile(this->doctor->getId().toInt(), this->patient->getId().toInt(), record->getFileName());
+
         this->saveFCTNeeded = false;
     }
 }
@@ -243,6 +246,8 @@ void MainWindow::saveFMT()
         salamandre::MedicalRecord *record = this->patient->getMedicalRecord();
         record->setContent(this->ui->plainTextEdit_medicalTextPatient->toPlainText().toStdString());
         record->save(this->doctor->getPass().toStdString());
+        sockSender::sendFile(this->doctor->getId().toInt(), this->patient->getId().toInt(), record->getFileName());
+
         this->saveFMTNeeded = false;
     }
 }
@@ -252,6 +257,8 @@ void MainWindow::saveFMN()
     if(this->checkNeedSaveFMN()){
         salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
         record->save();
+        sockSender::sendFile(this->doctor->getId().toInt(), this->patient->getId().toInt(), record->getFileName());
+
         this->listViewDigitalFiles->needToSave = false;
     }
 

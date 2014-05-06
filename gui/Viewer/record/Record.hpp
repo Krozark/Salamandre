@@ -37,6 +37,8 @@ namespace salamandre
         static const std::string strCompress(const std::string& str, int compressionlevel = Z_BEST_COMPRESSION);
         static const std::string strDecompress(const std::string& str);
 
+        static void copyFile(FILE *fSrc, FILE *fDest);
+
         std::string getFilePath();
         void setFilePath(std::string filePath);
 

@@ -1,6 +1,8 @@
 #include <forms/choosedialog.hpp>
 #include <ui_choosedialog.h>
 
+#include <objects/socksender.hpp>
+
 #include <QDir>
 #include <QMessageBox>
 #include <QDebug>
@@ -197,4 +199,10 @@ void chooseDialog::on_lineEdit_getDataClient_textChanged(const QString &arg1)
 void chooseDialog::on_lineEdit_researchPatient_textChanged(const QString &arg1)
 {
     this->filterModel->setFilterRegExp(arg1);
+}
+void chooseDialog::on_pushButton_resfreshPatient_clicked()
+{
+    if(sockSender::getFile(this->doctor->getId().toInt())){
+
+    }
 }
