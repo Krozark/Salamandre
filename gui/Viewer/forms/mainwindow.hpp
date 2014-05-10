@@ -1,10 +1,13 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
+#include <forms/savedialog.hpp>
+
 #include <objects/doctor.hpp>
 #include <objects/patient.hpp>
 #include <objects/listview.hpp>
 #include <objects/threaduploadfile.hpp>
+#include <objects/threadsave.hpp>
 
 #include <QMainWindow>
 #include <QLabel>
@@ -22,6 +25,14 @@ public:
     explicit MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient, QWidget *parent = 0);
     ~MainWindow();
 private:
+
+    enum actionEmit{
+        ACTION_NEW_PATIENT = 0,
+        ACTION_CHANGE_PATIENT,
+        ACTION_QUIT,
+        ACTION_NO
+    };
+
     Ui::MainWindow *ui;
 
     salamandre::Doctor *doctor;
@@ -38,6 +49,10 @@ private:
     QLabel *labelProcessNumber;
 
     threadUploadFile *threadUpload;
+    threadSave *threadSaveRecord;
+
+    saveDialog *saveRecordDialog;
+    actionEmit currentAction;
 
     void init();
     void initStatusBar();
@@ -51,10 +66,10 @@ private:
     void loadFMN();
 
     void saveRecords();
-    void saveFEC();
-    void saveFCT();
-    void saveFMT();
-    void saveFMN();
+    bool saveFEC();
+    bool saveFCT();
+    bool saveFMT();
+    bool saveFMN();
 
     void checkNeedSave();
     bool checkNeedSaveFEC();
@@ -64,7 +79,7 @@ private:
 
     void clearPatient();
 
-    void closeEvent(QCloseEvent *);
+    void closeEvent(QCloseEvent *event);
 
 private slots:
     void startUploadDigitalFile(QStringList listFile);
@@ -72,6 +87,8 @@ private slots:
     void refreshNumberProcessFile(int number);
     void refreshNumberInsertFile(int number);
     void setProgressBarText(QString text);
+    void saveProgress(int save);
+    void saveEnd();
 
     void on_actionQuitter_triggered();
     void on_actionNouveau_patient_triggered();

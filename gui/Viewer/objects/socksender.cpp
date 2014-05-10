@@ -4,7 +4,6 @@
 #include <objects/settings.hpp>
 #include <record/Record.hpp>
 
-#include <Salamandre-daemon/std.hpp>
 #include <Salamandre-daemon/GuiFunctions.hpp>
 
 #include <QCoreApplication>
@@ -43,10 +42,14 @@ bool sockSender::connectToDaemon()
     else{
         if(sockSender::restartDaemon()){
             daemonConnectionDialog *dialogConnectionToDaemon = new daemonConnectionDialog(nullptr);
+            bool resConnectRes = false;
 
             for(int i = 0; i < CONNECTION_TEST_NUMBER; ++i){ // loop for CONNECTION_TEST_NUMBER seconds
-                if(client.connect(sock.srvIpAddress, sock.srvPort) != NTW_ERROR_CONNEXION)
+                dialogConnectionToDaemon->increaseNbTest(i+1);
+                if(client.connect(sock.srvIpAddress, sock.srvPort) != NTW_ERROR_CONNEXION){
+                    resConnectRes = true;
                     break;
+                }
 
                 dialogConnectionToDaemon->show();
                 QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 1000);
@@ -60,7 +63,10 @@ bool sockSender::connectToDaemon()
             delete dialogConnectionToDaemon;
             QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 1000);
 
-            sockSender::initConnectionToDaemon();
+            if(resConnectRes)
+                sockSender::initConnectionToDaemon();
+            else
+                return false;
         }
         else{
             res = false;

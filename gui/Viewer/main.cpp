@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QDir>
+#include <QSharedMemory>
 
 int main(int argc, char *argv[])
 {
@@ -32,6 +33,11 @@ int main(int argc, char *argv[])
 
         sockSender::init();
         daemonConnectionSuccess = sockSender::connectToDaemon();
+    }
+
+    if(!daemonConnectionSuccess){
+        QMessageBox::critical(nullptr, "Erreur fatale", "La connexion au serveur de fichier à échoué, veuillez vérifier que l'application n'a pas déjà été lancée.");
+        return -3;
     }
 
     QDir dir(QCoreApplication::applicationDirPath()+"/save");
