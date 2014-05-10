@@ -27,6 +27,7 @@ namespace salamandre
             for(const std::string& patient : patients)
                 res += prepareForUpload(id_medecin,::atoi(patient.c_str()));
         }
+        utils::sys::dir::rm_if_empty(path_medecin);
         return res;
     }
 
@@ -44,6 +45,7 @@ namespace salamandre
             for(const std::string& file : files)
                 res += prepareForUpload(id_medecin,id_patient,file);
         }
+        utils::sys::dir::rm_if_empty(path_patient);
         return res;
     }
 
@@ -79,8 +81,8 @@ namespace salamandre
                 std::cerr<<"Unable to lock file "<<path_origin<<std::endl;
             }
             ::fclose(source);
+            utils::sys::file::rm(path_origin);
         }
-        //TODO rm path_origin
         return res;
     }
 
