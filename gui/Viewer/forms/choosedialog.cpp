@@ -1,7 +1,7 @@
 #include <forms/choosedialog.hpp>
 #include <ui_choosedialog.h>
 
-#include <objects/socksender.hpp>
+#include <objects/sockreceiver.hpp>
 
 #include <QDir>
 #include <QMessageBox>
@@ -25,6 +25,9 @@ chooseDialog::chooseDialog(salamandre::Doctor *doctor, QWidget *parent) :
     this->ui->lineEdit_newMedecinAndClientData->setValidator(this->validator);
     this->ui->lineEdit_researchPatient->setValidator(this->validator);
 
+    this->contextMenu = new QMenu();
+    this->actionMaj = new QAction(QPixmap(":/icons/controls/update.png"),"Mettre à jour les fiches de ce patient", nullptr);
+
     if(this->doctor->getType() == salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST){
         QDir dir(this->doctor->getDirPath());
         if(!dir.exists()){
@@ -47,8 +50,12 @@ chooseDialog::chooseDialog(salamandre::Doctor *doctor, QWidget *parent) :
             QFileInfoList listFileInfo = dirClient.entryInfoList(fileFilter, QDir::Files | QDir::NoDotAndDotDot, QDir::Time);
             int nbSubFile = listFileInfo.size();
 
+            patientData *data = new patientData();
+            data->id = dInfo.fileName();
+            data->needUpdate = nbSubFile != 4;
+
             QStandardItem *item = new QStandardItem(dInfo.fileName());
-            item->setData(dInfo.fileName());
+            item->setData(QVariant::fromValue(data));
 
             if(nbSubFile != 4){
                 item->setIcon(QPixmap(":/icons/controls/update.png"));
@@ -80,6 +87,8 @@ chooseDialog::~chooseDialog()
 {
     delete this->model;
     delete this->filterModel;
+    delete this->contextMenu;
+    delete this->actionMaj;
     delete ui;
 }
 
@@ -92,6 +101,8 @@ void chooseDialog::reject()
 void chooseDialog::accept()
 {
     QString idPatient = "";
+    bool needUpdate = false;
+
     salamandre::Patient::TypePatient typePatient = salamandre::Patient::TypePatient::NEW_PATIENT;
 
     switch(this->ui->stackedWidget->currentIndex()){
@@ -102,16 +113,18 @@ void chooseDialog::accept()
     case salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST:
         if(this->ui->radioButton_availablePatient->isChecked()){
             QItemSelectionModel *index = this->ui->listView_availablePatient->selectionModel();
-            idPatient = this->model->item(index->currentIndex().row())->data().toString();
+            patientData *data = this->model->item(index->currentIndex().row())->data().value<patientData*>();
+            idPatient = data->id;
+            needUpdate = data->needUpdate;
             typePatient = salamandre::Patient::TypePatient::PATIENT_ALREADY_EXIST;
         }
         else if(this->ui->radioButton_newClientData->isChecked()){
             idPatient = this->ui->lineEdit_newClientData->text();
             typePatient = salamandre::Patient::TypePatient::NEW_PATIENT;
-
         }
         else if(this->ui->radioButton_getDataClient->isChecked()){
             idPatient = this->ui->lineEdit_getDataClient->text();
+            needUpdate = true;
             typePatient = salamandre::Patient::TypePatient::PATIENT_ALREADY_EXIST;
         }
         break;
@@ -131,6 +144,12 @@ void chooseDialog::accept()
     this->patient = new salamandre::Patient(dirPathPatient);
     this->patient->setId(idPatient);
     this->patient->setType(typePatient);
+
+    if(needUpdate){
+        qDebug() << "need update";
+        sockReceiver::askFile(this->doctor->getId().toInt(), idPatient.toInt());
+        return;
+    }
 
     QDialog::accept();
 }
@@ -202,7 +221,11 @@ void chooseDialog::on_lineEdit_researchPatient_textChanged(const QString &arg1)
 }
 void chooseDialog::on_pushButton_resfreshPatient_clicked()
 {
-    if(sockSender::getFile(this->doctor->getId().toInt())){
+    sockReceiver::askFile(this->doctor->getId().toInt());
+}
 
-    }
+void chooseDialog::on_listView_availablePatient_doubleClicked(const QModelIndex &index)
+{
+    Q_UNUSED(index);
+    this->accept();
 }

@@ -24,6 +24,7 @@ public:
 private:
     Ui::daemonConnectionDialog *ui;
 
+    QMovie *movie;
     int maxTest;
 };
 

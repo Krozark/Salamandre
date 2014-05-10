@@ -8,6 +8,7 @@
 #include <QSortFilterProxyModel>
 #include <QStandardItemModel>
 #include <QIntValidator>
+#include <QMenu>
 
 namespace Ui {
 class chooseDialog;
@@ -47,13 +48,26 @@ private slots:
 
     void on_pushButton_resfreshPatient_clicked();
 
+    void on_listView_availablePatient_doubleClicked(const QModelIndex &index);
+
 private:
+
     Ui::chooseDialog *ui;
     QStandardItemModel *model;
     QSortFilterProxyModel *filterModel;
     QIntValidator *validator;
     salamandre::Doctor *doctor;
     salamandre::Patient *patient;
+
+    QMenu *contextMenu;
+    QAction *actionMaj;
 };
+
+struct patientData{
+    QString id;
+    bool needUpdate;
+};
+
+Q_DECLARE_METATYPE(patientData*)
 
 #endif // CHOOSEDIALOG_HPP

@@ -2,6 +2,7 @@
 #define SAVEDIALOG_HPP
 
 #include <QDialog>
+#include <QMovie>
 
 namespace Ui {
 class saveDialog;
@@ -19,6 +20,7 @@ public:
 
 private:
     Ui::saveDialog *ui;
+    QMovie *movie;
 
 private slots:
     void setProgressText(QString text);

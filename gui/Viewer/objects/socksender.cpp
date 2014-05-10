@@ -10,13 +10,12 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QProcess>
-#include <QLockFile>
 #include <QDebug>
 
 #include <sys/file.h>
 #include <sys/stat.h>
 
-sockSender sockSender::sock = sockSender();
+sockSender sockSender::sock;
 ntw::cli::Client sockSender::client;
 
 sockSender::sockSender()
@@ -28,7 +27,6 @@ sockSender::sockSender()
 void sockSender::init()
 {
     sock.daemonPath = settings::getDaemonSettingValue("pathExe").toString().toStdString();
-    ntw::Socket::init();
 }
 
 bool sockSender::connectToDaemon()
@@ -80,6 +78,7 @@ bool sockSender::connectToDaemon()
 void sockSender::initConnectionToDaemon()
 {
     std::string recvDaemonPath = client.call<std::string>(salamandre::gui::func::getMyPath);
+    //client.request_sock.clear();
 
     if(recvDaemonPath != sock.daemonPath){
         settings::setDaemonSettingValue("pathExe", QString::fromStdString(recvDaemonPath));
@@ -89,12 +88,12 @@ void sockSender::initConnectionToDaemon()
     sock.daemonGuiSavePath = sock.daemonPath+"/datas/tosave";
     sock.guiPath = (QCoreApplication::applicationDirPath()+"/save/").toStdString();
     qDebug() << "daemon path : " << QString::fromStdString(sock.daemonPath);
+
 }
 
 void sockSender::closeConnectionToDaemon()
 {
     client.disconnect();
-    ntw::Socket::close();
 }
 
 void sockSender::sendFile(int idDoctor, int idPatient, std::string filename)
@@ -220,4 +219,16 @@ bool sockSender::restartDaemon()
 {
     bool res = QProcess::startDetached(QString::fromStdString(sock.daemonPath+"/salamandre-daemon"), QStringList() << "20001" << "20000" << "1", QString::fromStdString(sock.daemonPath));
     return res;
+}
+
+bool sockSender::setGuiServerPort(int srvPort)
+{
+    client.call<void>(salamandre::gui::func::setGuiNotificationPort,srvPort);
+    if(checkStatus() < 0)
+    {
+        std::cerr << "Error on init notification server" << std::endl;
+        return false;
+    }
+
+    return true;
 }

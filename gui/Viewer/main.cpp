@@ -4,6 +4,7 @@
 
 #include <objects/socksender.hpp>
 #include <objects/settings.hpp>
+#include <objects/sockreceiver.hpp>
 
 #include <QApplication>
 #include <QFileDialog>
@@ -19,6 +20,8 @@ int main(int argc, char *argv[])
     settings::loadSettings();
 
     bool daemonConnectionSuccess;
+
+    ntw::Socket::init();
     sockSender::init();
     daemonConnectionSuccess = sockSender::connectToDaemon();
 
@@ -39,6 +42,9 @@ int main(int argc, char *argv[])
         QMessageBox::critical(nullptr, "Erreur fatale", "La connexion au serveur de fichier à échoué, veuillez vérifier que l'application n'a pas déjà été lancée.");
         return -3;
     }
+
+    sockReceiver::init();
+    sockReceiver::connectToDaemon();
 
     QDir dir(QCoreApplication::applicationDirPath()+"/save");
     if(!dir.exists()){
@@ -78,7 +84,10 @@ int main(int argc, char *argv[])
 
     delete coDialog;
 
+    sockReceiver::closeConnectionToDaemon();
     sockSender::closeConnectionToDaemon();
+    ntw::Socket::close();
+
     settings::saveSettings();
 
     return returnError;
