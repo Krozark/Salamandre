@@ -3,15 +3,21 @@
 #include <Socket/client/Client.hpp>
 #include <Socket/server/Server.hpp>
 #include <Socket/FuncWrapper.hpp>
+
 #include <Salamandre-daemon/GuiFunctions.hpp>
+#include <utils/log.hpp>
 
 #include <iostream>
 #include <list>
 
 #define SERVER_PORT 4321
 
-#define PRINT_ERROR std::cout<<"Aucune action corespond à la demmande \""<<c<<"\""<<std::endl
-#define BACK std::cout<<"Retour au menu précédant" <<std::endl;
+#define PRINT_ERROR utils::log::error(std::to_string(c),"Aucune action corespond à la demmande");
+#define BACK utils::log::info("Retour au menu précédant");
+
+#define COLOR_TITLE utils::log::colors::light_blue
+#define COLOR_ASK utils::log::colors::light_yellow
+#define COLOR_RESET utils::log::colors::reset
 
 void run(ntw::cli::Client& cli);
 int check_status(ntw::cli::Client& cli);///< return 0 if ok, -1 if srv down, 1 on other errors (and print it)
@@ -42,8 +48,7 @@ int main(int argc,char* argv[])
         client.call<void>(salamandre::gui::func::setGuiNotificationPort,SERVER_PORT);
         if(check_status(client) < 0)
         {
-            std::cout<<"Error on init notification server"<<std::endl;
-            exit(1);
+            utils::log::critical("Error on init notification server",1);
         }
 
         //start
@@ -63,10 +68,10 @@ int main(int argc,char* argv[])
 void run(ntw::cli::Client& client)
 {
     int id_medecin, id_patient;
-    std::cout<<"Id medecin:\n>";
+    std::cout<<COLOR_ASK<<"Id medecin:\n>"<<COLOR_RESET;
     std::cin>>id_medecin;
 
-    std::cout<<"Id patient:\n>";
+    std::cout<<COLOR_ASK<<"Id patient:\n>"<<COLOR_RESET;
     std::cin>>id_patient;
 
     std::vector<std::string> file_paths;
@@ -77,7 +82,7 @@ void run(ntw::cli::Client& client)
     char c = 0;
     while(c!= 'Q' and c != 'q')
     {
-        std::cout<<
+        std::cout<<COLOR_TITLE<<
             "==========================\n"
             "=== Choisir une action ===\n"
             "==========================\n"
@@ -88,7 +93,8 @@ void run(ntw::cli::Client& client)
             "\t[5] Verifier si une update est en cour\n"
             "\t[6] Voir la liste des fichier à sauver\n"
             "\t[7] Voir le path du server\n"
-            "\t[Q/q] Quitter\n>";
+            "\t[Q/q] Quitter\n>"
+            <<COLOR_RESET;
 
         std::cin>>c;
         std::cout<<std::endl;
@@ -99,7 +105,7 @@ void run(ntw::cli::Client& client)
             {
                 while(c != 'q' and c != 'Q')
                 {
-                    std::cout<< 
+                    std::cout<<COLOR_TITLE<<
                         "---------------------\n"
                         "--- Fiche à créer ---\n"
                         "---------------------\n"
@@ -109,7 +115,8 @@ void run(ntw::cli::Client& client)
                         "\t[4] test4\n"
                         "\t[5] test[1~4]\n"
                         "\t[6] Autre nom\n"
-                        "\t[Q/q] Retour\n>";
+                        "\t[Q/q] Retour\n>"
+                        <<COLOR_RESET;
 
                     std::cin>>c;
                     std::cout<<std::endl;
@@ -141,7 +148,7 @@ void run(ntw::cli::Client& client)
                         }break;
                         case '6'://autre
                         {
-                            std::cout<<"Nom du fichier à créer\n>";
+                            std::cout<<COLOR_ASK<<"Nom du fichier à créer\n>"<<COLOR_RESET;
                             std::string s;
                             std::cin>>s;
                             test::createFile(id_medecin,id_patient,s,file_paths);
@@ -172,8 +179,7 @@ void run(ntw::cli::Client& client)
                     client.call<void>(salamandre::gui::func::newFile,id_medecin,id_patient,file);
                     if(check_status(client) < 0)
                     {
-                        std::cout<<"ERROR on send new file info("<<file<<")"<<std::endl;
-                        exit(2);
+                        utils::log::critical(file,"ERROR on send new file info",2);
                     }
                     client.request_sock.clear();
                 }
@@ -183,7 +189,7 @@ void run(ntw::cli::Client& client)
             {
                 while(c != 'q' and c != 'Q')
                 {
-                    std::cout<< 
+                    std::cout<<COLOR_TITLE<< 
                         "----------------------------\n"
                         "--- Fichiers à récupérer ---\n"
                         "----------------------------\n"
@@ -195,7 +201,8 @@ void run(ntw::cli::Client& client)
                         "\t[6] Autre nom\n"
                         "\t[7] Tous ceux du patient\n"
                         "\t[8] Tous ceux du medecin\n"
-                        "\t[Q/q] Retour\n>";
+                        "\t[Q/q] Retour\n>"
+                        <<COLOR_RESET;
 
                     std::cin>>c;
                     std::cout<<std::endl;
@@ -228,7 +235,7 @@ void run(ntw::cli::Client& client)
                         }break;
                         case '6'://autre
                         {
-                            std::cout<<"Nom du fichier à créer\n>";
+                            std::cout<<COLOR_ASK<<"Nom du fichier à créer\n>"<<COLOR_RESET;
                             std::string s;
                             std::cin>>s;
                             files.push_back(s);
@@ -238,8 +245,7 @@ void run(ntw::cli::Client& client)
                             client.call<void>(salamandre::gui::func::sync,id_medecin,id_patient,"");
                             if(check_status(client) < 0)
                             {
-                                std::cout<<"ERROR on ask for an sync on all file of the patient ("<<id_patient<<")"<<std::endl;
-                                exit(3);
+                                utils::log::critical(std::to_string(id_patient),"ERROR on ask for an sync on all file of the patient",3);
                             }
                             client.request_sock.clear();
                         }break;
@@ -248,8 +254,7 @@ void run(ntw::cli::Client& client)
                             client.call<void>(salamandre::gui::func::sync,id_medecin,-1,"");
                             if(check_status(client) < 0)
                             {
-                                std::cout<<"ERROR on ask for an sync on all file of the medecin ("<<id_medecin<<")"<<std::endl;
-                                exit(4);
+                                utils::log::critical(std::to_string(id_medecin),"ERROR on ask for an sync on all file of the medecin",4);
                             }
                             client.request_sock.clear();
 
@@ -270,8 +275,7 @@ void run(ntw::cli::Client& client)
                         client.call<void>(salamandre::gui::func::sync,id_medecin,id_patient,file);
                         if(check_status(client) < 0)
                         {
-                            std::cout<<"ERROR on ask for an sync on file("<<file<<")"<<std::endl;
-                            exit(5);
+                            utils::log::critical(file,"ERROR on ask for an sync on file",5);
                         }
                         client.request_sock.clear();
                     }
@@ -282,7 +286,7 @@ void run(ntw::cli::Client& client)
             {
                 while(c != 'q' and c != 'Q')
                 {
-                    std::cout<< 
+                    std::cout<<COLOR_TITLE<< 
                         "----------------------\n"
                         "--- Update en cour ---\n"
                         "----------------------\n"
@@ -293,7 +297,8 @@ void run(ntw::cli::Client& client)
                         "\t[5] Autre nom\n"
                         "\t[6] Tous ceux du patient\n"
                         "\t[7] Tous ceux du medecin\n"
-                        "\t[Q/q] Retour\n>";
+                        "\t[Q/q] Retour\n>"
+                        <<COLOR_RESET;
 
                     std::cin>>c;
                     std::cout<<std::endl;
@@ -322,7 +327,7 @@ void run(ntw::cli::Client& client)
                         }break;
                         case '5'://autre
                         {
-                            std::cout<<"Nom du fichier à créer\n>";
+                            std::cout<<COLOR_ASK<<"Nom du fichier à créer\n>"<<COLOR_RESET;
                             std::string s;
                             std::cin>>s;
                             up = client.call<bool>(salamandre::gui::func::sync,id_medecin,id_patient,s);
@@ -350,8 +355,7 @@ void run(ntw::cli::Client& client)
                     {
                         if(check_status(client) < 0)
                         {
-                            std::cout<<"ERROR on ask for is_update"<<std::endl;
-                            exit(2);
+                            utils::log::critical("ERROR on ask for is_update",2);
                         }
                         else
                             std::cout<<"Update: "<<(up?"Oui":"Non")<<std::endl;
