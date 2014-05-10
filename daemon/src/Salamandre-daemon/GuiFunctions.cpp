@@ -4,6 +4,8 @@
 
 #include <Socket/FuncWrapper.hpp>
 
+#include <utils/sys.hpp>
+
 #include <unistd.h>
 #include <iostream>
 
@@ -88,11 +90,7 @@ namespace gui
 
     std::string funcGetMyPath(ntw::SocketSerialized& sock)
     {
-        sock.setStatus(gui::status::TODO);
-        char* path = ::get_current_dir_name();
-        std::string res(path);
-        ::free(path);
-        return res;
+        return utils::sys::dir::pwd();
     }
 
     void funcSetGuiNotificationPort(ntw::SocketSerialized& sock,unsigned int port)
