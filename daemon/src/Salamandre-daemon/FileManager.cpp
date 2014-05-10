@@ -81,8 +81,9 @@ namespace salamandre
                 std::cerr<<"Unable to lock file "<<path_origin<<std::endl;
             }
             ::fclose(source);
-            utils::sys::file::rm(path_origin);
         }
+        if(res>0)
+            utils::sys::file::rm(path_origin);
         return res;
     }
 
