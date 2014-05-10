@@ -54,8 +54,7 @@ namespace test
 
         std::string path_dest = utils::string::join("/",std::vector<std::string>({"datas/tosave",
                                                          std::to_string(id_medecin),
-                                                         std::to_string(id_patient),
-                                                         filename}));
+                                                         std::to_string(id_patient)}));
         utils::sys::dir::create(path_dest);
         path_dest+="/"+filename;
 
@@ -64,6 +63,15 @@ namespace test
         if(::rename(path_origin.c_str(),path_dest.c_str()) != 0)
             std::cerr<<"[Error] on move "<<path_origin<<" to "<<path_dest<<std::endl;
         else
+        {
             file_to_signal.push_back(filename);
+            //rm datas/tosave
+            std::string path = utils::string::join("/",std::vector<std::string>({"datas/tosave",std::to_string(id_medecin)}));
+            utils::sys::dir::rm_if_empty(path,true);
+
+            //rm gui/save
+            path = utils::string::join("/",std::vector<std::string>({ROOT_DIR,std::to_string(id_medecin)}));
+            utils::sys::dir::rm_if_empty(path,true);
+        }
     }
 }

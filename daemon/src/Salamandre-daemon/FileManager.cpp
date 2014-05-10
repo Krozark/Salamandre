@@ -71,7 +71,8 @@ namespace salamandre
                 {
                     for(auto& dest : dests)
                         res += cpForUpload(id_medecin,id_patient,filename,dest->host,dest->port,source);
-                    //::remove(path_origin.c_str());
+                    //remove file
+                    utils::sys::file::rm(path_origin);
                 }
                 //unlock it
                 ::flock(::fileno(source), LOCK_UN);
@@ -82,8 +83,6 @@ namespace salamandre
             }
             ::fclose(source);
         }
-        if(res>0)
-            utils::sys::file::rm(path_origin);
         return res;
     }
 
