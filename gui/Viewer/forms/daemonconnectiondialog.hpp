@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QMovie>
 
+#define CONNECTION_TEST_NUMBER 30
+
 namespace Ui {
 class daemonConnectionDialog;
 }
@@ -16,8 +18,13 @@ public:
     explicit daemonConnectionDialog(QWidget *parent = 0);
     ~daemonConnectionDialog();
 
+    void setMaxNbTest(int nb = CONNECTION_TEST_NUMBER);
+    void increaseNbTest(int nb);
+
 private:
     Ui::daemonConnectionDialog *ui;
+
+    int maxTest;
 };
 
 #endif // DAEMONCONNECTIONDIALOG_HPP

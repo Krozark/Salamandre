@@ -7,7 +7,6 @@
 
 #define DEFAULT_SERVEUR_PORT 20001
 #define DEFAULT_IP std::string("127.0.0.1")
-#define CONNECTION_TEST_NUMBER 30
 
 class sockSender
 {
