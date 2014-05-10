@@ -53,6 +53,7 @@ int main(int argc,char* argv[])
 
         //start
         run(client);
+        client.disconnect();
 
         //wait for end
         notification_srv.stop();
