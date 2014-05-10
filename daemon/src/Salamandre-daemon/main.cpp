@@ -4,8 +4,6 @@
 #include <iostream>
 #include <csignal>
 
-#include <Salamandre-daemon/std.hpp>
-
 #define GUI_PORT 1
 #define SERVER_PORT 2
 #define LOCAL_ONLY 3

@@ -1,11 +1,12 @@
 #include <Salamandre-daemon/FileManager.hpp>
-#include <Salamandre-daemon/std.hpp>
-
 #include <Salamandre-stats/stats.hpp>
 
 #include <sstream>
 #include <cstdlib>
 #include <sys/file.h>
+
+#include <utils/string.hpp>
+#include <utils/sys.hpp>
 
 namespace salamandre
 {
@@ -16,13 +17,13 @@ namespace salamandre
     bool FileManager::prepareForUpload(int id_medecin)
     {
         int res = 0;
-        const std::string path_medecin = std::join("/",std::vector<std::string>({new_file_dir_path,
+        const std::string path_medecin = utils::string::join("/",std::vector<std::string>({new_file_dir_path,
                                                                                 std::to_string(id_medecin)}));
         //check if the medecin dir exist
         //if(std::createDir(path_medecin) == 2) //already exist
         {
             //check if the patient dir exist
-            const std::vector<std::string> patients = std::getDirList(path_medecin);
+            const std::list<std::string> patients = utils::sys::dir::list_dirs(path_medecin);
             for(const std::string& patient : patients)
                 res += prepareForUpload(id_medecin,::atoi(patient.c_str()));
         }
@@ -33,13 +34,13 @@ namespace salamandre
     {
         int res = 0;
         //patient path
-        const std::string path_patient = std::join("/",std::vector<std::string>({new_file_dir_path,
+        const std::string path_patient = utils::string::join("/",std::vector<std::string>({new_file_dir_path,
                                                                                 std::to_string(id_medecin),
                                                                                 std::to_string(id_patient)}));
         //if(std::createDir(path_patient) == 2) //already exist
         {
             //get list of files
-            const std::vector<std::string> files = std::getFileList(path_patient);
+            const std::list<std::string> files = utils::sys::dir::list_files(path_patient);
             for(const std::string& file : files)
                 res += prepareForUpload(id_medecin,id_patient,file);
         }
@@ -49,7 +50,7 @@ namespace salamandre
     bool FileManager::prepareForUpload(int id_medecin,int id_patient,std::string filename)
     {
         int res = 0;
-        const std::string path_origin = std::join("/",std::vector<std::string>({new_file_dir_path,
+        const std::string path_origin = utils::string::join("/",std::vector<std::string>({new_file_dir_path,
                                                                                 std::to_string(id_medecin),
                                                                                 std::to_string(id_patient),
                                                                                 filename}));
@@ -87,16 +88,16 @@ namespace salamandre
     {
         std::string res;
         if(id_patient >0 and filename != "")
-            res = std::join("/",std::vector<std::string>({folder,
+            res = utils::string::join("/",std::vector<std::string>({folder,
                                                          std::to_string(id_medecin),
                                                          std::to_string(id_patient),
                                                          filename}));
         else if(id_patient >0)
-            res = std::join("/",std::vector<std::string>({folder,
+            res = utils::string::join("/",std::vector<std::string>({folder,
                                                          std::to_string(id_medecin),
                                                          std::to_string(id_patient)}));
         else
-            res = std::join("/",std::vector<std::string>({folder,
+            res = utils::string::join("/",std::vector<std::string>({folder,
                                                          std::to_string(id_medecin)}));
 
         return res;
@@ -106,11 +107,11 @@ namespace salamandre
     {
         bool res = true;
 
-        std::string path_dest = std::join("/",std::vector<std::string>({network_file_dir_path,
+        std::string path_dest = utils::string::join("/",std::vector<std::string>({network_file_dir_path,
                                                                              host+":"+std::to_string(port),
                                                                              std::to_string(id_medecin),
                                                                              std::to_string(id_patient)}));
-        if(std::createDir(path_dest) == 0)
+        if(utils::sys::dir::create(path_dest) == 0)
             return false;
         path_dest +="/"+filename;
 

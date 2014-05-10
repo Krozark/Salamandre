@@ -8,7 +8,6 @@ set(ROOT_SRC
     ${SRCROOT}/GuiFunctions.cpp
     ${SRCROOT}/ServerBroadcast
     ${SRCROOT}/ServerFunctions.cpp
-    ${SRCROOT}/std.cpp
 )
 set(ROOT_HEADER
     ${INCROOT}/Daemon.hpp
@@ -17,8 +16,6 @@ set(ROOT_HEADER
     ${INCROOT}/GuiFunctions.tpl
     ${INCROOT}/ServerBroadcast.hpp
     ${INCROOT}/ServerFunctions.hpp
-    ${INCROOT}/std.hpp
-    ${INCROOT}/std.tpl
 )
 set(ROOT_FILES
     ${ROOT_HEADER}

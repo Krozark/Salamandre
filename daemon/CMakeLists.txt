@@ -27,11 +27,11 @@ set_option(BUILD_DOC TRUE BOOL "TRUE to generate the API documentation, FALSE to
 set_option(BUILD_EXAMPLES TRUE BOOL "TRUE to generate the exmamples, FALSE to ignore it")
 
 find_library(SOCKET_LIB socket)
+find_library(UTILS_LIB utils)
 find_library(STATS_LIB Salamandre-stats)
 find_library(ORM_LIB orm)
 find_library(SQLITE_LIB sqlite3)
-set(LIBS ${SOCKET_LIB} ${STATS_LIB} ${ORM_LIB}
-    ${SQLITE_LIB})
+set(LIBS ${SOCKET_LIB} ${UTILS_LIB} ${STATS_LIB} ${ORM_LIB} ${SQLITE_LIB})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(DEFINES "")
