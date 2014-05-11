@@ -160,12 +160,14 @@ namespace salamandre
                 //read header
                 if(fread(header,HEADER_SIZE,1,f) >= HEADER_SIZE)
                 {
-                    long int version;
                     //unserialize header
-                    ntw::Serializer serializer;
+                    long int version;
+                    ntw::Serializer::convert(header,version);
+
+                    /*ntw::Serializer serializer;
                     serializer.write(header,HEADER_SIZE);
                     //get version
-                    serializer>>version;
+                    serializer>>version;*/
 
                     File file = {
                         .version=version,
