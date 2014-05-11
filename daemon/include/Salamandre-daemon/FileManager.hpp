@@ -51,7 +51,7 @@ namespace salamandre
             static std::string makeNewFilePath(int id_medecin,int id_patient = -1,const std::string& filename = "",const std::string& folder=FileManager::new_file_dir_path);
 
             struct File {
-                int version;
+                long int version;
                 int id_medecin;
                 int id_patient;
                 std::string filename;

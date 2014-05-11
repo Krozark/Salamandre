@@ -8,6 +8,8 @@
 #include <utils/string.hpp>
 #include <utils/sys.hpp>
 
+constexpr int HEADER_SIZE = ntw::Serializer::Size<long int>::value;
+
 namespace salamandre
 {
     const std::string FileManager::new_file_dir_path = "datas/tosave";
@@ -152,18 +154,28 @@ namespace salamandre
         FILE* f = ::fopen(path.c_str(),"rb");
         if(f != NULL)
         {
-            if(flock(::fileno(f),LOCK_EX) == 0)
+            //if(flock(::fileno(f),LOCK_EX) == 0)
             {
-                //TODO get version
-                int version = 0;
-                File file = {
-                    .version=version,
-                    .id_medecin=id_medecin,
-                    .id_patient=id_patient,
-                    .filename=filename
-                };
-                l.push_back(std::move(file));
-                ::flock(::fileno(f), LOCK_UN);
+                char header[HEADER_SIZE];
+                //read header
+                if(fread(header,HEADER_SIZE,1,f) >= HEADER_SIZE)
+                {
+                    long int version;
+                    //unserialize header
+                    ntw::Serializer serializer;
+                    serializer.write(header,HEADER_SIZE);
+                    //get version
+                    serializer>>version;
+
+                    File file = {
+                        .version=version,
+                        .id_medecin=id_medecin,
+                        .id_patient=id_patient,
+                        .filename=filename
+                    };
+                    l.push_back(std::move(file));
+                }
+                //::flock(::fileno(f), LOCK_UN);
             }
             ::fclose(f);
         }

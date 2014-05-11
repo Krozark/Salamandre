@@ -11,7 +11,8 @@
 #include <Socket/Serializer.hpp>
 #include <zlib.h>
 
-#define SIZE_HEADER 8
+constexpr int HEADER_SIZE = ntw::Serializer::Size<long int>::value;
+
 
 namespace salamandre
 {
