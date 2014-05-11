@@ -145,7 +145,7 @@ namespace salamandre
     void ServerBroadcast::funcILostMyData(ntw::SocketSerialized& from,int id_medecin,int id_patient,std::string filename,int port)
     {
         std::cout<<"funcILostMyData from:"<<from.getIp()<<" id_medecin:"<<id_medecin<<" id_patient:"<<id_patient<<" filename:"<<filename<<" port:"<<port<<std::endl;
-        std::thread t(salamandre::srv::funcILostMyData,id_medecin,id_patient,filename,port,from.getIp());
+        std::thread t(salamandre::srv::funcILostMyData_BroadcastRecv,id_medecin,id_patient,filename,port,from.getIp());
         t.detach();
     }
     

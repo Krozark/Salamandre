@@ -50,20 +50,20 @@ namespace salamandre
              */
             static std::string makeNewFilePath(int id_medecin,int id_patient = -1,const std::string& filename = "",const std::string& folder=FileManager::new_file_dir_path);
 
-            struct File {
+            struct FileInfo {
                 long int version;
                 int id_medecin;
                 int id_patient;
                 std::string filename;
 
-                friend ntw::Serializer& operator<<(ntw::Serializer& ser,const FileManager::File& self);
-                friend ntw::Serializer& operator>>(ntw::Serializer& ser,FileManager::File& self);
+                friend ntw::Serializer& operator<<(ntw::Serializer& ser,const FileManager::FileInfo& self);
+                friend ntw::Serializer& operator>>(ntw::Serializer& ser,FileManager::FileInfo& self);
             };
 
             /**
              * \brief build a list of files that are avalible on backup dir
              */
-            static std::list<FileManager::File> list(int id_medecin,int id_patient, const std::string& filename);
+            static std::list<FileManager::FileInfo> list(int id_medecin,int id_patient, const std::string& filename);
 
         private:
 
@@ -72,9 +72,9 @@ namespace salamandre
             static const std::string backup_file_dir_path; ///< where the recv files are stored
 
 
-            static void list_append(int id_medecin,std::list<FileManager::File>& l);
-            static void list_append(int id_medecin,int id_patient,std::list<FileManager::File>& l);
-            static void list_append(int id_medecin,int id_patient, const std::string& filename,std::list<FileManager::File>& l);
+            static void list_append(int id_medecin,std::list<FileManager::FileInfo>& l);
+            static void list_append(int id_medecin,int id_patient,std::list<FileManager::FileInfo>& l);
+            static void list_append(int id_medecin,int id_patient, const std::string& filename,std::list<FileManager::FileInfo>& l);
 
 
             /***

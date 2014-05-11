@@ -107,9 +107,9 @@ namespace salamandre
         return res;
     }
 
-    std::list<FileManager::File> FileManager::list(int id_medecin,int id_patient, const std::string& filename)
+    std::list<FileManager::FileInfo> FileManager::list(int id_medecin,int id_patient, const std::string& filename)
     {
-        std::list<FileManager::File> res;
+        std::list<FileManager::FileInfo> res;
         if(id_medecin > 0 and id_patient >0 and filename != "")
         {
             list_append(id_medecin,id_patient,filename,res);
@@ -125,7 +125,7 @@ namespace salamandre
         return res;
     }
 
-    void FileManager::list_append(int id_medecin,std::list<FileManager::File>& l)
+    void FileManager::list_append(int id_medecin,std::list<FileManager::FileInfo>& l)
     {
         const std::string path_medecin = utils::string::join("/",std::vector<std::string>({backup_file_dir_path,
                                                                                 std::to_string(id_medecin)}));
@@ -134,7 +134,7 @@ namespace salamandre
             list_append(id_medecin,::atoi(patient.c_str()),l);
     }
 
-    void FileManager::list_append(int id_medecin,int id_patient,std::list<FileManager::File>& l)
+    void FileManager::list_append(int id_medecin,int id_patient,std::list<FileManager::FileInfo>& l)
     {
         const std::string path_patient = utils::string::join("/",std::vector<std::string>({backup_file_dir_path,
                                                                                 std::to_string(id_medecin),
@@ -145,7 +145,7 @@ namespace salamandre
             list_append(id_medecin,id_patient,file,l);
     }
 
-    void FileManager::list_append(int id_medecin,int id_patient, const std::string& filename,std::list<FileManager::File>& l)
+    void FileManager::list_append(int id_medecin,int id_patient, const std::string& filename,std::list<FileManager::FileInfo>& l)
     {
         const std::string path = utils::string::join("/",std::vector<std::string>({backup_file_dir_path,
                                                                                 std::to_string(id_medecin),
@@ -169,7 +169,7 @@ namespace salamandre
                     //get version
                     serializer>>version;*/
 
-                    File file = {
+                    FileInfo file = {
                         .version=version,
                         .id_medecin=id_medecin,
                         .id_patient=id_patient,
@@ -183,13 +183,13 @@ namespace salamandre
         }
     }
 
-    ntw::Serializer& operator<<(ntw::Serializer& ser,const FileManager::File& self)
+    ntw::Serializer& operator<<(ntw::Serializer& ser,const FileManager::FileInfo& self)
     {
         ser<<self.version<<self.id_medecin<<self.id_patient<<self.filename;
         return ser;
     }
 
-    ntw::Serializer& operator>>(ntw::Serializer& ser,FileManager::File& self)
+    ntw::Serializer& operator>>(ntw::Serializer& ser,FileManager::FileInfo& self)
     {
         ser>>self.version>>self.id_medecin>>self.id_patient>>self.filename;
         return ser;

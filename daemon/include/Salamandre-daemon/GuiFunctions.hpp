@@ -3,6 +3,7 @@
 
 #include <Socket/define.hpp>
 #include <Socket/SocketSerialized.hpp>
+#include <Socket/Status.hpp>
 
 #include <string>
 
@@ -35,11 +36,10 @@ namespace gui
      * \brief enum that contain the error code put as socket status
      */
     enum status {
-        STOP = NTW_STOP_CONNEXION,
-        OK = 0, 
-        TODO = 1,
-        WRONG_PARAM = 2,
-        ENABLE_TO_SEND_FILE = 3
+        OK = ntw::Status::ok,
+        TODO = ntw::Status::user_define,
+        WRONG_PARAM,
+        ENABLE_TO_SEND_FILE
     };
 
     /***

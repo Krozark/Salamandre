@@ -33,7 +33,7 @@ namespace srv
     /**
      * \brief connect to the ip:port and send a file list
      */
-    void funcILostMyData(int id_medecin,int id_patient,const std::string& filename,unsigned int port,const std::string& ip);
+    void funcILostMyData_BroadcastRecv(int id_medecin,int id_patient,const std::string& filename,unsigned int port,const std::string& ip);
 }
 }
 #endif

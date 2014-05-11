@@ -36,7 +36,7 @@ int main(int argc,char* argv[])
 
     ntw::Socket::init();
     ntw::cli::Client client;
-    if(client.connect("127.0.0.1",atoi(argv[1])) != NTW_ERROR_CONNEXION)
+    if(client.connect("127.0.0.1",atoi(argv[1])) != ntw::Status::connexion)
     {
         //init notification listener
         ntw::srv::Server notification_srv(SERVER_PORT,"127.0.0.1",notification_dispatch,1,1);
@@ -392,14 +392,14 @@ int check_status(ntw::cli::Client& client)
     int status = client.request_sock.getStatus();
     switch(status)
     {
-        case salamandre::gui::status::STOP :
+        case ntw::Status::stop :
         {
             std::cerr<<"[ERROR] The server is probably down."<<std::endl;
             std::cout<<"[Recv] Stop"<<std::endl
                 <<"The programme will now stop"<<std::endl;
             return -1;
         }break;
-        case ntw::FuncWrapper::Status::st::ok :
+        case ntw::Status::ok :
         {
             return 0;
         }
@@ -414,7 +414,7 @@ int check_status(ntw::cli::Client& client)
 
 int notification_dispatch(int id,ntw::SocketSerialized& request)
 {
-        int res= ntw::FuncWrapper::Status::st::wrong_id;
+        int res= ntw::Status::wrong_id;
         std::cout<<"[notification_dispatch] id:"<<id<<std::endl<<std::flush;
         switch(id)
         {
