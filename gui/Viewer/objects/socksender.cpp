@@ -77,7 +77,7 @@ bool sockSender::connectToDaemon()
 
 void sockSender::initConnectionToDaemon()
 {
-    std::string recvDaemonPath = client.call<std::string>(salamandre::gui::func::getMyPath);
+    std::string recvDaemonPath = sockSender::getDaemonPath();
     //client.request_sock.clear();
 
     if(recvDaemonPath != sock.daemonPath){
@@ -94,6 +94,11 @@ void sockSender::initConnectionToDaemon()
 void sockSender::closeConnectionToDaemon()
 {
     client.disconnect();
+}
+
+std::string sockSender::getDaemonPath()
+{
+    return client.call<std::string>(salamandre::gui::func::getMyPath);
 }
 
 void sockSender::sendFile(int idDoctor, int idPatient, std::string filename)
@@ -193,15 +198,14 @@ int sockSender::checkStatus()
     int status = client.request_sock.getStatus();
     switch(status)
     {
-        case salamandre::gui::status::STOP :
-        {
+        case salamandre::gui::status::STOP :{
             std::cerr<<"[ERROR] The server is probably down."<<std::endl;
             std::cout<<"[Recv] Trying to restart the server"<<std::endl;
             sock.closeConnectionToDaemon();
             sockSender::connectToDaemon();
-        }break;
-        case ntw::FuncWrapper::Status::st::ok :
-        {
+        }
+        break;
+        case ntw::FuncWrapper::Status::st::ok :{
             return 0;
         }
         default :
@@ -209,7 +213,7 @@ int sockSender::checkStatus()
             std::cout<<"[ERROR] Recv server code <"<<status<<"> whene sending file : "<<salamandre::gui::statusToString(status)<<std::endl;
             /// server error???
             return 1;
-        }break;
+        }
     }
 
     return status;

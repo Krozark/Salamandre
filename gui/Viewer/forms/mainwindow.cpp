@@ -10,7 +10,6 @@
 #include <QDebug>
 #include <QDate>
 #include <QFileDialog>
-#include <QProcess>
 
 #define STATUS_BAR_HEIGHT 22
 
@@ -50,6 +49,7 @@ void MainWindow::init()
     this->threadSaveRecord = new threadSave(this->patient, this->doctor, nullptr);
     this->saveRecordDialog = new saveDialog(this);
     this->currentAction = ACTION_NO;
+    this->restartApplication = false;
 
     this->connect(this->listViewDigitalFiles, SIGNAL(dropFile(QStringList)), SLOT(startUploadDigitalFile(QStringList)));
     this->connect(this->threadUpload, SIGNAL(newFileInserted()), this, SLOT(refreshDigitalFile()));
@@ -382,7 +382,7 @@ void MainWindow::refreshDigitalFile()
 
 void MainWindow::checkNeedSave()
 {
-    bool needToSave = this->checkNeedSaveFCT() | this->checkNeedSaveFEC() | this->checkNeedSaveFMN() | this->checkNeedSaveFMT();
+    bool needToSave = this->checkNeedSaveFCT() || this->checkNeedSaveFEC() || this->checkNeedSaveFMN() || this->checkNeedSaveFMT();
 
     if(needToSave){
         QMessageBox::StandardButton saveBox;
@@ -482,8 +482,13 @@ void MainWindow::on_actionQuitter_triggered()
 
 void MainWindow::on_actionD_connection_triggered()
 {
+    this->restartApplication = true;
     this->on_actionQuitter_triggered();
-    QProcess::startDetached(QApplication::applicationFilePath());
+}
+
+bool MainWindow::restartApps()
+{
+    return this->restartApplication;
 }
 
 void MainWindow::startUploadDigitalFile(QStringList listFile)

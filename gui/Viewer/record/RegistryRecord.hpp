@@ -95,11 +95,9 @@ l’adresse, . . . , et surtout, un numero d’identification)
                 return is;
             }
 
-            std::string getFileName(){
-                return this->fileName;
+            static std::string getFileName(){
+                return fileName;
             }
-
-            const static std::string fileName;
 
             void setFirstName(std::string firstName);
             std::string getFirstName();
@@ -118,6 +116,8 @@ l’adresse, . . . , et surtout, un numero d’identification)
         protected:
 
         private:
+            const static std::string fileName;
+
             std::string lastName;
             std::string firstName;
             std::string birthDate;

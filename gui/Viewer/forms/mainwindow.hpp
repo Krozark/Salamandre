@@ -24,6 +24,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(salamandre::Doctor *doctor, salamandre::Patient *patient, QWidget *parent = 0);
     ~MainWindow();
+
+    bool restartApps();
 private:
 
     enum actionEmit{
@@ -41,6 +43,7 @@ private:
     ListView *listViewDigitalFiles;
 
     bool saveFCTNeeded, saveFMTNeeded;
+    bool restartApplication;
 
     // status bar objects.
     QProgressBar *progressBarProcessing;

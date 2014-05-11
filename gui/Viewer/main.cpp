@@ -11,7 +11,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QDir>
-#include <QSharedMemory>
+#include <QProcess>
 
 int main(int argc, char *argv[])
 {
@@ -51,38 +51,44 @@ int main(int argc, char *argv[])
         dir.mkdir(dir.path());
     }
 
-    int returnError;
+    int returnError = 0;
+    bool restart = true;
 
-    connexionDialog *coDialog = new connexionDialog(nullptr);
-    int res = coDialog->exec();
+    while(restart){
+        restart = false;
 
-    if(res == QDialog::Accepted){
-        salamandre::Doctor *doctor = coDialog->getDoctor();
+        connexionDialog *coDialog = new connexionDialog(nullptr);
+        int res = coDialog->exec();
 
-        chooseDialog *chDialog = new chooseDialog(doctor, nullptr);
-        res = chDialog->exec();
+        if(res == QDialog::Accepted){
+            salamandre::Doctor *doctor = coDialog->getDoctor();
 
-        if(res  == QDialog::Rejected){
-            delete doctor;
-            returnError = -1;
+            chooseDialog *chDialog = new chooseDialog(doctor, nullptr);
+            res = chDialog->exec();
+
+            if(res  == QDialog::Rejected){
+                delete doctor;
+                returnError = -1;
+            }
+            else{
+                salamandre::Patient *patient = chDialog->getPatient();
+                QCoreApplication::processEvents();
+
+                MainWindow w(doctor, patient, nullptr);
+                w.show();
+
+                returnError = a.exec();
+                restart = w.restartApps();
+            }
+
+            delete chDialog;
         }
         else{
-            salamandre::Patient *patient = chDialog->getPatient();
-            QCoreApplication::processEvents();
-
-            MainWindow w(doctor, patient, nullptr);
-            w.show();
-
-            returnError = a.exec();
+            returnError = -2;
         }
 
-        delete chDialog;
+        delete coDialog;
     }
-    else{
-        returnError = -2;
-    }
-
-    delete coDialog;
 
     sockReceiver::closeConnectionToDaemon();
     sockSender::closeConnectionToDaemon();

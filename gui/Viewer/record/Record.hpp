@@ -44,7 +44,7 @@ namespace salamandre
 
         virtual std::string serialize(std::string key) = 0;
         virtual void unSerialize(std::string key, std::string *string) = 0;
-        virtual std::string getFileName() = 0;
+        static std::string getFileName();
 
         void save(std::string key);
         void load(std::string key);

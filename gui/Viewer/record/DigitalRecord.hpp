@@ -52,19 +52,19 @@ namespace salamandre
                 return is;
             }
 
-            std::string getFileName(){
-                return this->fileName;
+            static std::string getFileName(){
+                return fileName;
             }
 
             static void extractDigitFile(std::string source, DigitalContent *digit);
             static void insertDigitFile(std::string source, DigitalContent *digit);
-            const static std::string fileName;
 
             std::string key;
             std::vector<DigitalContent*> vFile;
         protected:
 
         private:
+            const static std::string fileName;
     };
 }
 #endif

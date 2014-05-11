@@ -15,7 +15,7 @@ class getFile{
 
 public:
     getFile(){}
-    getFile(int idDoctor, int idPatient, std::string filename) : idDoctor(idDoctor), idPatient(idPatient), filename(filename){}
+    getFile(int idDoctor, int idPatient = -1, std::string filename = "") : idDoctor(idDoctor), idPatient(idPatient), filename(filename){}
 
     int idDoctor;
     int idPatient;
@@ -24,7 +24,7 @@ public:
 
 Q_DECLARE_METATYPE(getFile)
 
-class sockReceiver : QObject
+class sockReceiver : public QObject
 {
     Q_OBJECT
 public:
@@ -32,28 +32,28 @@ public:
     static bool connectToDaemon();
     static void closeConnectionToDaemon();
 
-    static void askFile(int idDoctor, int idPatient = -1, std::string filename = "");
+    static void askFile(getFile *file);
 
     static void funcFileIsSend(ntw::SocketSerialized& socket,int idDoctor, int idPatient, std::string filename);
     static void funcFileIsRecv(ntw::SocketSerialized& socket, int idDoctor, int idPatient, std::string filename);
 
     static int notification_dispatch(int id,ntw::SocketSerialized& request);
+
+    static sockReceiver sock;
 private:
     sockReceiver();
     ~sockReceiver();
     sockReceiver(sockReceiver const&) = delete;
     void operator=(sockReceiver const&) = delete;
 
-    static sockReceiver sock;
-
     ntw::srv::Server *server;
     int srvPort;
     std::string srvIpAddress;
 
-    QVector<getFile> patientDataList;
+    QVector<getFile*> patientDataList;
 
 signals:
-    void fileIsRecv(getFile);
+    void fileIsRecv(getFile*);
 };
 
 #endif // SOCKRECEIVER_HPP

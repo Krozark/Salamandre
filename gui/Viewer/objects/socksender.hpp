@@ -16,6 +16,7 @@ public:
 
     static void sendFile(int idDoctor, int idPatient, std::string filename = "");
     static bool getFile(int idDoctor, int idPatient = -1, std::string filename = "");
+    static std::string getDaemonPath();
 
 private:
     sockSender();

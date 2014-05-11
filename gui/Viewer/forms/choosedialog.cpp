@@ -1,8 +1,6 @@
 #include <forms/choosedialog.hpp>
 #include <ui_choosedialog.h>
 
-#include <objects/sockreceiver.hpp>
-
 #include <QDir>
 #include <QMessageBox>
 #include <QDebug>
@@ -19,58 +17,29 @@ chooseDialog::chooseDialog(salamandre::Doctor *doctor, QWidget *parent) :
     this->model = new QStandardItemModel();
     this->filterModel = new QSortFilterProxyModel();
     this->validator = new QIntValidator(nullptr);
+    this->updfileDialog = new updateFileDialog(this);
+
+    this->filterModel->setSourceModel(this->model);
+    this->ui->listView_availablePatient->setModel(this->filterModel);
 
     this->ui->lineEdit_getDataClient->setValidator(this->validator);
     this->ui->lineEdit_newClientData->setValidator(this->validator);
     this->ui->lineEdit_newMedecinAndClientData->setValidator(this->validator);
     this->ui->lineEdit_researchPatient->setValidator(this->validator);
 
+    this->connect(this->updfileDialog, SIGNAL(accepted()), this, SLOT(updatePatientAvailable()));
+
     this->contextMenu = new QMenu();
-    this->actionMaj = new QAction(QPixmap(":/icons/controls/update.png"),"Mettre à jour les fiches de ce patient", nullptr);
+    this->actionMaj = new QAction(QPixmap(":/icons/controls/update.png"), "Mettre à jour les fiches de ce patient", nullptr);
+    this->connect(this->actionMaj, SIGNAL(triggered()), this, SLOT(updatePatientRecord()));
+
+    this->contextMenu->addAction(this->actionMaj);
+
+    this->setContextMenuPolicy(Qt::CustomContextMenu);
+    this->connect(this, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(const QPoint)));
 
     if(this->doctor->getType() == salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST){
-        QDir dir(this->doctor->getDirPath());
-        if(!dir.exists()){
-            QMessageBox::critical(this, "Erreur critique", "Une erreur critique s'est produite.");
-            this->reject();
-        }
-
-        QFileInfoList listInfo = dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot, QDir::Time);
-        int nbSubDir = listInfo.size();
-
-        QStringList fileFilter = QStringList() << QString::fromStdString(salamandre::ConfidentialRecord::fileName)
-                                               << QString::fromStdString(salamandre::MedicalRecord::fileName)
-                                               << QString::fromStdString(salamandre::DigitalRecord::fileName)
-                                               << QString::fromStdString(salamandre::RegistryRecord::fileName);
-
-        for(int i = 0; i < nbSubDir; ++i){
-            QFileInfo dInfo = listInfo.at(i);
-            QDir dirClient(dInfo.absoluteFilePath());
-
-            QFileInfoList listFileInfo = dirClient.entryInfoList(fileFilter, QDir::Files | QDir::NoDotAndDotDot, QDir::Time);
-            int nbSubFile = listFileInfo.size();
-
-            patientData *data = new patientData();
-            data->id = dInfo.fileName();
-            data->needUpdate = nbSubFile != 4;
-
-            QStandardItem *item = new QStandardItem(dInfo.fileName());
-            item->setData(QVariant::fromValue(data));
-
-            if(nbSubFile != 4){
-                item->setIcon(QPixmap(":/icons/controls/update.png"));
-
-                if(nbSubFile == 3)
-                    item->setToolTip("Une fiche est manquante, elle sera récupérée.");
-                else
-                    item->setToolTip("Certaines fiches sont manquantes, elles seront récupérées.");
-            }
-
-            this->model->appendRow(item);
-        }
-
-        this->filterModel->setSourceModel(this->model);
-        this->ui->listView_availablePatient->setModel(this->filterModel);
+        this->updatePatientAvailable();
         this->ui->label_firstConnection->setVisible(false);
         this->ui->stackedWidget->setCurrentIndex(this->doctor->getType());
     }
@@ -83,13 +52,75 @@ chooseDialog::chooseDialog(salamandre::Doctor *doctor, QWidget *parent) :
     }
 }
 
+void chooseDialog::updatePatientAvailable()
+{
+    this->model->clear();
+
+    QDir dir(this->doctor->getDirPath());
+    if(!dir.exists()){
+        QMessageBox::critical(this, "Erreur critique", "Une erreur critique s'est produite.");
+        this->reject();
+    }
+
+    QFileInfoList listInfo = dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot, QDir::Time);
+    int nbSubDir = listInfo.size();
+
+    QStringList fileFilter = QStringList() << QString::fromStdString(salamandre::ConfidentialRecord::getFileName())
+                                           << QString::fromStdString(salamandre::MedicalRecord::getFileName())
+                                           << QString::fromStdString(salamandre::DigitalRecord::getFileName())
+                                           << QString::fromStdString(salamandre::RegistryRecord::getFileName());
+
+    for(int i = 0; i < nbSubDir; ++i){
+        QFileInfo dInfo = listInfo.at(i);
+        QDir dirClient(dInfo.absoluteFilePath());
+
+        QFileInfoList listFileInfo = dirClient.entryInfoList(fileFilter, QDir::Files | QDir::NoDotAndDotDot, QDir::Time);
+        int nbSubFile = listFileInfo.size();
+
+        patientData *data = new patientData(dInfo.fileName(), nbSubFile != 4, true, true, true , true);
+
+        QStandardItem *item = new QStandardItem(dInfo.fileName());
+        item->setData(QVariant::fromValue(data));
+
+        if(data->needUpdate){
+            QFileInfo fInfo;
+
+            qDebug() << "nbsubfile " << nbSubFile;
+
+            for(int i = 0; i < nbSubFile; ++i){
+                 fInfo = listFileInfo.at(i);
+                 std::string fName = fInfo.fileName().toStdString();
+                 qDebug() << "nbsubfile " << QString::fromStdString(fName);
+
+                 if(fName == salamandre::ConfidentialRecord::getFileName())
+                     data->needUpdateFCT = false;
+                 else if(fName == salamandre::RegistryRecord::getFileName())
+                     data->needUpdateFEC = false;
+                 else if(fName == salamandre::MedicalRecord::getFileName())
+                     data->needUpdateFMT = false;
+                 else if(fName == salamandre::DigitalRecord::getFileName())
+                     data->needUpdateFMN = false;
+            }
+
+            item->setIcon(QPixmap(":/icons/controls/update.png"));
+
+            if(nbSubFile == 3)
+                item->setToolTip("Une fiche est manquante, elle sera récupérée.");
+            else
+                item->setToolTip("Certaines fiches sont manquantes, elles seront récupérées.");
+        }
+
+        this->model->appendRow(item);
+    }
+}
+
 chooseDialog::~chooseDialog()
 {
     delete this->model;
     delete this->filterModel;
     delete this->contextMenu;
     delete this->actionMaj;
-    delete ui;
+    delete this->ui;
 }
 
 void chooseDialog::reject()
@@ -102,6 +133,9 @@ void chooseDialog::accept()
 {
     QString idPatient = "";
     bool needUpdate = false;
+    bool needFullUpdate = false;
+
+    patientData *data = nullptr;
 
     salamandre::Patient::TypePatient typePatient = salamandre::Patient::TypePatient::NEW_PATIENT;
 
@@ -113,10 +147,23 @@ void chooseDialog::accept()
     case salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST:
         if(this->ui->radioButton_availablePatient->isChecked()){
             QItemSelectionModel *index = this->ui->listView_availablePatient->selectionModel();
-            patientData *data = this->model->item(index->currentIndex().row())->data().value<patientData*>();
+            data = this->model->item(index->currentIndex().row())->data().value<patientData*>();
             idPatient = data->id;
             needUpdate = data->needUpdate;
             typePatient = salamandre::Patient::TypePatient::PATIENT_ALREADY_EXIST;
+
+            if(needUpdate){
+                QMessageBox::StandardButton updateBox;
+                updateBox = QMessageBox::question(this, "Mise à jour requise", "Certaines données sont manquantes, voulez-vous tenter de les récupérer sur le réseau ?<br/>", QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+                QCoreApplication::processEvents();
+
+                if(updateBox == QMessageBox::No){
+                    needUpdate = false;
+                }
+                else if(updateBox == QMessageBox::Cancel){
+                    return;
+                }
+            }
         }
         else if(this->ui->radioButton_newClientData->isChecked()){
             idPatient = this->ui->lineEdit_newClientData->text();
@@ -124,7 +171,7 @@ void chooseDialog::accept()
         }
         else if(this->ui->radioButton_getDataClient->isChecked()){
             idPatient = this->ui->lineEdit_getDataClient->text();
-            needUpdate = true;
+            needFullUpdate = true;
             typePatient = salamandre::Patient::TypePatient::PATIENT_ALREADY_EXIST;
         }
         break;
@@ -145,13 +192,26 @@ void chooseDialog::accept()
     this->patient->setId(idPatient);
     this->patient->setType(typePatient);
 
-    if(needUpdate){
-        qDebug() << "need update";
-        sockReceiver::askFile(this->doctor->getId().toInt(), idPatient.toInt());
+    if(needUpdate || needFullUpdate){
+        this->updatePatientRecord();
         return;
     }
 
     QDialog::accept();
+}
+
+void chooseDialog::updateRecord(patientData *data)
+{
+    QString idPatient = data->id;
+
+    if(data->needUpdateFCT)
+        this->updfileDialog->askFile(this->doctor->getId().toInt(), idPatient.toInt(), salamandre::ConfidentialRecord::getFileName());
+    if(data->needUpdateFEC)
+        this->updfileDialog->askFile(this->doctor->getId().toInt(), idPatient.toInt(), salamandre::RegistryRecord::getFileName());
+    if(data->needUpdateFMT)
+        this->updfileDialog->askFile(this->doctor->getId().toInt(), idPatient.toInt(), salamandre::MedicalRecord::getFileName());
+    if(data->needUpdateFMN)
+        this->updfileDialog->askFile(this->doctor->getId().toInt(), idPatient.toInt(), salamandre::DigitalRecord::getFileName());
 }
 
 salamandre::Patient* chooseDialog::getPatient()
@@ -221,11 +281,46 @@ void chooseDialog::on_lineEdit_researchPatient_textChanged(const QString &arg1)
 }
 void chooseDialog::on_pushButton_resfreshPatient_clicked()
 {
-    sockReceiver::askFile(this->doctor->getId().toInt());
+    this->updfileDialog->askFile(this->doctor->getId().toInt());
 }
 
 void chooseDialog::on_listView_availablePatient_doubleClicked(const QModelIndex &index)
 {
     Q_UNUSED(index);
     this->accept();
+}
+
+void chooseDialog::updatePatientRecord()
+{
+    qDebug() << "update patient record";
+    QString idPatient;
+    bool needFullUpdate = false;
+
+    if(this->ui->radioButton_availablePatient->isChecked()){
+        QItemSelectionModel *index = this->ui->listView_availablePatient->selectionModel();
+        patientData *data = this->model->item(index->currentIndex().row())->data().value<patientData*>();
+        idPatient = data->id;
+
+        bool needUpdate = data->needUpdate;
+        needFullUpdate = false;
+
+        if(needUpdate){
+            if(data->needUpdateFCT && data->needUpdateFEC && data->needUpdateFMN && data->needUpdateFMT)
+                needFullUpdate = true;
+            else
+                this->updateRecord(data);
+        }
+    }
+    else if(this->ui->radioButton_getDataClient->isChecked()){
+        idPatient = this->ui->lineEdit_getDataClient->text();
+        needFullUpdate = true;
+    }
+
+    if(needFullUpdate)
+        this->updfileDialog->askFile(this->doctor->getId().toInt(), idPatient.toInt());
+}
+
+void chooseDialog::showContextMenu(QPoint p)
+{
+    this->contextMenu->exec(this->mapToGlobal(p));
 }

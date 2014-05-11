@@ -5,10 +5,10 @@ namespace salamandre {
     {
         this->setDirPath(dirPath);
 
-        this->confidentialRecord = new salamandre::ConfidentialRecord(this->getDirPath().toStdString()+"/"+salamandre::ConfidentialRecord::fileName);
-        this->digitalRecord = new salamandre::DigitalRecord(this->getDirPath().toStdString()+"/"+salamandre::DigitalRecord::fileName);
-        this->medicalRecord = new salamandre::MedicalRecord(this->getDirPath().toStdString()+"/"+salamandre::MedicalRecord::fileName);
-        this->registryRecord = new salamandre::RegistryRecord(this->getDirPath().toStdString()+"/"+salamandre::RegistryRecord::fileName);
+        this->confidentialRecord = new salamandre::ConfidentialRecord(this->getDirPath().toStdString()+"/"+salamandre::ConfidentialRecord::getFileName());
+        this->digitalRecord = new salamandre::DigitalRecord(this->getDirPath().toStdString()+"/"+salamandre::DigitalRecord::getFileName());
+        this->medicalRecord = new salamandre::MedicalRecord(this->getDirPath().toStdString()+"/"+salamandre::MedicalRecord::getFileName());
+        this->registryRecord = new salamandre::RegistryRecord(this->getDirPath().toStdString()+"/"+salamandre::RegistryRecord::getFileName());
     }
 
     Patient::~Patient()

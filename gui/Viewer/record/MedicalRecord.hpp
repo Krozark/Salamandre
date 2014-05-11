@@ -19,8 +19,8 @@ namespace salamandre
             std::string serialize(std::string key);
             void unSerialize(std::string key, std::string *string);
 
-            std::string getFileName(){
-                return this->fileName;
+            static std::string getFileName(){
+                return fileName;
             }
 
             std::string getContent();
@@ -45,10 +45,11 @@ namespace salamandre
                 return is;
             }
 
-            const static std::string fileName;
         protected:
 
         private:
+            const static std::string fileName;
+
             std::string fileContent;
     };
 }
