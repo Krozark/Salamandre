@@ -2,7 +2,10 @@
 #define SALAMANDRE_FILEMANAGER_HPP
 
 #include <string>
+#include <list>
 #include <cstdio>
+
+#include <Socket/Serializer.hpp>
 
 namespace salamandre
 {
@@ -47,13 +50,32 @@ namespace salamandre
              */
             static std::string makeNewFilePath(int id_medecin,int id_patient = -1,const std::string& filename = "",const std::string& folder=FileManager::new_file_dir_path);
 
+            struct File {
+                int version;
+                int id_medecin;
+                int id_patient;
+                std::string filename;
 
+                friend ntw::Serializer& operator<<(ntw::Serializer& ser,const FileManager::File& self);
+                friend ntw::Serializer& operator>>(ntw::Serializer& ser,FileManager::File& self);
+            };
+
+            /**
+             * \brief build a list of files that are avalible on backup dir
+             */
+            static std::list<FileManager::File> list(int id_medecin,int id_patient, const std::string& filename);
 
         private:
 
             static const std::string new_file_dir_path; ///< where the gui store files to saves
             static const std::string network_file_dir_path; ///< where file are stored for the network sender
             static const std::string backup_file_dir_path; ///< where the recv files are stored
+
+
+            static void list_append(int id_medecin,std::list<FileManager::File>& l);
+            static void list_append(int id_medecin,int id_patient,std::list<FileManager::File>& l);
+            static void list_append(int id_medecin,int id_patient, const std::string& filename,std::list<FileManager::File>& l);
+
 
             /***
              * \brief copy file for upload

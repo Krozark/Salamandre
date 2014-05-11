@@ -57,7 +57,7 @@ namespace salamandre
                                                                                 std::to_string(id_patient),
                                                                                 filename}));
         //TODO test if file exist
-        FILE* source = ::fopen(path_origin.c_str(), "r");
+        FILE* source = ::fopen(path_origin.c_str(), "rb");
         if(source != nullptr)
         {
             std::cout<<"Save file "<<path_origin<<std::endl;
@@ -103,6 +103,82 @@ namespace salamandre
                                                          std::to_string(id_medecin)}));
 
         return res;
+    }
+
+    std::list<FileManager::File> FileManager::list(int id_medecin,int id_patient, const std::string& filename)
+    {
+        std::list<FileManager::File> res;
+        if(id_medecin > 0 and id_patient >0 and filename != "")
+        {
+            list_append(id_medecin,id_patient,filename,res);
+        }
+        else if(id_medecin > 0 and id_patient >0)
+        {
+            list_append(id_medecin,id_patient,res);
+        }
+        else if(id_medecin > 0)
+        {
+            list_append(id_medecin,res);
+        }
+        return res;
+    }
+
+    void FileManager::list_append(int id_medecin,std::list<FileManager::File>& l)
+    {
+        const std::string path_medecin = utils::string::join("/",std::vector<std::string>({backup_file_dir_path,
+                                                                                std::to_string(id_medecin)}));
+        const std::list<std::string> patients = utils::sys::dir::list_dirs(path_medecin);
+        for(const std::string& patient : patients)
+            list_append(id_medecin,::atoi(patient.c_str()),l);
+    }
+
+    void FileManager::list_append(int id_medecin,int id_patient,std::list<FileManager::File>& l)
+    {
+        const std::string path_patient = utils::string::join("/",std::vector<std::string>({backup_file_dir_path,
+                                                                                std::to_string(id_medecin),
+                                                                                std::to_string(id_patient)}));
+
+        const std::list<std::string> files = utils::sys::dir::list_files(path_patient);
+        for(const std::string& file : files)
+            list_append(id_medecin,id_patient,file,l);
+    }
+
+    void FileManager::list_append(int id_medecin,int id_patient, const std::string& filename,std::list<FileManager::File>& l)
+    {
+        const std::string path = utils::string::join("/",std::vector<std::string>({backup_file_dir_path,
+                                                                                std::to_string(id_medecin),
+                                                                                std::to_string(id_patient),
+                                                                                filename}));
+        FILE* f = ::fopen(path.c_str(),"rb");
+        if(f != NULL)
+        {
+            if(flock(::fileno(f),LOCK_EX) == 0)
+            {
+                //TODO get version
+                int version = 0;
+                File file = {
+                    .version=version,
+                    .id_medecin=id_medecin,
+                    .id_patient=id_patient,
+                    .filename=filename
+                };
+                l.push_back(std::move(file));
+                ::flock(::fileno(f), LOCK_UN);
+            }
+            ::fclose(f);
+        }
+    }
+
+    ntw::Serializer& operator<<(ntw::Serializer& ser,const FileManager::File& self)
+    {
+        ser<<self.version<<self.id_medecin<<self.id_patient<<self.filename;
+        return ser;
+    }
+
+    ntw::Serializer& operator>>(ntw::Serializer& ser,FileManager::File& self)
+    {
+        ser>>self.version>>self.id_medecin>>self.id_patient>>self.filename;
+        return ser;
     }
 
     bool FileManager::cpForUpload(int id_medecin,int id_patient,std::string filename,std::string host, int port,FILE* source)
