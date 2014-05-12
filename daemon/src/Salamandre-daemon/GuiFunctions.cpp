@@ -26,6 +26,7 @@ namespace gui
             case func::newFile :
             {
                 res = ntw::FuncWrapper::srv::exec(funcNewFile,request);
+                //\todo TODO
                 daemon->gui_client_notif_sender.call<void>(salamandre::gui::func::fileIsRecv,-1,-1,"test");
             }break;
             case func::sync :
