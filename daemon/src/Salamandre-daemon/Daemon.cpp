@@ -15,6 +15,7 @@ namespace salamandre
 
     void Daemon::start()
     {
+        FileManager::init();
         gui_server.start();
         file_server.start();
         broadcaster.start();

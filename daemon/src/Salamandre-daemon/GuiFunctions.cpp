@@ -5,6 +5,7 @@
 #include <Socket/FuncWrapper.hpp>
 
 #include <utils/sys.hpp>
+#include <utils/string.hpp>
 
 #include <unistd.h>
 #include <iostream>
@@ -37,10 +38,14 @@ namespace gui
             {
                 res = ntw::FuncWrapper::srv::exec(funcSetGuiNotificationPort,request);
             }break;
-            case func::getMyPath :
+            case func::getMyBackupPath :
             {
-                res = ntw::FuncWrapper::srv::exec(funcGetMyPath,request);
+                res = ntw::FuncWrapper::srv::exec(funcGetMyBackupPath,request);
             }break;
+            case func::getMySavePathPath :
+            {
+                res = ntw::FuncWrapper::srv::exec(funcGetMySavePath,request);
+            }
             default:
             {
                 std::cout<<"[dispatch] Function id not found"<<std::endl;                
@@ -88,9 +93,13 @@ namespace gui
         return status;
     }
 
-    std::string funcGetMyPath(ntw::SocketSerialized& sock)
+    std::string funcGetMyBackupPath(ntw::SocketSerialized& sock)
     {
-        return utils::sys::dir::pwd();
+        return utils::string::join("/",std::vector<std::string>({utils::sys::dir::pwd(),FileManager::backup_file_dir_path}));
+    }
+    std::string funcGetMySavePath(ntw::SocketSerialized& sock)
+    {
+        return utils::string::join("/",std::vector<std::string>({utils::sys::dir::pwd(),FileManager::new_file_dir_path}));
     }
 
     void funcSetGuiNotificationPort(ntw::SocketSerialized& sock,unsigned int port)

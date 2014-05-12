@@ -78,7 +78,8 @@ void run(ntw::cli::Client& client)
     std::vector<std::string> file_paths;
     std::vector<std::string> file_to_signal;
 
-    std::string daemon_path = client.call<std::string>(salamandre::gui::func::getMyPath);
+    std::string daemon_save_path = client.call<std::string>(salamandre::gui::func::getMySavePathPath);
+    std::string daemon_backup_path = client.call<std::string>(salamandre::gui::func::getMyBackupPath);
 
     char c = 0;
     while(c!= 'Q' and c != 'q')
@@ -371,7 +372,8 @@ void run(ntw::cli::Client& client)
             }break;
             case '7': //print daemon_path
             {
-                std::cout<<"Daemon path : \""<<daemon_path<<"\""<<std::endl;
+                std::cout<<"Daemon save path : \""<<daemon_save_path<<"\""<<std::endl;
+                std::cout<<"Daemon backup path : \""<<daemon_backup_path<<"\""<<std::endl;
             }break;
             case 'q': //quitter
             case 'Q':

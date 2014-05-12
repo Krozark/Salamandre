@@ -65,11 +65,17 @@ namespace salamandre
              */
             static std::list<FileManager::FileInfo> list(int id_medecin,int id_patient, const std::string& filename);
 
-        private:
+            /**
+             * \brief create dirs
+             */
+            static void init();
 
             static const std::string new_file_dir_path; ///< where the gui store files to saves
             static const std::string network_file_dir_path; ///< where file are stored for the network sender
             static const std::string backup_file_dir_path; ///< where the recv files are stored
+
+        private:
+
 
 
             static void list_append(int id_medecin,std::list<FileManager::FileInfo>& l);

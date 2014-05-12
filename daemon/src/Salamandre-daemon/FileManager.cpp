@@ -125,6 +125,11 @@ namespace salamandre
         return res;
     }
 
+    void FileManager::init()
+    {
+        utils::sys::dir::create(new_file_dir_path);
+    }
+
     void FileManager::list_append(int id_medecin,std::list<FileManager::FileInfo>& l)
     {
         const std::string path_medecin = utils::string::join("/",std::vector<std::string>({backup_file_dir_path,
