@@ -40,6 +40,15 @@ namespace srv
                 client.request_sock>>id;
                 if(id == sendFile)
                 {
+                    std::list<FileManager::FileInfo> to_send;
+                    client.request_sock>>to_send;
+                    client.request_sock.clear();
+                    for(FileManager::FileInfo& file : to_send)
+                    {
+                        /*std::string file_path = utils::string::join("/",std::vector<std::string>({std::to_string(file.id_medecin),
+                                                                                                 std::to_string(file.id_patient),
+                                                                                                 file.filename}));*/
+                    }
                 }
                 else
                 {
