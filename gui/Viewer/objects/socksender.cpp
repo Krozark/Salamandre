@@ -26,7 +26,9 @@ sockSender::sockSender()
 
 void sockSender::init()
 {
-    sock.daemonPath = settings::getDaemonSettingValue("pathExe").toString().toStdString();
+    sock.daemonBinPath = settings::getDaemonSettingValue("pathExe").toString().toStdString();
+    sock.daemonBackupPath = settings::getDaemonSettingValue("pathBackup").toString().toStdString();
+    sock.daemonSavePath = settings::getDaemonSettingValue("pathSave").toString().toStdString();
 }
 
 bool sockSender::connectToDaemon()
@@ -77,18 +79,15 @@ bool sockSender::connectToDaemon()
 
 void sockSender::initConnectionToDaemon()
 {
-    std::string recvDaemonPath = sockSender::getDaemonPath();
-    //client.request_sock.clear();
+    sock.daemonSavePath = sockSender::getDaemonSavePath();
+    sock.daemonBackupPath = sockSender::getDaemonBackupPath();
+    sock.daemonBinPath = sockSender::getDaemonBinPath();
 
-    if(recvDaemonPath != sock.daemonPath){
-        settings::setDaemonSettingValue("pathExe", QString::fromStdString(recvDaemonPath));
-    }
+    settings::setDaemonSettingValue("pathExe", QString::fromStdString(sock.daemonBinPath));
+    settings::setDaemonSettingValue("pathSave", QString::fromStdString(sock.daemonSavePath));
+    settings::setDaemonSettingValue("pathBackup", QString::fromStdString(sock.daemonBackupPath));
 
-    sock.daemonPath = recvDaemonPath;
-    sock.daemonGuiSavePath = sock.daemonPath+"/datas/tosave";
     sock.guiPath = (QCoreApplication::applicationDirPath()+"/save/").toStdString();
-    qDebug() << "daemon path : " << QString::fromStdString(sock.daemonPath);
-
 }
 
 void sockSender::closeConnectionToDaemon()
@@ -96,16 +95,25 @@ void sockSender::closeConnectionToDaemon()
     client.disconnect();
 }
 
-std::string sockSender::getDaemonPath()
+std::string sockSender::getDaemonBinPath()
 {
-    return client.call<std::string>(salamandre::gui::func::getMyPath);
+    return client.call<std::string>(salamandre::gui::func::getMyBinPath);
+}
+
+std::string sockSender::getDaemonSavePath()
+{
+    return client.call<std::string>(salamandre::gui::func::getMySavePath);
+}
+
+std::string sockSender::getDaemonBackupPath()
+{
+    return client.call<std::string>(salamandre::gui::func::getMyBackupPath);
 }
 
 void sockSender::sendFile(int idDoctor, int idPatient, std::string filename)
 {
-
     QString path = QString::number(idDoctor)+"/"+QString::number(idPatient)+"/"+QString::fromStdString(filename);
-    QStringList pathList = QStringList() << QString::fromStdString(sock.daemonGuiSavePath)  << QString::number(idDoctor);
+    QStringList pathList = QStringList() << QString::fromStdString(sock.daemonSavePath)  << QString::number(idDoctor);
 
     qDebug() << "create dir : "<< pathList.join('/');
     QDir dirDoctor(pathList.join('/'));
@@ -221,7 +229,7 @@ int sockSender::checkStatus()
 
 bool sockSender::restartDaemon()
 {
-    bool res = QProcess::startDetached(QString::fromStdString(sock.daemonPath+"/salamandre-daemon"), QStringList() << "20001" << "20000" << "1", QString::fromStdString(sock.daemonPath));
+    bool res = QProcess::startDetached(QString::fromStdString(sock.daemonBinPath), QStringList() << "20001" << "20000" << "1", QString::fromStdString(sock.daemonBinPath));
     return res;
 }
 

@@ -16,7 +16,10 @@ public:
 
     static void sendFile(int idDoctor, int idPatient, std::string filename = "");
     static bool getFile(int idDoctor, int idPatient = -1, std::string filename = "");
-    static std::string getDaemonPath();
+
+    static std::string getDaemonBackupPath();
+    static std::string getDaemonSavePath();
+    static std::string getDaemonBinPath();
 
 private:
     sockSender();
@@ -36,8 +39,9 @@ private:
     int srvPort;
     std::string srvIpAddress;
 
-    std::string daemonPath;
-    std::string daemonGuiSavePath;
+    std::string daemonBinPath;
+    std::string daemonSavePath;
+    std::string daemonBackupPath;
     std::string guiPath;
 };
 

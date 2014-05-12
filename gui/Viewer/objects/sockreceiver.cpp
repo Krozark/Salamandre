@@ -58,7 +58,7 @@ void sockReceiver::askFile(getFile *file){
                                            << QString::fromStdString(salamandre::DigitalRecord::getFileName())
                                            << QString::fromStdString(salamandre::RegistryRecord::getFileName());
 
-    std::string backupPath = sockSender::getDaemonPath()+"/"+"datas/backup/"+std::to_string(file->idDoctor);
+    std::string backupPath = sockSender::getDaemonBackupPath()+"/"+std::to_string(file->idDoctor);
 
     if(file->idPatient == -1){
         QDir dirBackup(QString::fromStdString(backupPath));
@@ -141,7 +141,7 @@ void sockReceiver::funcFileIsRecv(ntw::SocketSerialized& socket,int idDoctor, in
                                            << QString::fromStdString(salamandre::DigitalRecord::getFileName())
                                            << QString::fromStdString(salamandre::RegistryRecord::getFileName());
 
-    std::string backupPath = sockSender::getDaemonPath()+"/"+"datas/backup/"+std::to_string(idDoctor);
+    std::string backupPath = sockSender::getDaemonBackupPath()+"/"+std::to_string(idDoctor);
 
     if(idPatient == -1){
         QDir dirBackup(QString::fromStdString(backupPath));
