@@ -221,7 +221,6 @@ void MainWindow::saveRecords()
     if(save){
         this->saveRecordDialog->show();
         this->saveRecordDialog->setModal(true);
-        QCoreApplication::processEvents();
         this->threadSaveRecord->start(QThread::HighPriority);
     }
     else{
@@ -250,8 +249,6 @@ void MainWindow::saveEnd()
 {
     if(this->saveRecordDialog->isVisible())
         this->saveRecordDialog->close();
-
-    QCoreApplication::processEvents();
 
     switch(this->currentAction){
     case ACTION_NEW_PATIENT:
@@ -494,6 +491,7 @@ bool MainWindow::restartApps()
 void MainWindow::startUploadDigitalFile(QStringList listFile)
 {
     u_int32_t nbFileToAdd = listFile.size();
+    QString tmpFileName;
 
     if(nbFileToAdd > 0){
         if(!this->ui->statusBar->isVisible())
@@ -502,9 +500,16 @@ void MainWindow::startUploadDigitalFile(QStringList listFile)
 
         for(u_int32_t i = 0; i < nbFileToAdd; ++i){
             salamandre::DigitalContent *digitalContent = new salamandre::DigitalContent();
+
+            tmpFileName = QString(this->patient->getDirPath()+QString("/tmp/")+QFileInfo(listFile.at(i)).fileName());
             digitalContent->fileName = QFileInfo(listFile.at(i)).fileName().toStdString();
-            digitalContent->filePath = QString(this->patient->getDirPath()+QString("/tmp/")+QFileInfo(listFile.at(i)).fileName()).toStdString();
+            digitalContent->filePath = tmpFileName.toStdString();
             digitalContent->sourcePath = listFile.at(i).toStdString();
+
+            QFile tmpFile(tmpFileName);
+            if(tmpFile.exists()){
+                tmpFile.remove();
+            }
 
             vFile.push_back(digitalContent);
         }

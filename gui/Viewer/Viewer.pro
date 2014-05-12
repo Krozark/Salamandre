@@ -17,7 +17,6 @@ include("./record/record.pri")
 
 INCLUDEPATH += ../../daemon/include/
 
-QMAKE_CXXFLAGS_DEBUG -= -g
 QMAKE_CXXFLAGS_DEBUG += -pg
 QMAKE_CXXFLAGS += -std=c++11 -O3
 

@@ -17,7 +17,7 @@ class chooseDialog;
 }
 
 struct patientData{
-    patientData(QString id, bool needUpdate, bool needUpdateFCT, bool needUpdateFEC, bool needUpdateFMT, bool needUpdateFMN) : id(id), needUpdate(needUpdate), needUpdateFCT(needUpdateFCT), needUpdateFEC(needUpdateFEC), needUpdateFMT(needUpdateFMT), needUpdateFMN(needUpdateFMN){}
+    patientData(QString id, bool needUpdate, bool needUpdateFCT = true, bool needUpdateFEC = true, bool needUpdateFMT = true, bool needUpdateFMN = true) : id(id), needUpdate(needUpdate), needUpdateFCT(needUpdateFCT), needUpdateFEC(needUpdateFEC), needUpdateFMT(needUpdateFMT), needUpdateFMN(needUpdateFMN){}
 
     QString id;
     bool needUpdate;

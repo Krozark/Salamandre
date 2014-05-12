@@ -19,26 +19,32 @@ int main(int argc, char *argv[])
 
     settings::loadSettings();
 
-    bool daemonConnectionSuccess;
+    int daemonConnectionRes;
+    int returnError = 0;
+    bool restart = true;
 
     ntw::Socket::init();
     sockSender::init();
-    daemonConnectionSuccess = sockSender::connectToDaemon();
+    daemonConnectionRes = sockSender::connectToDaemon();
 
-
-    QString pathExe = settings::getDaemonSettingValue("pathExe").toString();
-
-    if(pathExe == "" && !daemonConnectionSuccess){
+    if(daemonConnectionRes == sockSender::ERROR_WITH_BIN_DAEMON || daemonConnectionRes == sockSender::ERROR_TO_START_DAEMON){
         QMessageBox::warning(nullptr, "Serveur introuvable", "Impossible de localiser le serveur de mise à jour des fiches patients, \nmerci d'indiquer le chemin de l'exécutable dans la fenêtre suivante.");
         QString file = QFileDialog::getOpenFileName(nullptr, "Choix des fichiers", QDir::homePath(), "salamandre-daemon");
-        QFileInfo info(file);
-        settings::setDaemonSettingValue("pathExe", info.dir().path());
 
-        sockSender::init();
-        daemonConnectionSuccess = sockSender::connectToDaemon();
+        if(file.isNull()){
+            ntw::Socket::close();
+            return -3;
+        }
+        else{
+            QFileInfo info(file);
+            settings::setDaemonSettingValue("pathBin", info.filePath());
+
+            sockSender::init();
+            daemonConnectionRes = sockSender::connectToDaemon();
+        }
     }
 
-    if(!daemonConnectionSuccess){
+    if(daemonConnectionRes == sockSender::ERROR_TO_CONNECT_DAEMON){
         QMessageBox::critical(nullptr, "Erreur fatale", "La connexion au serveur de fichier à échoué, veuillez vérifier que l'application n'a pas déjà été lancée.");
         return -3;
     }
@@ -51,10 +57,7 @@ int main(int argc, char *argv[])
         dir.mkdir(dir.path());
     }
 
-    int returnError = 0;
-    bool restart = true;
-
-    while(restart){
+    while(restart && returnError == 0){
         restart = false;
 
         connexionDialog *coDialog = new connexionDialog(nullptr);

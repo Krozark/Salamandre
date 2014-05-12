@@ -9,27 +9,34 @@
 class sockSender
 {
 public:
+    enum errorConnection{
+        ERROR_WITH_BIN_DAEMON = 0,
+        ERROR_TO_START_DAEMON = 1,
+        ERROR_TO_CONNECT_DAEMON = 2,
+        NO_ERROR = 3
+    };
+
     static void init();
-    static bool connectToDaemon();
+    static errorConnection connectToDaemon();
     static void closeConnectionToDaemon();
     static bool setGuiServerPort(int srvPort);
 
     static void sendFile(int idDoctor, int idPatient, std::string filename = "");
     static bool getFile(int idDoctor, int idPatient = -1, std::string filename = "");
 
-    static std::string getDaemonBackupPath();
-    static std::string getDaemonSavePath();
-    static std::string getDaemonBinPath();
-
+    static std::string getBackupPath();
 private:
     sockSender();
     sockSender(sockSender const&) = delete;
     void operator=(sockSender const&) = delete;
 
     static bool informNewFile(int idDoctor, int idPatient, std::string filename);
-    static bool restartDaemon();
+    static errorConnection restartDaemon();
     static void initConnectionToDaemon();
 
+    static std::string getDaemonBackupPath();
+    static std::string getDaemonSavePath();
+    static std::string getDaemonBinPath();
 
     static sockSender sock;
     static ntw::cli::Client client;

@@ -35,6 +35,7 @@ void sockReceiver::init(){
 }
 
 bool sockReceiver::connectToDaemon(){
+    std::cout << "inform server port to daemon " << std::to_string(sock.srvPort) << std::endl;
     return sockSender::setGuiServerPort(sock.srvPort);
 }
 
@@ -50,7 +51,7 @@ void sockReceiver::askFile(getFile *file){
 
     sockSender::getFile(file->idDoctor, file->idPatient, file->filename);
 
-    /* TODO remove next line then daemon will send notification, now its just to test ... */
+    /* TODO remove next line then daemon will send notification, now its just to test ...
     emit sock.fileIsRecv(file);
 
     QStringList fileFilter = QStringList() << QString::fromStdString(salamandre::ConfidentialRecord::getFileName())
@@ -58,7 +59,7 @@ void sockReceiver::askFile(getFile *file){
                                            << QString::fromStdString(salamandre::DigitalRecord::getFileName())
                                            << QString::fromStdString(salamandre::RegistryRecord::getFileName());
 
-    std::string backupPath = sockSender::getDaemonBackupPath()+"/"+std::to_string(file->idDoctor);
+    std::string backupPath = sockSender::getBackupPath()+"/"+std::to_string(file->idDoctor);
 
     if(file->idPatient == -1){
         QDir dirBackup(QString::fromStdString(backupPath));
@@ -109,7 +110,7 @@ void sockReceiver::askFile(getFile *file){
         QFile f(pathFiles);
         f.rename(dirApps.path()+"/"+QString::fromStdString(file->filename));
     }
-    /* TODO end remove */
+    TODO end remove */
 }
 
 void sockReceiver::funcFileIsSend(ntw::SocketSerialized& socket,int idDoctor, int idPatient, std::string filename)
@@ -141,7 +142,7 @@ void sockReceiver::funcFileIsRecv(ntw::SocketSerialized& socket,int idDoctor, in
                                            << QString::fromStdString(salamandre::DigitalRecord::getFileName())
                                            << QString::fromStdString(salamandre::RegistryRecord::getFileName());
 
-    std::string backupPath = sockSender::getDaemonBackupPath()+"/"+std::to_string(idDoctor);
+    std::string backupPath = sockSender::getBackupPath()+"/"+std::to_string(idDoctor);
 
     if(idPatient == -1){
         QDir dirBackup(QString::fromStdString(backupPath));

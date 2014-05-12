@@ -26,21 +26,19 @@ sockSender::sockSender()
 
 void sockSender::init()
 {
-    sock.daemonBinPath = settings::getDaemonSettingValue("pathExe").toString().toStdString();
-    sock.daemonBackupPath = settings::getDaemonSettingValue("pathBackup").toString().toStdString();
-    sock.daemonSavePath = settings::getDaemonSettingValue("pathSave").toString().toStdString();
+    sock.daemonBinPath = settings::getDaemonSettingValue("pathBin").toString().toStdString();
 }
 
-bool sockSender::connectToDaemon()
+sockSender::errorConnection sockSender::connectToDaemon()
 {
-    bool res = true;
+    errorConnection res = NO_ERROR;
 
     if(client.connect(sock.srvIpAddress, sock.srvPort) != ntw::Status::connexion){
         qDebug() << "Gui is now connect to daemon and ready to send request";
         sockSender::initConnectionToDaemon();
     }
     else{
-        if(sockSender::restartDaemon()){
+        if((res = sockSender::restartDaemon()) == NO_ERROR){
             daemonConnectionDialog *dialogConnectionToDaemon = new daemonConnectionDialog(nullptr);
             bool resConnectRes = false;
 
@@ -63,15 +61,15 @@ bool sockSender::connectToDaemon()
             delete dialogConnectionToDaemon;
             QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 1000);
 
-            if(resConnectRes)
+            if(resConnectRes){
+                res = NO_ERROR;
                 sockSender::initConnectionToDaemon();
+            }
             else
-                return false;
+                res = ERROR_TO_CONNECT_DAEMON;
         }
-        else{
-            res = false;
+        else
             std::cerr << "Gui connection to daemon has failed" << std::endl;
-        }
     }
 
     return res;
@@ -82,12 +80,9 @@ void sockSender::initConnectionToDaemon()
     sock.daemonSavePath = sockSender::getDaemonSavePath();
     sock.daemonBackupPath = sockSender::getDaemonBackupPath();
     sock.daemonBinPath = sockSender::getDaemonBinPath();
-
-    settings::setDaemonSettingValue("pathExe", QString::fromStdString(sock.daemonBinPath));
-    settings::setDaemonSettingValue("pathSave", QString::fromStdString(sock.daemonSavePath));
-    settings::setDaemonSettingValue("pathBackup", QString::fromStdString(sock.daemonBackupPath));
-
     sock.guiPath = (QCoreApplication::applicationDirPath()+"/save/").toStdString();
+
+    settings::setDaemonSettingValue("pathBin", QString::fromStdString(sock.daemonBinPath));
 }
 
 void sockSender::closeConnectionToDaemon()
@@ -108,6 +103,11 @@ std::string sockSender::getDaemonSavePath()
 std::string sockSender::getDaemonBackupPath()
 {
     return client.call<std::string>(salamandre::gui::func::getMyBackupPath);
+}
+
+std::string sockSender::getBackupPath()
+{
+    return sock.daemonBackupPath;
 }
 
 void sockSender::sendFile(int idDoctor, int idPatient, std::string filename)
@@ -227,15 +227,24 @@ int sockSender::checkStatus()
     return status;
 }
 
-bool sockSender::restartDaemon()
+sockSender::errorConnection sockSender::restartDaemon()
 {
-    bool res = QProcess::startDetached(QString::fromStdString(sock.daemonBinPath), QStringList() << "20001" << "20000" << "1", QString::fromStdString(sock.daemonBinPath));
-    return res;
+    QFile fileDaemon(QString::fromStdString(sock.daemonBinPath));
+
+    if(fileDaemon.exists())
+        if(QProcess::startDetached(QString::fromStdString(sock.daemonBinPath), QStringList() << "20001" << "20000" << "1", QString::fromStdString(sock.daemonBinPath)))
+            return NO_ERROR;
+        else
+            return ERROR_TO_START_DAEMON;
+    else
+        return ERROR_WITH_BIN_DAEMON;
+
+    return NO_ERROR;
 }
 
 bool sockSender::setGuiServerPort(int srvPort)
 {
-    client.call<void>(salamandre::gui::func::setGuiNotificationPort,srvPort);
+    client.call<void>(salamandre::gui::func::setGuiNotificationPort, srvPort);
     if(checkStatus() < 0)
     {
         std::cerr << "Error on init notification server" << std::endl;

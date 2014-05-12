@@ -14,7 +14,7 @@ class threadSave : public QThread
 public:
     explicit threadSave(salamandre::Patient *patient, salamandre::Doctor *doctor, QObject *parent = 0);
 
-    enum saveProgress{
+    enum saveProgression{
         SAVE_OF_FEC = 0,
         SAVE_OF_FCT = 1,
         SAVE_OF_FMT = 2,

@@ -28,48 +28,37 @@ threadUploadFile::threadUploadFile(salamandre::Patient *patient, salamandre::Doc
 void threadUploadFile::run()
 {
     salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
-    u_int32_t nbDigitalFile;
-    //bool exists;
+    bool removeIfExist;
 
     while(!this->uploadFileList.isEmpty()){
         ++this->totalProcessFile;
-        nbDigitalFile = record->vFile.size();
+        removeIfExist = true;
 
         salamandre::DigitalContent *digit = this->uploadFileList.at(0);
         this->uploadFileList.pop_front();
 
         QFile f(QString::fromStdString(digit->sourcePath));
         QString fileName = QFileInfo(f.fileName()).fileName();
-        /*exists = false;
 
-        for(u_int32_t j = 0; j < nbDigitalFile; ++j){ // check if file always exists
-            salamandre::DigitalContent *digitFile = record->vFile.at(j);
-            if(fileName.toStdString() == digitFile->fileName){
-                exists = true;
-                break;
-            }
+        QFile fTmp(this->destinationTmp+"/"+fileName);
+
+        if(fTmp.exists())
+            removeIfExist = fTmp.remove();
+
+        if(removeIfExist && f.copy(this->destinationTmp+"/"+fileName)){
+            digit->key = this->doctor->getPass().toStdString();
+
+            emit setProgressText("Encrypting : " + fileName);
+            salamandre::Record::encrypt(digit->key, digit->filePath);
+
+            emit setProgressText("Writting : " + fileName);
+            salamandre::DigitalRecord::insertDigitFile(this->destinationFmn.toStdString(), digit);
+            remove((this->destinationTmp.toStdString()+"/"+fileName.toStdString()).c_str());
+
+            record->vFile.push_back(digit);
         }
 
-        if(!exists){*/
-        f.copy(this->destinationTmp+"/"+fileName);
-
-        digit->key = this->doctor->getPass().toStdString();
-
-        emit setProgressText("Encrypting : " + fileName);
-        salamandre::Record::encrypt(digit->key, digit->filePath);
-
-        emit setProgressText("Writting : " + fileName);
-        salamandre::DigitalRecord::insertDigitFile(this->destinationFmn.toStdString(), digit);
-        remove((this->destinationTmp.toStdString()+"/"+fileName.toStdString()).c_str());
-
-        record->vFile.push_back(digit);
-
-
-        ++nbDigitalFile;
-
         emit newFileInserted();
-        //}
-
         this->totalProgress = (this->totalProcessFile * 100) / this->totalInsertedFile;
         emit fileProcess(this->totalProcessFile);
         emit uploadProgression(this->totalProgress);
