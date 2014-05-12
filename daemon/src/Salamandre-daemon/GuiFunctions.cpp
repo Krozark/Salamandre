@@ -39,6 +39,10 @@ namespace gui
             {
                 res = ntw::FuncWrapper::srv::exec(funcSetGuiNotificationPort,request);
             }break;
+            case func::getMyBinPath :
+            {
+                res = ntw::FuncWrapper::srv::exec(funcGetMyBinPath,request);
+            }break;
             case func::getMyBackupPath :
             {
                 res = ntw::FuncWrapper::srv::exec(funcGetMyBackupPath,request);
