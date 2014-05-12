@@ -36,7 +36,6 @@ namespace gui
      * \brief enum that contain the error code put as socket status
      */
     enum status {
-        OK = ntw::Status::ok,
         TODO = ntw::Status::user_define,
         WRONG_PARAM,
         ENABLE_TO_SEND_FILE

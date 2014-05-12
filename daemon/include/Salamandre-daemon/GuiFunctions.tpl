@@ -8,7 +8,7 @@ namespace gui
 
         switch(code)
         {
-            case status::OK:
+            case ntw::Status::ok:
             {
                 msg = "No errors";
             }break;
