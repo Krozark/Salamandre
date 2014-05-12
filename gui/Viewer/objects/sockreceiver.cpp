@@ -199,7 +199,7 @@ void sockReceiver::funcFileIsRecv(ntw::SocketSerialized& socket,int idDoctor, in
 
 int sockReceiver::notification_dispatch(int id,ntw::SocketSerialized& request)
 {
-        int res= ntw::FuncWrapper::Status::st::wrong_id;
+        int res= ntw::Status::wrong_id;
         std::cout<<"[notification_dispatch] id:"<<id<<std::endl<<std::flush;
         switch(id)
         {
