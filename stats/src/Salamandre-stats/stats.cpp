@@ -47,7 +47,7 @@ std::list<std::shared_ptr<Node>> Stats::get_nodes(unsigned int number)
     std::list<std::shared_ptr<Node>> list;
     Node::query()\
         //.filter(...)
-        .orderBy("?")
+        .orderBy("last_seen_time", '-')
         .limit(number)\
         .get(list);
 
