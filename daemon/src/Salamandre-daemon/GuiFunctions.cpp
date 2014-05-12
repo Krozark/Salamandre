@@ -1,6 +1,7 @@
 #include <Salamandre-daemon/GuiFunctions.hpp>
 #include <Salamandre-daemon/FileManager.hpp>
 #include <Salamandre-daemon/Daemon.hpp>
+#include <Salamandre-daemon/define.hpp>
 
 #include <Socket/FuncWrapper.hpp>
 
@@ -93,10 +94,16 @@ namespace gui
         return status;
     }
 
+    std::string funcGetMyBinPath(ntw::SocketSerialized& sock)
+    {
+        return utils::string::join("/",std::vector<std::string>({utils::sys::dir::pwd(),DAEMON_NAME}));
+    }
+
     std::string funcGetMyBackupPath(ntw::SocketSerialized& sock)
     {
         return utils::string::join("/",std::vector<std::string>({utils::sys::dir::pwd(),FileManager::backup_file_dir_path}));
     }
+
     std::string funcGetMySavePath(ntw::SocketSerialized& sock)
     {
         return utils::string::join("/",std::vector<std::string>({utils::sys::dir::pwd(),FileManager::new_file_dir_path}));

@@ -1,0 +1,6 @@
+#ifndef DAEMON_DEFINE_HPP
+#define DAEMON_DEFINE_HPP
+
+#define DAEMON_NAME "@CMAKE_PROJECT_NAME@"
+
+#endif

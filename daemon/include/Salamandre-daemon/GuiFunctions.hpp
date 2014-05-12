@@ -25,6 +25,7 @@ namespace gui
         sync, ///< to call whene un sync is need
         isInUpdate, ///< is in update
         setGuiNotificationPort,///< set the notification port to use
+        getMyBinPath, ///< get the path of the exec
         getMyBackupPath, ///<get my current path
         getMySavePath, ///<get my current path
 
@@ -85,6 +86,7 @@ namespace gui
      */
     void funcSetGuiNotificationPort(ntw::SocketSerialized& sock,unsigned int port);
 
+    std::string funcGetMyBinPath(ntw::SocketSerialized& sock);
     std::string funcGetMySavePath(ntw::SocketSerialized& sock);
     std::string funcGetMyBackupPath(ntw::SocketSerialized& sock);
 
