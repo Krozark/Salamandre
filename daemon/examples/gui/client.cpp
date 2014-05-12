@@ -29,8 +29,7 @@ int main(int argc,char* argv[])
 {
     if(argc < 2)
     {
-        std::cout<<"Usage are: "<<argv[0]<<" <server-port>"<<std::endl;
-        return 1;
+        utils::log::critical(1,"Usage are",argv[0],"<server-port>");
     }
 
 
@@ -48,7 +47,7 @@ int main(int argc,char* argv[])
         client.call<void>(salamandre::gui::func::setGuiNotificationPort,SERVER_PORT);
         if(check_status(client) < 0)
         {
-            utils::log::critical("Error on init notification server",1);
+            utils::log::critical(1,"Error on init notification server");
         }
 
         //start
@@ -182,7 +181,7 @@ void run(ntw::cli::Client& client)
                     client.call<void>(salamandre::gui::func::newFile,id_medecin,id_patient,file);
                     if(check_status(client) < 0)
                     {
-                        utils::log::critical(file,"ERROR on send new file info",2);
+                        utils::log::critical(2,file,"ERROR on send new file info");
                     }
                     client.request_sock.clear();
                 }
@@ -248,7 +247,7 @@ void run(ntw::cli::Client& client)
                             client.call<void>(salamandre::gui::func::sync,id_medecin,id_patient,"");
                             if(check_status(client) < 0)
                             {
-                                utils::log::critical(std::to_string(id_patient),"ERROR on ask for an sync on all file of the patient",3);
+                                utils::log::critical(3,id_patient,"ERROR on ask for an sync on all file of the patient");
                             }
                             client.request_sock.clear();
                         }break;
@@ -257,7 +256,7 @@ void run(ntw::cli::Client& client)
                             client.call<void>(salamandre::gui::func::sync,id_medecin,-1,"");
                             if(check_status(client) < 0)
                             {
-                                utils::log::critical(std::to_string(id_medecin),"ERROR on ask for an sync on all file of the medecin",4);
+                                utils::log::critical(4,id_medecin,"ERROR on ask for an sync on all file of the medecin");
                             }
                             client.request_sock.clear();
 
@@ -278,7 +277,7 @@ void run(ntw::cli::Client& client)
                         client.call<void>(salamandre::gui::func::sync,id_medecin,id_patient,file);
                         if(check_status(client) < 0)
                         {
-                            utils::log::critical(file,"ERROR on ask for an sync on file",5);
+                            utils::log::critical(5,file,"ERROR on ask for an sync on file");
                         }
                         client.request_sock.clear();
                     }
@@ -358,7 +357,7 @@ void run(ntw::cli::Client& client)
                     {
                         if(check_status(client) < 0)
                         {
-                            utils::log::critical("ERROR on ask for is_update",2);
+                            utils::log::critical(2,"ERROR on ask for is_update");
                         }
                         else
                             std::cout<<"Update: "<<(up?"Oui":"Non")<<std::endl;

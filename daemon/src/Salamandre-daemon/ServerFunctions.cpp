@@ -5,7 +5,11 @@
 #include <Socket/client/Client.hpp>
 #include <Socket/Status.hpp>
 
+#include <utils/string.hpp>
+
 #include <iostream>
+#include <sys/file.h>
+
 
 namespace salamandre
 {
@@ -38,20 +42,39 @@ namespace srv
                 client.request_sock.receive();//sendFile
                 int id;
                 client.request_sock>>id;
+
                 if(id == sendFile)
                 {
                     std::list<FileManager::FileInfo> to_send;
                     client.request_sock>>to_send;
                     client.request_sock.clear();
+
                     for(FileManager::FileInfo& file : to_send)
                     {
-                        /*std::string file_path = utils::string::join("/",std::vector<std::string>({std::to_string(file.id_medecin),
+                        std::string file_path = utils::string::join("/",std::vector<std::string>({std::to_string(file.id_medecin),
                                                                                                  std::to_string(file.id_patient),
-                                                                                                 file.filename}));*/
+                                                                                                 file.filename}));
+                        FILE* source = ::fopen(file_path.c_str(), "rb");
+                        if(source != NULL)
+                        {
+                            if(flock(::fileno(source),LOCK_EX) == 0)
+                            {
+                                client.request_sock<<sendFile //f id
+                                    <<file;//file info
+                                ::fseek(source,0,SEEK_SET);
+                                char buf[BUFSIZ];
+                                size_t size;
+                                while ((size = ::fread(buf, 1, BUFSIZ, source)) > 0)
+                                    client.request_sock.write(buf,size);
+                                //unlock it
+                                ::flock(::fileno(source), LOCK_UN);
+                                client.request_sock.sendCl();
+                                if(client.request_sock.getStatus() == ntw::Status::stop)
+                                    break;
+                            }
+                            ::fclose(source);
+                        }
                     }
-                }
-                else
-                {
                 }
             }
             client.disconnect();

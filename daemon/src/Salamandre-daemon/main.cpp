@@ -1,6 +1,8 @@
 #include <Salamandre-daemon/Daemon.hpp>
 #include <Salamandre-daemon/ServerBroadcast.hpp>
 
+#include <utils/log.hpp>
+
 #include <iostream>
 #include <csignal>
 
@@ -16,7 +18,7 @@ namespace salamandre
 
 void stop_server_handler(int sig)
 {
-    std::cout<<"Recv signal "<<sig<<". Stoping server.\n Please wait."<<std::endl;
+    utils::log::info("Stop","Recv signal",sig,"Stoping server.\n Please wait.");
     if(salamandre::daemon)
         salamandre::daemon->stop();
 }
@@ -32,13 +34,13 @@ int main(int argc,char* argv[])
 
     if(argc < NB_ARGS)
     {
-        std::cout<<"Usage is:\n\t"<<argv[0]<<" <gui port> <server port> <local only>"<<std::endl;
+        utils::log::error("Usage",argv[0],"<gui port> <server port> <local only>");
         if(argc <= GUI_PORT)
-            std::cout<<"Use "<<gui_port<<" as default gui port"<<std::endl;
+            utils::log::info("Useage",gui_port,"is used as default gui port");
         if(argc <= SERVER_PORT)
-            std::cout<<"Use "<<server_port<<" as default server port"<<std::endl;
+            utils::log::info("Usage",server_port,"is use as default server port");
         if(argc <= LOCAL_ONLY)
-            std::cout<<"Use "<<local_only<<" as default local only value"<<std::endl;
+            utils::log::info("Useage",local_only,"is use as default local only value");
     }
     if(argc > GUI_PORT)
         gui_port = atoi(argv[GUI_PORT]);
@@ -73,10 +75,10 @@ int main(int argc,char* argv[])
     }
     catch(ntw::SocketExeption& e)
     {
-        std::cout<<e.what()<<std::endl;
+        utils::log::error("Socket error",e.what());
     }
 
-    std::cout<<"Daemon is now close. Good bye"<<std::endl;    
+    utils::log::info("End","Daemon is now close, Good bye");
 
     return 0;
 }
