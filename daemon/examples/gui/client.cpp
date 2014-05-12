@@ -80,6 +80,7 @@ void run(ntw::cli::Client& client)
 
     std::string daemon_save_path = client.call<std::string>(salamandre::gui::func::getMySavePath);
     std::string daemon_backup_path = client.call<std::string>(salamandre::gui::func::getMyBackupPath);
+    std::string daemon_bin_path = client.call<std::string>(salamandre::gui::func::getMyBinPath);
 
     char c = 0;
     while(c!= 'Q' and c != 'q')
@@ -372,6 +373,7 @@ void run(ntw::cli::Client& client)
             }break;
             case '7': //print daemon_path
             {
+                std::cout<<"Daemon bin path : \""<<daemon_bin_path<<"\""<<std::endl;
                 std::cout<<"Daemon save path : \""<<daemon_save_path<<"\""<<std::endl;
                 std::cout<<"Daemon backup path : \""<<daemon_backup_path<<"\""<<std::endl;
             }break;
