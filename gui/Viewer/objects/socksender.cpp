@@ -33,7 +33,7 @@ bool sockSender::connectToDaemon()
 {
     bool res = true;
 
-    if(client.connect(sock.srvIpAddress, sock.srvPort) != NTW_ERROR_CONNEXION){
+    if(client.connect(sock.srvIpAddress, sock.srvPort) != ntw::Status::connexion){
         qDebug() << "Gui is now connect to daemon and ready to send request";
         sockSender::initConnectionToDaemon();
     }
@@ -44,7 +44,7 @@ bool sockSender::connectToDaemon()
 
             for(int i = 0; i < CONNECTION_TEST_NUMBER; ++i){ // loop for CONNECTION_TEST_NUMBER seconds
                 dialogConnectionToDaemon->increaseNbTest(i+1);
-                if(client.connect(sock.srvIpAddress, sock.srvPort) != NTW_ERROR_CONNEXION){
+                if(client.connect(sock.srvIpAddress, sock.srvPort) != ntw::Status::connexion){
                     resConnectRes = true;
                     break;
                 }
@@ -198,14 +198,14 @@ int sockSender::checkStatus()
     int status = client.request_sock.getStatus();
     switch(status)
     {
-        case salamandre::gui::status::STOP :{
+    case ntw::Status::stop :{
             std::cerr<<"[ERROR] The server is probably down."<<std::endl;
             std::cout<<"[Recv] Trying to restart the server"<<std::endl;
             sock.closeConnectionToDaemon();
             sockSender::connectToDaemon();
         }
         break;
-        case ntw::FuncWrapper::Status::st::ok :{
+    case ntw::Status::ok :{
             return 0;
         }
         default :
