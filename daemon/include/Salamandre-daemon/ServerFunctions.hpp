@@ -2,6 +2,8 @@
 #define SALAMANDRE_SERVERFUNCTIONS_HPP
 
 #include <Socket/SocketSerialized.hpp>
+#include <Salamandre-daemon/FileManager.hpp>
+#include <list>
 
 namespace salamandre
 {
@@ -34,6 +36,8 @@ namespace srv
      * \brief connect to the ip:port and send a file list
      */
     void funcILostMyData_BroadcastRecv(int id_medecin,int id_patient,const std::string& filename,unsigned int port,const std::string& ip);
+
+    void funcThisIsMyFiles_Recv(ntw::SocketSerialized& request,std::list<FileManager::FileInfo>);
 }
 }
 #endif

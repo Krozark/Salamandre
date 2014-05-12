@@ -33,9 +33,18 @@ namespace srv
         {
             std::list<FileManager::FileInfo> file_list = FileManager::list(id_medecin,id_patient,filename);
             client.call<void>(thisIsMyFiles,file_list);
-            /*
             if(client.request_sock.getStatus() != ntw::Status::stop)
-            */
+            {
+                client.request_sock.receive();//sendFile
+                int id;
+                client.request_sock>>id;
+                if(id == sendFile)
+                {
+                }
+                else
+                {
+                }
+            }
             client.disconnect();
         }
     }
