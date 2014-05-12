@@ -83,8 +83,12 @@ namespace salamandre
             sock_listen.receive(from);
             int id;
             sock_listen>>id;
+            std::cout<<"Recv id "<<id << "with status" << sock_listen.getStatus() <<std::endl;
 
-            std::cout<<"Recv id "<<id<<std::endl;
+            if(sock_listen.getStatus() == ntw::Status::stop) {
+                // Whether we received shutdown
+                break;
+            }
 
             switch(id)
             {
