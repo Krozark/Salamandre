@@ -42,7 +42,7 @@ namespace gui
             {
                 res = ntw::FuncWrapper::srv::exec(funcGetMyBackupPath,request);
             }break;
-            case func::getMySavePathPath :
+            case func::getMySavePath :
             {
                 res = ntw::FuncWrapper::srv::exec(funcGetMySavePath,request);
             }

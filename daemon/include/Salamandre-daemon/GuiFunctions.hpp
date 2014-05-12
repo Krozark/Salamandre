@@ -26,7 +26,7 @@ namespace gui
         isInUpdate, ///< is in update
         setGuiNotificationPort,///< set the notification port to use
         getMyBackupPath, ///<get my current path
-        getMySavePathPath, ///<get my current path
+        getMySavePath, ///<get my current path
 
         ///NOTIFICATIONS, daemon send, gui recv
         fileIsSend, ///< send a notification to the gui with the info of sended file

@@ -78,7 +78,7 @@ void run(ntw::cli::Client& client)
     std::vector<std::string> file_paths;
     std::vector<std::string> file_to_signal;
 
-    std::string daemon_save_path = client.call<std::string>(salamandre::gui::func::getMySavePathPath);
+    std::string daemon_save_path = client.call<std::string>(salamandre::gui::func::getMySavePath);
     std::string daemon_backup_path = client.call<std::string>(salamandre::gui::func::getMyBackupPath);
 
     char c = 0;
