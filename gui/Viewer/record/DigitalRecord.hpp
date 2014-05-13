@@ -32,14 +32,14 @@ namespace salamandre
                 (void) key;
                 return "";
             }
-            bool unSerialize(std::string key, std::string *string){
+            bool unSerialize(std::string key, std::string string){
                 (void) key;
                 (void) string;
 
                 return true;
             }
 
-            void save();
+            void save(std::string key);
             bool load(std::string key);
 
             friend std::ostream& operator<<(std::ostream& os, const DigitalRecord& digital)

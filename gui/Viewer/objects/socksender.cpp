@@ -77,10 +77,17 @@ sockSender::errorConnection sockSender::connectToDaemon()
 
 void sockSender::initConnectionToDaemon()
 {
+    qDebug() << "getting paths ";
+
     sock.daemonSavePath = sockSender::getDaemonSavePath();
     sock.daemonBackupPath = sockSender::getDaemonBackupPath();
     sock.daemonBinPath = sockSender::getDaemonBinPath();
     sock.guiPath = (QCoreApplication::applicationDirPath()+"/save/").toStdString();
+
+    qDebug() << "paths save : " << QString::fromStdString(sock.daemonSavePath);
+    qDebug() << "paths backup : " << QString::fromStdString(sock.daemonBackupPath);
+    qDebug() << "paths bin : " << QString::fromStdString(sock.daemonBinPath);
+    qDebug() << "paths gui save : " << QString::fromStdString(sock.guiPath);
 
     settings::setDaemonSettingValue("pathBin", QString::fromStdString(sock.daemonBinPath));
 }
@@ -92,7 +99,9 @@ void sockSender::closeConnectionToDaemon()
 
 std::string sockSender::getDaemonBinPath()
 {
-    return client.call<std::string>(salamandre::gui::func::getMyBinPath);
+    std::string binPath = client.call<std::string>(salamandre::gui::func::getMyBinPath);
+    sockSender::checkStatus();
+    return binPath;
 }
 
 std::string sockSender::getDaemonSavePath()

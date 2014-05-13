@@ -19,7 +19,7 @@ namespace salamandre
         }
     }
 
-    void DigitalRecord::save()
+    void DigitalRecord::save(std::string key)
     {
         ntw::Serializer serializer;
         long int version = this->getVersionNumber()+1;
@@ -32,14 +32,14 @@ namespace salamandre
         FILE *digitFile = fopen(this->getFilePath().c_str(), "rb+");
 
         fseek(digitFile, 0, SEEK_END);
+
         if(digitFile){
-            std::string passStrEncrypt;
-            passStrEncrypt = Record::strEncrypt(key, &passStr);
-            std::cout << "pass phrase size encrypt :  " << passStrEncrypt << " size : " << passStrEncrypt.size();
+            std::string passStrEncrypt = Record::strEncrypt(key, passStr);
 
             fseek(digitFile, 0, SEEK_SET);
             fwrite(buf, SIZE_HEADER, 1, digitFile);
-            fwrite(passStrEncrypt.c_str(), PASS_STR_SIZE, 1, digitFile);
+            fwrite(passStrEncrypt.c_str(), passStrEncrypt.size(), 1, digitFile);
+
             fclose(digitFile);
         }
     }
@@ -68,18 +68,20 @@ namespace salamandre
 
             curOffset += SIZE_HEADER;
 
-            char passStrBuf[PASS_STR_SIZE];
-            if((readSize = fread(passStrBuf, PASS_STR_SIZE, 1, digitFile)) == 0)
-                std::cerr << "attempt to read " << PASS_STR_SIZE << " but " << readSize << " have been read" << std::endl;
+            std::string passStrEncrypt = Record::strEncrypt(key, passStr);
 
-            std::string strBuf(passStrBuf);
+            char passStrBuf[passStrEncrypt.size()];
+            if((readSize = fread(passStrBuf, passStrEncrypt.size(), 1, digitFile)) == 0)
+                std::cerr << "attempt to read " << passStrEncrypt.size() << " but " << readSize << " have been read" << std::endl;
 
-            if(Record::strDecrypt(key, &strBuf) == std::string()){
-                std::cout << "decrypt pass for fmn : " << strBuf << " size : " << strBuf.size() << std::endl;
+            passStrBuf[passStrEncrypt.size()] = '\0';
+            std::string strBuf;
+            strBuf.assign(passStrBuf);
+
+            if(Record::strDecrypt(key, strBuf) != Record::strDecrypt(key, passStrEncrypt))
                 return false;
-            }
 
-            curOffset += PASS_STR_SIZE;
+            curOffset += passStrEncrypt.size();
 
             while(curOffset < offset){
                 std::string name;
@@ -130,14 +132,12 @@ namespace salamandre
     void DigitalRecord::extractDigitFile(std::string source, DigitalContent *digit)
     {
         std::string fileNameToRead = digit->filePathExport;
-
         std::cout << "extract file : " << digit->fileName << " to : " << source+"/tmp/"+digit->fileName+".tmp" << std::endl;
 
         FILE * fileToRead = fopen(fileNameToRead.c_str(), "rb");
 
-        if(fileToRead){ // check if file exists
+        if(fileToRead) // check if file exists
                 fclose(fileToRead);
-        }
         else{
             FILE *fileFMN = fopen((source+"/"+salamandre::DigitalRecord::fileName).c_str(), "rb");
             FILE *fileEncrypt = fopen((source+"/tmp/"+digit->fileName+".tmp").c_str(), "ab+");
@@ -149,8 +149,6 @@ namespace salamandre
 
             char buf[BUFSIZ];
             char bufEnd[rest];
-
-            std::cout << "read ofset : " << digit->offset << " : size : " << digit->size << std::endl;
 
             if(fileFMN){
                 fseek(fileFMN, digit->offset, SEEK_SET);
@@ -189,11 +187,9 @@ namespace salamandre
                 char buf[SIZE_HEADER];
                 serializer.read(buf, SIZE_HEADER);
 
-                std::string passStrEncrypt;
-                std::cout << "encrypt : " << passStr << " with " << digit->key << std::endl;
-                passStrEncrypt = Record::strEncrypt(digit->key, &passStr);
+                std::string passStrEncrypt = Record::strEncrypt(digit->key, passStr);
                 fwrite(buf, SIZE_HEADER, 1, file);
-                fwrite(passStrEncrypt.c_str(), PASS_STR_SIZE, 1, file);
+                fwrite(passStrEncrypt.c_str(), passStrEncrypt.size(), 1, file);
             }
             fclose(file);
         }
@@ -219,8 +215,6 @@ namespace salamandre
 
             digit->offset = ftell(fmnFile);
             digit->size = fileSize;
-
-            std::cout << "write ofset : " << digit->offset << " : size : " << digit->size << std::endl;
 
             int needLoop = fileSize / BUFSIZ;
             int rest = fileSize - (BUFSIZ*needLoop);

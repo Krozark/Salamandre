@@ -16,6 +16,9 @@ namespace salamandre
             MedicalRecord& operator=(const MedicalRecord&) = delete;
             ~MedicalRecord();
 
+            std::string serialize(std::string key);
+            bool unSerialize(std::string key, std::string string);
+
             static std::string getFileName(){
                 return fileName;
             }
