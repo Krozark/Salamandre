@@ -16,6 +16,7 @@ namespace salamandre
 {
 namespace srv
 {
+
     int dispatch(int id,ntw::SocketSerialized& request)
     {
         int res= ntw::Status::wrong_id;
@@ -23,11 +24,18 @@ namespace srv
 
         switch(id)
         {
-            case func::thisIsMyInfos :
+            case func::thisIsMyFiles :
+            {
+                res = ntw::FuncWrapper::srv::exec(funcThisIsMyFiles_Recv,request);
+            }break;
+            case func::sendFile :
             {
             }break;
+            default :
+            {
+                utils::log::error("srv::dispatch","Function of id",id,"not found");
+            }break;
         }
-
         return res;
     }
 
@@ -36,9 +44,10 @@ namespace srv
         ntw::cli::Client client;
         if(client.connect(ip,port) == ntw::Status::ok)
         {
+            //std::cout<<"srv::funcILostMyData_BroadcastRecv("<<id_medecin<<","<<id_patient<<","<<filename<<")"<<std::endl;
             std::list<FileManager::FileInfo> file_list = FileManager::list(id_medecin,id_patient,filename);
             client.call<void>(thisIsMyFiles,file_list);
-            if(client.request_sock.getStatus() != ntw::Status::stop)
+            /*if(client.request_sock.getStatus() != ntw::Status::stop)
             {
                 client.request_sock.receive();//sendFile
                 int id;
@@ -75,9 +84,33 @@ namespace srv
                         }
                     }
                 }
-            }
+            }*/
             client.disconnect();
         }
+    }
+
+    void funcThisIsMyFiles_Recv(ntw::SocketSerialized& request,std::list<FileManager::FileInfo> files)
+    {
+        utils::log::info("srv::funcThisIsMyFiles_Recv","Recv datas");
+        file_info_mutex.lock();
+        for(auto& f : files)
+        {
+            FileInfoFrom tmp = {
+                .version=f.version,
+                .id_medecin=f.id_medecin,
+                .id_patient=f.id_patient,
+                .filename=f.filename,
+                .request=&request
+            };
+            file_info_from.push_back(std::move(tmp));
+
+            std::cout<<"version: "<<f.version
+                <<" id_medecin: "<<f.id_medecin
+                <<" id_patient: "<<f.id_patient
+                <<" filename: "<<f.filename
+                <<std::endl;
+        }
+        file_info_mutex.unlock();
     }
 }
 }

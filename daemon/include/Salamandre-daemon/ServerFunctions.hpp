@@ -4,6 +4,7 @@
 #include <Socket/SocketSerialized.hpp>
 #include <Salamandre-daemon/FileManager.hpp>
 #include <list>
+#include <mutex>
 
 namespace salamandre
 {
@@ -38,6 +39,20 @@ namespace srv
     void funcILostMyData_BroadcastRecv(int id_medecin,int id_patient,const std::string& filename,unsigned int port,const std::string& ip);
 
     void funcThisIsMyFiles_Recv(ntw::SocketSerialized& request,std::list<FileManager::FileInfo>);
+
+    struct FileInfoFrom
+    {
+        //file
+        long int version;
+        int id_medecin;
+        int id_patient;
+        std::string filename;
+        //src
+        ntw::SocketSerialized* request;
+    };
+
+    static std::mutex file_info_mutex;
+    static std::list<FileInfoFrom> file_info_from;
 }
 }
 #endif

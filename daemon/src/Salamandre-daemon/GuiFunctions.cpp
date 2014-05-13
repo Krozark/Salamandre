@@ -11,11 +11,26 @@
 
 #include <unistd.h>
 #include <iostream>
+#include <chrono>
 
 namespace salamandre
 {
 namespace gui
 {
+    class update {
+        public:
+        int id_medecin;
+        int id_patient;
+        std::string filename;
+            
+        update(int m,int p,const std::string& f):id_medecin(m),id_patient(p),filename(f)
+        {
+        }
+
+    };
+
+    std::mutex update_list_mutex;
+    std::list<update> update_list;
 
     int dispatch(int id,ntw::SocketSerialized& request)
     {
@@ -85,21 +100,80 @@ namespace gui
 
     void funcSync(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename)
     {
-        sock.setStatus(gui::status::TODO);
-        daemon->broadcaster.sendILostMyData(id_medecin,id_patient,filename);
+        std::thread thread([id_medecin,id_patient,filename]()->void {
+            daemon->broadcaster.sendILostMyData(id_medecin,id_patient,filename);
+
+            update_list_mutex.lock();
+            update tmp(id_medecin,id_patient,filename);
+            update_list.push_back(tmp);
+            update_list_mutex.unlock();
+            //wait x sec
+            std::this_thread::sleep_for(std::chrono::seconds(60));
+            //askfiles
+
+            update_list_mutex.lock();
+            auto end = update_list.end();
+            for(auto i=update_list.begin();i!=end;++i)
+            {
+                update& ii=*i;
+                if(ii.id_medecin==id_medecin and ii.id_patient==id_patient and ii.filename==filename)
+                {
+                    update_list.erase(i);
+                    break;
+                }
+            }
+            update_list_mutex.unlock();
+        });
+        thread.detach();
     }
 
     bool funcIsInUpdate(ntw::SocketSerialized& sock,int id_medecin, int id_patient,std::string filename)
     {
-        if(id_medecin <=0)
+        update_list_mutex.lock();
+        auto end = update_list.end();
+        bool res = false;
+        if(id_medecin > 0 and id_patient > 0 and filename != "")
         {
-            sock.setStatus(status::WRONG_PARAM);
-            return false;
+            for(auto i=update_list.begin();i!=end;++i)
+            {
+                update& ii=*i;
+                if(ii.id_medecin==id_medecin and ii.id_patient==id_patient and ii.filename==filename)
+                {
+                    res = true;
+                    break;
+                }
+            }
         }
-        bool status = false;
-        ///\todo TODO
-        sock.setStatus(gui::status::TODO);
-        return status;
+        else if (id_medecin > 0 and id_patient > 0)
+        {
+            for(auto i=update_list.begin();i!=end;++i)
+            {
+                update& ii=*i;
+                if(ii.id_medecin==id_medecin and ii.id_patient==id_patient)
+                {
+                    res = true;
+                    break;
+                }
+            }
+        }
+        else if (id_medecin > 0)
+        {
+            for(auto i=update_list.begin();i!=end;++i)
+            {
+                update& ii=*i;
+                if(ii.id_medecin==id_medecin)
+                {
+                    res = true;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            res = update_list.size() > 0;
+        }
+        update_list_mutex.unlock();
+        return res;
     }
 
     std::string funcGetMyBinPath(ntw::SocketSerialized& sock)
