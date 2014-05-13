@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <csignal>
+#include <tclap/CmdLine.h>
 
 #define GUI_PORT 1
 #define SERVER_PORT 2
@@ -30,25 +31,22 @@ int main(int argc,char* argv[])
     int server_port = 3843;
     int broadcast_port = 5001;
     bool local_only = false;
+    try {
+    TCLAP::CmdLine cmd("Salamandre Daemon", ' ', "0.1");
+    TCLAP::ValueArg<int> gui_port_arg("g", "gui-port", "Port for the GUI", false, gui_port, "int", cmd);
+    TCLAP::ValueArg<int> server_port_arg("s", "server-port", "Port for the server to listen", false, server_port, "int", cmd);
+    TCLAP::SwitchArg local_switch("l", "local", "Whether daemon sould run stricly locally", cmd, false);
 
+    cmd.parse(argc, argv);
 
-    if(argc < NB_ARGS)
-    {
-        utils::log::error("Usage",argv[0],"<gui port> <server port> <local only>");
-        if(argc <= GUI_PORT)
-            utils::log::info("Useage",gui_port,"is used as default gui port");
-        if(argc <= SERVER_PORT)
-            utils::log::info("Usage",server_port,"is use as default server port");
-        if(argc <= LOCAL_ONLY)
-            utils::log::info("Useage",local_only,"is use as default local only value");
+    local_only = local_switch.getValue();
+    gui_port = gui_port_arg.getValue();
+    server_port = server_port_arg.getValue();
+
+    } catch(TCLAP::ArgException &e) {
+        std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
+        exit(1);
     }
-    if(argc > GUI_PORT)
-        gui_port = atoi(argv[GUI_PORT]);
-    if(argc > SERVER_PORT)
-        server_port = atoi(argv[SERVER_PORT]);
-    if(argc > LOCAL_ONLY)
-        local_only = atoi(argv[LOCAL_ONLY]);
-
 
     std::cout<<"Daemon start on:"
         <<"\n\tgui listen on port : "<<gui_port
