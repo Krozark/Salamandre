@@ -11,7 +11,7 @@
 #include <Socket/Serializer.hpp>
 #include <zlib.h>
 
-#define PASS_STR_SIZE 128
+#define PASS_STR_SIZE 96
 
 constexpr int SIZE_HEADER = ntw::Serializer::Size<long int>::value;
 
@@ -44,8 +44,8 @@ namespace salamandre
         std::string getFilePath();
         void setFilePath(std::string filePath);
 
-        virtual std::string serialize(std::string key) = 0;
-        virtual bool unSerialize(std::string key, std::string *string) = 0;
+        std::string serialize(std::string key);
+        bool unSerialize(std::string key, std::string *string);
         static std::string getFileName();
 
         void save(std::string key);
@@ -57,6 +57,18 @@ namespace salamandre
 
         void setVersionNumber(long long versionNumber);
         u_int64_t getVersionNumber();
+
+        friend std::ostream& operator<<(std::ostream& os, Record& record)
+        {
+            (void) record;
+            return os;
+        }
+
+        friend std::istream& operator>>(std::istream& is, Record& record)
+        {
+            (void) record;
+            return is;
+        }
 
     private:
         u_int64_t versionNumber;

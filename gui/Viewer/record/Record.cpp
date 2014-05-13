@@ -16,6 +16,8 @@ namespace salamandre
 {
     std::string Record::passStr = std::string("salamandre");
 
+    Record::~Record(){}
+
     const std::string Record::strCompress(const std::string& str, int compressionlevel)
     {
         z_stream zs;
@@ -109,8 +111,6 @@ namespace salamandre
         }
     }
 
-    Record::~Record(){}
-
     bool Record::decrypt(const std::string pass, const std::string filePathSrc, std::string filePathTo)
     {
         try{
@@ -154,6 +154,31 @@ namespace salamandre
         }
 
         return std::string();
+    }
+
+    std::string Record::serialize(std::string key)
+    {
+        std::ostringstream os;
+        os << *this;
+        std::string s = os.str();
+        std::string strEncrypt = this->strEncrypt(key, &s);
+
+        return Record::strCompress(strEncrypt);
+    }
+
+    bool Record::unSerialize(std::string key, std::string *string)
+    {
+        std::istringstream is;
+        std::string decompressString = Record::strDecompress(*string);
+        std::string decryptString = this->strDecrypt(key, &decompressString);
+
+        if(decryptString != std::string()){
+            is.str(decryptString);
+            is >> *this;
+            return true;
+        }
+
+        return false;
     }
 
     void Record::copyFile(FILE *fSrc, FILE *fDest)
