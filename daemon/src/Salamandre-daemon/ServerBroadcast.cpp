@@ -39,22 +39,26 @@ namespace salamandre
     {
         struct ifaddrs *ifaddr, *ifa;
         sockaddr_in * address;
-        if (::getifaddrs(&ifaddr) != 0) {
+        if (::getifaddrs(&ifaddr) != 0)
+        {
             ::perror("Unable to get interface addrs: ");
         }
 
-        for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
-            if (ifa->ifa_addr == NULL) {
+        for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next)
+        {
+            if (ifa->ifa_addr == NULL)
+            {
                 continue;
             }
 
-            if (ifa->ifa_addr->sa_family == AF_INET) { // We don't support IPv6, yet
+            if (ifa->ifa_addr->sa_family == AF_INET)
+            { // We don't support IPv6, yet
                 address = (sockaddr_in*) ifa->ifa_addr;
                 this->my_ips.insert(address->sin_addr.s_addr);
                 utils::log::info("ServerBroadcast::getaddrs","Adding", inet_ntoa(address->sin_addr), "to my known ip addresses.");
             }
         }
-        freeifaddrs(ifaddr);
+        ::freeifaddrs(ifaddr);
     }
 
     void ServerBroadcast::init()
@@ -113,7 +117,7 @@ namespace salamandre
             utils::log::info("ServerBroadcast::listen","Recv id ",id,"with status",sock_listen.getStatus());
 
             if(sock_listen.getStatus() == ntw::Status::stop) {
-                utils::log::warnning("ServerBroadcast::listen","Whether we received shutdown");
+                utils::log::warning("ServerBroadcast::listen","Whether we received shutdown");
                 continue;
             }
 
