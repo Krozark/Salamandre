@@ -25,6 +25,7 @@ private slots:
 
 signals:
     void fileExtracted(QString destFile);
+    void decryptError();
 
 public slots:
 };

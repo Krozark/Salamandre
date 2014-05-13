@@ -49,13 +49,16 @@ void threadUploadFile::run()
             digit->key = this->doctor->getPass().toStdString();
 
             emit setProgressText("Encrypting : " + fileName);
-            salamandre::Record::encrypt(digit->key, digit->filePath);
-
-            emit setProgressText("Writting : " + fileName);
-            salamandre::DigitalRecord::insertDigitFile(this->destinationFmn.toStdString(), digit);
-            remove((this->destinationTmp.toStdString()+"/"+fileName.toStdString()).c_str());
-
-            record->vFile.push_back(digit);
+            if(!salamandre::Record::encrypt(digit->key, digit->filePath)){
+                emit encryptError();
+                break;
+            }
+            else{
+                emit setProgressText("Writting : " + fileName);
+                salamandre::DigitalRecord::insertDigitFile(this->destinationFmn.toStdString(), digit);
+                remove((this->destinationTmp.toStdString()+"/"+fileName.toStdString()).c_str());
+                record->vFile.push_back(digit);
+            }
         }
 
         emit newFileInserted();

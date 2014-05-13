@@ -232,7 +232,7 @@ sockSender::errorConnection sockSender::restartDaemon()
     QFile fileDaemon(QString::fromStdString(sock.daemonBinPath));
 
     if(fileDaemon.exists())
-        if(QProcess::startDetached(QString::fromStdString(sock.daemonBinPath), QStringList() << "20001" << "20000" << "1", QString::fromStdString(sock.daemonBinPath)))
+        if(QProcess::startDetached(QString::fromStdString(sock.daemonBinPath), QStringList() << "-s" << "20001" << "-g" << "20000", QString::fromStdString(sock.daemonBinPath)))
             return NO_ERROR;
         else
             return ERROR_TO_START_DAEMON;

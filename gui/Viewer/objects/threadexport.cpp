@@ -34,9 +34,19 @@ void threadExport::run()
 
         if(removeIfExist){
             salamandre::DigitalRecord::extractDigitFile(this->source.toStdString(), fileToExport);
-            salamandre::Record::decrypt(fileToExport->key, this->source.toStdString()+"/tmp/"+fileToExport->fileName+".tmp", fileToExport->filePathExport);
-            remove((this->source.toStdString()+"/tmp/"+fileToExport->fileName+".tmp").c_str());
 
+            if(!salamandre::Record::decrypt(fileToExport->key, this->source.toStdString()+"/tmp/"+fileToExport->fileName+".tmp", fileToExport->filePathExport)){
+                QFile file(QString::fromStdString(fileToExport->filePathExport));
+                if(file.exists())
+                    file.remove();
+
+                remove((this->source.toStdString()+"/tmp/"+fileToExport->fileName+".tmp").c_str());
+
+                emit decryptError();
+                break;
+            }
+
+            remove((this->source.toStdString()+"/tmp/"+fileToExport->fileName+".tmp").c_str());
             emit fileExtracted(QString::fromStdString(fileToExport->filePathExport));
         }
     }

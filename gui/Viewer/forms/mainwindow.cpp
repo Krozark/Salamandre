@@ -36,7 +36,9 @@ MainWindow::~MainWindow()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     this->currentAction = ACTION_QUIT;
-    this->checkNeedSave();
+
+    if(!this->badPass)
+        this->checkNeedSave();
 
     if(this->threadSaveRecord->isRunning())
         event->ignore();
@@ -44,6 +46,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::init()
 {
+    qDebug() << "init";
     this->listViewDigitalFiles = new ListView(this->patient->getDirPath(), nullptr);
     this->threadUpload = new threadUploadFile(this->patient, this->doctor, nullptr);
     this->threadSaveRecord = new threadSave(this->patient, this->doctor, nullptr);
@@ -52,6 +55,7 @@ void MainWindow::init()
     this->restartApplication = false;
 
     this->connect(this->listViewDigitalFiles, SIGNAL(dropFile(QStringList)), SLOT(startUploadDigitalFile(QStringList)));
+    this->connect(this->listViewDigitalFiles, SIGNAL(needToRestartApps()), this, SLOT(restartNeeded()));
     this->connect(this->threadUpload, SIGNAL(newFileInserted()), this, SLOT(refreshDigitalFile()));
     this->connect(this->threadSaveRecord, SIGNAL(setProgressText(QString)), this->saveRecordDialog, SLOT(setProgressText(QString)));
     this->connect(this->threadSaveRecord, SIGNAL(setProgress(int)), this->saveRecordDialog, SLOT(setProgress(int)));
@@ -67,7 +71,6 @@ void MainWindow::init()
     this->ui->lineEdit_medicalPatientNumber->setText(this->patient->getId());
     this->ui->lineEdit_numericalPatientNumber->setText(this->patient->getId());
 
-    this->loadRecords();
     this->doctor->setType(salamandre::Doctor::TypeDoctor::DOCTOR_ALREADY_EXIST);
 
     this->initStatusBar();
@@ -78,6 +81,16 @@ void MainWindow::init()
     this->ui->actionChanger_de_patient->setShortcut(QKeySequence("Ctrl+o"));
     this->ui->actionD_connection->setShortcut(QKeySequence("Ctrl+d"));
     this->ui->actionQuitter->setShortcut(QKeySequence("Ctrl+q"));
+
+    if(this->loadRecords())
+        this->badPass = false;
+    else
+        this->badPass = true;
+}
+
+bool MainWindow::isBadPass()
+{
+    return this->badPass;
 }
 
 void MainWindow::initStatusBar()
@@ -115,21 +128,34 @@ void MainWindow::startDownloadClientData(int clientNumber)
     Q_UNUSED(clientNumber);
 }
 
-void MainWindow::loadRecords()
+bool MainWindow::loadRecords()
 {
-    this->loadFEC();
-    this->loadFCT();
-    this->loadFMT();
-    this->loadFMN();
+    bool noError = true;
+
+    noError = this->loadFEC();
+    qDebug() << "load : " << noError;
+
+    if(noError)
+        noError = this->loadFCT();
+qDebug() << "load : " << noError;
+    if(noError)
+        noError = this->loadFMT();
+qDebug() << "load : " << noError;
+    if(noError)
+        noError = this->loadFMN();
+qDebug() << "load : " << noError;
+    return noError;
 }
 
-void MainWindow::loadFEC()
+bool MainWindow::loadFEC()
 {
     salamandre::RegistryRecord *record = this->patient->getRegistryRecord();
 
     if(QFile::exists(QString::fromStdString(record->getFilePath())))
     {
-        record->load(this->doctor->getPass().toStdString());
+        if(!record->load(this->doctor->getPass().toStdString())){
+            return false;
+        }
 
         this->ui->lineEdit_patientLastName->setText(QString::fromStdString(record->getLastName()));
         this->ui->lineEdit_patientFirstName->setText(QString::fromStdString(record->getFirstName()));
@@ -149,15 +175,19 @@ void MainWindow::loadFEC()
 
         record->setVersionNumber(0); // will be automatically increment at save.
     }
+
+    return true;
 }
 
-void MainWindow::loadFCT()
+bool MainWindow::loadFCT()
 {
     salamandre::ConfidentialRecord *record = this->patient->getConfidentialRecord();
 
     if(QFile::exists(QString::fromStdString(record->getFilePath())))
     {
-        record->load(this->doctor->getPass().toStdString());
+        if(!record->load(this->doctor->getPass().toStdString())){
+            return false;
+        }
 
         this->ui->plainTextEdit_confidentialTextPatient->setPlainText(QString::fromStdString(record->getContent()));
     }
@@ -168,15 +198,18 @@ void MainWindow::loadFCT()
     }
 
     this->saveFCTNeeded = false;
+    return true;
 }
 
-void MainWindow::loadFMT()
+bool MainWindow::loadFMT()
 {
     salamandre::MedicalRecord *record = this->patient->getMedicalRecord();
 
     if(QFile::exists(QString::fromStdString(record->getFilePath())))
     {
-        record->load(this->doctor->getPass().toStdString());
+        if(!record->load(this->doctor->getPass().toStdString())){
+            return false;
+        }
 
         this->ui->plainTextEdit_medicalTextPatient->setPlainText(QString::fromStdString(record->getContent()));
     }
@@ -187,21 +220,27 @@ void MainWindow::loadFMT()
     }
 
     this->saveFMTNeeded = false;
+    return true;
 }
 
-void MainWindow::loadFMN()
+bool MainWindow::loadFMN()
 {
     salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
 
     if(QFile::exists(QString::fromStdString(record->getFilePath()))){
         QFile f(QString::fromStdString(record->getFilePath()));
         f.copy(this->patient->getDirPath()+"/tmp/"+QString::fromStdString(record->getFileName()));
-        record->load(this->doctor->getPass().toStdString());
+        if(!record->load(this->doctor->getPass().toStdString())){
+            qDebug() << "fail to load fmn";
+            return false;
+        }
         this->refreshDigitalFile();
     }
     else{
         record->setVersionNumber(0); // will be automatically increment at save.
     }
+
+    return true;
 }
 
 void MainWindow::saveRecords()
@@ -247,8 +286,10 @@ void MainWindow::saveProgress(int save)
 
 void MainWindow::saveEnd()
 {
-    if(this->saveRecordDialog->isVisible())
+    if(this->saveRecordDialog->isVisible()){
         this->saveRecordDialog->close();
+        QCoreApplication::processEvents();
+    }
 
     switch(this->currentAction){
     case ACTION_NEW_PATIENT:
@@ -577,4 +618,10 @@ void MainWindow::refreshNumberProcessFile(int number)
 void MainWindow::setProgressBarText(QString text)
 {
     this->progressBarProcessing->setFormat(text);
+}
+
+void MainWindow::restartNeeded()
+{
+    this->badPass = true;
+    this->on_actionD_connection_triggered();
 }

@@ -124,6 +124,9 @@ void sockReceiver::funcFileIsRecv(ntw::SocketSerialized& socket,int idDoctor, in
     (void) socket;
     std::cout<<"File recv:"<<idDoctor<<"/"<<idPatient<<"/"<<filename<<std::endl;
 
+    if(idDoctor < 0)
+        return;
+
     getFile *fileRecv = new getFile(idDoctor, idPatient, filename);
     getFile *file = nullptr;
 

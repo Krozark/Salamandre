@@ -26,6 +26,7 @@ public:
     ~MainWindow();
 
     bool restartApps();
+    bool isBadPass();
 private:
 
     enum actionEmit{
@@ -44,6 +45,7 @@ private:
 
     bool saveFCTNeeded, saveFMTNeeded;
     bool restartApplication;
+    bool badPass;
 
     // status bar objects.
     QProgressBar *progressBarProcessing;
@@ -62,11 +64,11 @@ private:
     void initStatusBarValue();
 
     void startDownloadClientData(int clientNumber = -1);
-    void loadRecords();
-    void loadFEC();
-    void loadFCT();
-    void loadFMT();
-    void loadFMN();
+    bool loadRecords();
+    bool loadFEC();
+    bool loadFCT();
+    bool loadFMT();
+    bool loadFMN();
 
     void saveRecords();
     bool saveFEC();
@@ -92,6 +94,7 @@ private slots:
     void setProgressBarText(QString text);
     void saveProgress(int save);
     void saveEnd();
+    void restartNeeded();
 
     void on_actionQuitter_triggered();
     void on_actionNouveau_patient_triggered();

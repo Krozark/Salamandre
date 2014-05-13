@@ -33,13 +33,18 @@ namespace salamandre
 
         fseek(digitFile, 0, SEEK_END);
         if(digitFile){
+            std::string passStrEncrypt;
+            passStrEncrypt = Record::strEncrypt(key, &passStr);
+            std::cout << "pass phrase size encrypt :  " << passStrEncrypt << " size : " << passStrEncrypt.size();
+
             fseek(digitFile, 0, SEEK_SET);
             fwrite(buf, SIZE_HEADER, 1, digitFile);
+            fwrite(passStrEncrypt.c_str(), PASS_STR_SIZE, 1, digitFile);
             fclose(digitFile);
         }
     }
 
-    void DigitalRecord::load(std::string key)
+    bool DigitalRecord::load(std::string key)
     {
         FILE *digitFile = fopen(this->getFilePath().c_str(), "rb");
         if(digitFile){
@@ -62,6 +67,19 @@ namespace salamandre
             this->setVersionNumber(version);
 
             curOffset += SIZE_HEADER;
+
+            char passStrBuf[PASS_STR_SIZE];
+            if((readSize = fread(passStrBuf, PASS_STR_SIZE, 1, digitFile)) == 0)
+                std::cerr << "attempt to read " << PASS_STR_SIZE << " but " << readSize << " have been read" << std::endl;
+
+            std::string strBuf(passStrBuf);
+
+            if(Record::strDecrypt(key, &strBuf) == std::string()){
+                std::cout << "decrypt pass for fmn : " << strBuf << " size : " << strBuf.size() << std::endl;
+                return false;
+            }
+
+            curOffset += PASS_STR_SIZE;
 
             while(curOffset < offset){
                 std::string name;
@@ -105,6 +123,8 @@ namespace salamandre
         else{
             std::cerr << "error to open file " << this->getFilePath().c_str() << std::endl;
         }
+
+        return true;
     }
 
     void DigitalRecord::extractDigitFile(std::string source, DigitalContent *digit)
@@ -168,7 +188,12 @@ namespace salamandre
                 serializer << version;
                 char buf[SIZE_HEADER];
                 serializer.read(buf, SIZE_HEADER);
+
+                std::string passStrEncrypt;
+                std::cout << "encrypt : " << passStr << " with " << digit->key << std::endl;
+                passStrEncrypt = Record::strEncrypt(digit->key, &passStr);
                 fwrite(buf, SIZE_HEADER, 1, file);
+                fwrite(passStrEncrypt.c_str(), PASS_STR_SIZE, 1, file);
             }
             fclose(file);
         }

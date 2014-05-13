@@ -45,9 +45,12 @@ private:
 
 signals:
     void dropFile(QStringList);
+    void needToRestartApps();
+
 public slots:
     void startUpload();
     void startReading();
+    void decryptHasError();
 
 private slots:
     void showContextMenu(QPoint p);

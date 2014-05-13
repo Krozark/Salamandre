@@ -78,10 +78,19 @@ int main(int argc, char *argv[])
                 QCoreApplication::processEvents();
 
                 MainWindow w(doctor, patient, nullptr);
-                w.show();
 
-                returnError = a.exec();
-                restart = w.restartApps();
+                if(w.isBadPass()){
+                    restart = true;
+                }
+                else{
+                    w.show();
+                    returnError = a.exec();
+                    restart = w.restartApps();
+                }
+
+                if(w.isBadPass()){
+                    QMessageBox::critical(nullptr, "Erreur critique", "Mot de passe incorrect, vous aller être redirigé vers l'interface de connexion.");
+                }
             }
 
             delete chDialog;

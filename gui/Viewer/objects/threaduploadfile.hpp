@@ -39,6 +39,7 @@ signals:
     void fileProcess(int);
     void uploadProgression(int);
     void setProgressText(QString text);
+    void encryptError();
 public slots:
     
 };

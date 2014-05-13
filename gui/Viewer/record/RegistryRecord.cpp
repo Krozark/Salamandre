@@ -19,14 +19,24 @@ namespace salamandre
         std::ostringstream os;
         os << *this;
         std::string s = os.str();
-        return this->strEncrypt(key, &s);
+        std::string strEncrypt = this->strEncrypt(key, &s);
+
+        return Record::strCompress(strEncrypt);
     }
 
-    void RegistryRecord::unSerialize(std::string key, std::string *string)
+    bool RegistryRecord::unSerialize(std::string key, std::string *string)
     {
         std::istringstream is;
-        is.str(this->strDecrypt(key, string));
-        is >> *this;
+        std::string decompressString = Record::strDecompress(*string);
+        std::string decryptString = this->strDecrypt(key, &decompressString);
+
+        if(decryptString != std::string()){
+            is.str(decryptString);
+            is >> *this;
+            return true;
+        }
+
+        return false;
     }
 
     void RegistryRecord::setFirstName(std::string firstName)

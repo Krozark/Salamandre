@@ -5,6 +5,7 @@
 #include <QFileInfo>
 #include <QFileDialog>
 #include <QDesktopServices>
+#include <QMessageBox>
 
 ListView::ListView(QString sourceFMN, QWidget *parent) :
     QListView(parent)
@@ -36,6 +37,9 @@ ListView::ListView(QString sourceFMN, QWidget *parent) :
 
     this->connect(this, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(const QPoint)));
     this->connect(this->threadToRead, SIGNAL(fileExtracted(QString)), SLOT(readExtractFile(QString)));;
+
+    this->connect(this->threadToUpload, SIGNAL(decryptError()), this, SLOT(decryptHasError()));
+    this->connect(this->threadToRead, SIGNAL(decryptError()), this, SLOT(decryptHasError()));
 }
 
 ListView::~ListView()
@@ -146,5 +150,11 @@ void ListView::startUpload()
 
 void ListView::readExtractFile(QString filePath)
 {
-    QDesktopServices::openUrl(QUrl(filePath));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(filePath));
+}
+
+void ListView::decryptHasError()
+{
+    qDebug() << "receive decrypt error";
+   emit needToRestartApps();
 }

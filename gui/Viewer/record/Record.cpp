@@ -14,6 +14,8 @@
 
 namespace salamandre
 {
+    std::string Record::passStr = std::string("salamandre");
+
     const std::string Record::strCompress(const std::string& str, int compressionlevel)
     {
         z_stream zs;
@@ -93,39 +95,65 @@ namespace salamandre
         return outstring;
     }
 
-    void Record::encrypt(const std::string pass, const std::string filePath)
+    bool Record::encrypt(const std::string pass, const std::string filePath)
     {
-        std::cout << "start to encrypt file : " << filePath << std::endl;
-        CryptoPP::FileSource(filePath.c_str(), true,
-                               new CryptoPP::DefaultEncryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::FileSink((filePath+".tmp").c_str())));
-        std::cout << "end to encrypt file" << std::endl;
+        try{
+            std::cout << "start to encrypt file : " << filePath << std::endl;
+            CryptoPP::FileSource(filePath.c_str(), true, new CryptoPP::DefaultEncryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::FileSink((filePath+".tmp").c_str())));
+            std::cout << "end to encrypt file" << std::endl;
+            return true;
+        }
+        catch(const CryptoPP::Exception& e){
+            std::cerr << e.what() << std::endl;
+            return false;
+        }
     }
 
     Record::~Record(){}
 
-    void Record::decrypt(const std::string pass, const std::string filePathSrc, std::string filePathTo)
+    bool Record::decrypt(const std::string pass, const std::string filePathSrc, std::string filePathTo)
     {
-        std::cout << "start to decrypt file : " << filePathSrc << std::endl;
-        CryptoPP::FileSource((filePathSrc).c_str(), true, new CryptoPP::DefaultDecryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::FileSink(filePathTo.c_str())));
-        std::cout << "end to decrypt file" << std::endl;
+        try{
+            std::cout << "start to decrypt file : " << filePathSrc << std::endl;
+            CryptoPP::FileSource((filePathSrc).c_str(), true, new CryptoPP::DefaultDecryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::FileSink(filePathTo.c_str())));
+            std::cout << "end to decrypt file" << std::endl;
+            return true;
+        }
+        catch(const CryptoPP::Exception& e){
+            std::cerr << e.what() << std::endl;
+            return false;
+        }
     }
 
     const std::string Record::strEncrypt(const std::string pass, const std::string *string)
     {
-        std::string output;
-        std::cout << "start to encrypt string" << std::endl;
-        CryptoPP::StringSource(*string, true, new CryptoPP::DefaultEncryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::HexEncoder(new CryptoPP::StringSink(output))));
-        std::cout << "end of encrypt string" << std::endl;
-        return Record::strCompress(output);
+        try{
+            std::string output;
+            std::cout << "start to encrypt string" << std::endl;
+            CryptoPP::StringSource(*string, true, new CryptoPP::DefaultEncryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::HexEncoder(new CryptoPP::StringSink(output))));
+            std::cout << "end of encrypt string" << std::endl;
+            return output;
+        }
+        catch(const CryptoPP::Exception& e){
+            std::cerr << e.what() << std::endl;
+            return std::string();
+        }
     }
 
     const std::string Record::strDecrypt(const std::string pass, std::string *string)
     {
-        std::string output;
-        std::cout << "start of decrypt string" << std::endl;
-        CryptoPP::StringSource(Record::strDecompress(*string), true, new CryptoPP::HexDecoder(new CryptoPP::DefaultDecryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::StringSink(output))));
-        std::cout << "end of decrypt string" << std::endl;
-        return output;
+        try{
+            std::string output;
+            std::cout << "start of decrypt string" << std::endl;
+            CryptoPP::StringSource(*string, true, new CryptoPP::HexDecoder(new CryptoPP::DefaultDecryptorWithMAC((byte*)pass.data(), pass.size(), new CryptoPP::StringSink(output))));
+            std::cout << "end of decrypt string" << std::endl;
+            return output;
+        }
+        catch(const CryptoPP::Exception& e){
+            std::cerr << e.what() << std::endl;
+        }
+
+        return std::string();
     }
 
     void Record::copyFile(FILE *fSrc, FILE *fDest)
@@ -177,27 +205,41 @@ namespace salamandre
         char buf[SIZE_HEADER];
         serializer.read(buf, SIZE_HEADER);
 
+        std::string passStrEncrypt;
+        passStrEncrypt = Record::strEncrypt(key, &passStr);
+        std::cout << "pass phrase size encrypt :  " << passStrEncrypt << " size : " << passStrEncrypt.size();
+
         outputFile.seekp(0, outputFile.beg);
         outputFile.write(buf, SIZE_HEADER);
+        outputFile.write(passStrEncrypt.c_str(), PASS_STR_SIZE);
         outputFile.seekp(0, outputFile.end);
 
         outputFile << str;
     }
 
-    void Record::load(std::string key)
+    bool Record::load(std::string key)
     {
-        this->loadHeader();
+        if(!this->loadHeader(key)){
+            std::cout << "failed to load header " << std::endl;
+            return false;
+        }
 
         std::ifstream inputFile(this->getFilePath().c_str(), std::ios::in | std::ios::binary);
         std::string str((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
-        std::string subStr = str.substr(SIZE_HEADER, str.size()-SIZE_HEADER);
-        this->unSerialize(key, &subStr);
+        std::string subStr = str.substr(SIZE_HEADER+PASS_STR_SIZE, str.size()-(SIZE_HEADER+PASS_STR_SIZE));
 
         inputFile.close();
+
+        if(str.size() > (SIZE_HEADER+PASS_STR_SIZE))
+            return this->unSerialize(key, &subStr);
+
+        return true;
     }
 
-    void Record::loadHeader()
+    bool Record::loadHeader(std::string key)
     {
+        bool res = true;
+
         FILE *file = fopen(this->getFilePath().c_str(), "rb");
         if(file){
             char header[SIZE_HEADER];
@@ -213,8 +255,22 @@ namespace salamandre
             long int version;
             serializer >> version;
             this->setVersionNumber(version);
+
+            char passStrBuf[PASS_STR_SIZE];
+            if((readSize = fread(passStrBuf, PASS_STR_SIZE, 1, file)) == 0)
+                std::cerr << "attempt to read " << PASS_STR_SIZE << " but " << readSize << " have been read" << std::endl;
+
+            std::string strBuf;
+            strBuf.assign(passStrBuf);
+
+            if(Record::strDecrypt(key, &strBuf) == std::string()){
+                res = false;
+            }
+
             fclose(file);
         }
+
+        return res;
     }
 
     void Record::setVersionNumber(long long versionNumber)

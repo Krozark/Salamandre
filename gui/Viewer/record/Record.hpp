@@ -11,8 +11,9 @@
 #include <Socket/Serializer.hpp>
 #include <zlib.h>
 
-constexpr int SIZE_HEADER = ntw::Serializer::Size<long int>::value;
+#define PASS_STR_SIZE 128
 
+constexpr int SIZE_HEADER = ntw::Serializer::Size<long int>::value;
 
 namespace salamandre
 {
@@ -29,8 +30,8 @@ namespace salamandre
         Record& operator=(const Record&) = delete;
         virtual ~Record() = 0;
 
-        static void encrypt(const std::string pass, const std::string filePath);
-        static void decrypt(const std::string pass, const std::string filePathSrc, std::string filePathTo);
+        static bool encrypt(const std::string pass, const std::string filePath);
+        static bool decrypt(const std::string pass, const std::string filePathSrc, std::string filePathTo);
 
         static const std::string strDecrypt(const std::string pass, std::string *string);
         static const std::string strEncrypt(const std::string pass, const std::string *string);
@@ -44,14 +45,15 @@ namespace salamandre
         void setFilePath(std::string filePath);
 
         virtual std::string serialize(std::string key) = 0;
-        virtual void unSerialize(std::string key, std::string *string) = 0;
+        virtual bool unSerialize(std::string key, std::string *string) = 0;
         static std::string getFileName();
 
         void save(std::string key);
-        void load(std::string key);
-        void loadHeader();
+        bool load(std::string key);
+        bool loadHeader(std::string key);
 
         static u_int64_t getVersion(u_int32_t idMedecin, u_int32_t idPatient, std::string nameRecord);
+        static std::string passStr;
 
         void setVersionNumber(long long versionNumber);
         u_int64_t getVersionNumber();
