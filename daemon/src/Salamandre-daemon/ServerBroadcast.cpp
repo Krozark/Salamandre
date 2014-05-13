@@ -127,20 +127,27 @@ namespace salamandre
                 continue;
             }
 
+
+            std::string remote_ip = from.getIp();
+
             switch(id)
             {
                 case salamandre::srv::func::thisIsMyInfos :
                     {
                         int port;
                         sock_listen>>port;
-                        funcThisIsMyInfos(from,port);
+
+                        if (this->my_ips.count(remote_ip) == 0 or port != this->server_port)
+                            funcThisIsMyInfos(from,port);
                     }break;
                 case salamandre::srv::func::iLostMyData :
                     {
                         int id_medecin,id_patient,port;
                         std::string filename;
                         sock_listen>>id_medecin>>id_patient>>filename>>port;
-                        funcILostMyData(from,id_medecin,id_patient,filename,port);
+
+                        if (this->my_ips.count(remote_ip) == 0 or port != this->server_port)
+                            funcILostMyData(from,id_medecin,id_patient,filename,port);
                     }break;
                 default:
                     ///\todo WTF are you doing?
@@ -180,14 +187,8 @@ namespace salamandre
     void ServerBroadcast::funcThisIsMyInfos(ntw::SocketSerialized& from,int port)
     {
         std::string remote_ip = from.getIp();
-        utils::log::info("ServerBroadcast::funcThisIsMyInfos", "Recv info from", remote_ip, " Port",port);
-
-        // We don't add messages from ourselves
-        if (this->my_ips.count(remote_ip) == 0 or port != this->server_port)
-        {
-            utils::log::info("ServerBroadcast::funcThisIsMyInfos", "Adding", remote_ip, "port", port, "to the known nodes.");
-            stats::Stats::add_node(remote_ip, port);
-        }
+        utils::log::info("ServerBroadcast::funcThisIsMyInfos", "Adding", remote_ip, "port", port, "to the known nodes.");
+        stats::Stats::add_node(remote_ip, port);
     }
 
     void ServerBroadcast::funcILostMyData(ntw::SocketSerialized& from,int id_medecin,int id_patient,std::string filename,int port)

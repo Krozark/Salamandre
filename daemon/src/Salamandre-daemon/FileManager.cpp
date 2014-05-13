@@ -239,7 +239,6 @@ namespace salamandre
 
         while(run)
         {
-            std::cout<<"FileManager::_start_thread"<<std::endl;
             if (elapsed_time > duration)
             {
                 build_list_to_send();
@@ -326,6 +325,8 @@ namespace salamandre
             {
                 if(::flock(::fileno(f),LOCK_EX|LOCK_NB) == 0)
                 {
+                    utils::log::info("FileManager::send_file","to ip:",info.ip,"port:",info.port,"file:",info.path);
+
                     res = true;
                     std::thread thread([client,f,info]()->void{
                         ::fseek(f,0,SEEK_SET);

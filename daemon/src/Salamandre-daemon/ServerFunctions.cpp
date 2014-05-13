@@ -152,6 +152,8 @@ namespace srv
 
     bool askFile(const FileInfoFrom& info)
     {
+        utils::log::info("ServerFunctions::askFile","to ip:",info.ip,"port:",info.port);
+        
         ntw::cli::Client* client = new ntw::cli::Client;
         if(client->connect(info.ip,info.port) == ntw::Status::ok)
         {

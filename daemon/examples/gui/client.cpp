@@ -436,7 +436,7 @@ int notification_dispatch(int id,ntw::SocketSerialized& request)
             case salamandre::gui::func::endOfSync :
             {
                 res = ntw::FuncWrapper::srv::exec(salamandre::gui::funcEndOfSync,request);
-            }
+            }break;
             default:
             {
                 utils::log::error("notification_dispatch","Function of id",id,"not found");
