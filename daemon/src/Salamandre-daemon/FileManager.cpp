@@ -10,6 +10,7 @@
 #include <utils/log.hpp>
 
 #include <Socket/Serializer.hpp>
+#include <Socket/client/Client.hpp>
 
 constexpr int HEADER_SIZE = ntw::Serializer::Size<long int>::value;
 
@@ -228,12 +229,15 @@ namespace salamandre
     void FileManager::_start_thread()
     {
         const std::chrono::seconds duration(timeout);
-        const std::chrono::milliseconds step(500);
+        const std::chrono::milliseconds step(5000);
 
         std::chrono::milliseconds elapsed_time(0);
 
+        build_list_to_send();
+
         while(run)
         {
+            std::cout<<"FileManager::_start_thread"<<std::endl;
             if (elapsed_time > duration)
             {
                 build_list_to_send();
@@ -256,16 +260,20 @@ namespace salamandre
 
     void FileManager::build_list_to_send()
     {
+        files_to_send.clear();
+
         const std::list<std::string> dest_l = utils::sys::dir::list_dirs(network_file_dir_path);
         for(const std::string& dest : dest_l)
         {
             const std::string dest_path = utils::string::join("/",network_file_dir_path,dest);
             const std::list<std::string> medecin_l = utils::sys::dir::list_dirs(dest_path);
 
+
             std::vector<std::string> ip_port = utils::string::split(dest,":");
 
             if(ip_port.size() != 2)
                 continue;
+
 
             const int port = ::atoi(ip_port[1].c_str());
 
@@ -279,14 +287,14 @@ namespace salamandre
                 for(const std::string& patient : patient_l)
                 {
                     const std::string patient_path = utils::string::join("/",medecin_path,patient);
-                    const std::list<std::string> file_l = utils::sys::dir::list_dirs(patient_path);
+                    const std::list<std::string> file_l = utils::sys::dir::list_files(patient_path);
 
                     int id_patient = ::atoi(patient.c_str());
 
                     for(const std::string& file : file_l)
                     {
                         const std::string file_path = utils::string::join("/",patient_path,file);
-
+                        
                         FileInfoFromPath tmp;
                         tmp.id_medecin = id_medecin;
                         tmp.id_patient = id_patient;
@@ -296,15 +304,26 @@ namespace salamandre
                         tmp.ip = ip_port[0];
 
                         files_to_send.insert(tmp);
+
+                        std::cout<<"Add path "<<file_path<<" to send"<<std::endl;
                     }
                 }
             }
         }
     }
 
-    bool FileManager::send_file(const salamandre::FileInfoFromPath& fileinfo)
+    bool FileManager::send_file(const salamandre::FileInfoFromPath& info)
     {
         bool res = false;
+
+        ntw::cli::Client* client = new ntw::cli::Client;
+        if(client->connect(info.ip,info.port) == ntw::Status::ok)
+        {
+            std::cout<<"Connect to "<<info.ip<<":"<<info.port<<" ok"<<std::endl;
+        }
+        else
+            std::cout<<"Connect to "<<info.ip<<":"<<info.port<<" fail"<<std::endl;
+        delete client;
         return res;
     }
 

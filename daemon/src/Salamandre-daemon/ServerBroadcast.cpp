@@ -58,8 +58,9 @@ namespace salamandre
             if (ifa->ifa_addr->sa_family == AF_INET)
             {
                 address = (sockaddr_in*) ifa->ifa_addr;
-                this->my_ips.insert(address->sin_addr.s_addr);
-                utils::log::info("ServerBroadcast::getaddrs","Adding", inet_ntoa(address->sin_addr), "to my known ip addresses.");
+                std::string addr = ::inet_ntoa(address->sin_addr);
+                this->my_ips.insert(addr);
+                utils::log::info("ServerBroadcast::getaddrs","Adding",addr,"to my known ip addresses.");
             }
         }
         ::freeifaddrs(ifaddr);
@@ -180,10 +181,9 @@ namespace salamandre
     {
         std::string remote_ip = from.getIp();
         utils::log::info("ServerBroadcast::funcThisIsMyInfos", "Recv info from", remote_ip, " Port",port);
-        in_addr_t remote_addr = ::inet_addr(remote_ip.c_str());
 
         // We don't add messages from ourselves
-        if (this->my_ips.find(remote_addr) == this->my_ips.end() || port != this->server_port)
+        if (this->my_ips.count(remote_ip) == 0 or port != this->server_port)
         {
             utils::log::info("ServerBroadcast::funcThisIsMyInfos", "Adding", remote_ip, "port", port, "to the known nodes.");
             stats::Stats::add_node(remote_ip, port);

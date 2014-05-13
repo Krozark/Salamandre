@@ -10,6 +10,7 @@ endmacro()
 
 # project name
 project (Salamandre-daemon)
+set(DAEMON_NAME salamandre-daemon)
 
 # setup version numbers
 set(VERSION_MAJOR 0)

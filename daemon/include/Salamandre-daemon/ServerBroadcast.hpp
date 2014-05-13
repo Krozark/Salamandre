@@ -42,7 +42,7 @@ namespace salamandre
             ntw::SocketSerialized sock_listen;
             ntw::SocketSerialized sock_send;
 
-            std::unordered_set<in_addr_t> my_ips;
+            std::unordered_set<std::string> my_ips;
 
             /**
              * \param port port to connect to
