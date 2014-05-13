@@ -34,8 +34,24 @@ namespace srv
             {
                 res = ntw::FuncWrapper::srv::exec(funcThisIsMyFiles_Recv,request);
             }break;
-            case func::sendThisFile :
+            case func::saveThisFile :
             {
+                int id_medecin,id_patient;
+                std::string filename;
+
+                request>>id_medecin
+                    >>id_patient
+                    >>filename;
+
+                std::string dir_path = utils::string::join("/",FileManager::backup_file_dir_path,id_medecin,id_patient);
+                utils::sys::dir::create(dir_path);
+                std::string file_path = utils::string::join("/",dir_path,filename);
+                request.save(file_path);
+
+                request.clear();
+                request.setStatus(ntw::Status::ok);
+                request.sendCl();
+
             }break;
             default :
             {
@@ -132,6 +148,7 @@ namespace srv
         }
         file_info_mutex.unlock();
     }
+
 
     bool askFile(const FileInfoFrom& info)
     {

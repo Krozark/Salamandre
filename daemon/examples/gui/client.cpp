@@ -170,7 +170,7 @@ void run(ntw::cli::Client& client)
             }break;
             case '2': //déplacer vers save
                 for(auto& file : file_paths)
-                    test::moveForSave(id_medecin,id_patient,file,file_to_signal);
+                    test::moveForSave(id_medecin,id_patient,file,file_to_signal,daemon_save_path);
                 file_paths.clear();
             {
             }break;
@@ -428,6 +428,10 @@ int notification_dispatch(int id,ntw::SocketSerialized& request)
             {
                 res = ntw::FuncWrapper::srv::exec(salamandre::gui::funcFileIsRecv,request);
             }break;
+            case salamandre::gui::func::endOfSync :
+            {
+                res = ntw::FuncWrapper::srv::exec(salamandre::gui::funcEndOfSync,request);
+            }
             default:
             {
                 utils::log::error("notification_dispatch","Function of id",id,"not found");
@@ -449,6 +453,11 @@ namespace gui {
     void funcFileIsRecv(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename)
     {
         std::cout<<"File recv:"<<id_medecin<<"/"<<id_patient<<"/"<<filename<<std::endl;
+    }
+
+    void funcEndOfSync(ntw::SocketSerialized& sock,int id_medecin,int id_patient,std::string filename)
+    {
+        utils::log::info("gui::funcEndOfSync","medecin:",id_medecin,"patient:",id_medecin,"filename:",filename);
     }
 }
 }

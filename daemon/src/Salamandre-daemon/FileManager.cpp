@@ -1,4 +1,6 @@
 #include <Salamandre-daemon/FileManager.hpp>
+#include <Salamandre-daemon/ServerFunctions.hpp>
+
 #include <Salamandre-stats/stats.hpp>
 
 #include <sstream>
@@ -319,11 +321,40 @@ namespace salamandre
         ntw::cli::Client* client = new ntw::cli::Client;
         if(client->connect(info.ip,info.port) == ntw::Status::ok)
         {
-            std::cout<<"Connect to "<<info.ip<<":"<<info.port<<" ok"<<std::endl;
+            FILE* f = ::fopen(info.path.c_str(),"rb");
+            if(f != NULL)
+            {
+                if(::flock(::fileno(f),LOCK_EX|LOCK_NB) == 0)
+                {
+                    res = true;
+                    std::thread thread([client,f,info]()->void{
+                        ::fseek(f,0,SEEK_SET);
+                        char buf[BUFSIZ];
+                        size_t size; //file size
+                        client->request_sock<<salamandre::srv::saveThisFile
+                            <<info.id_medecin
+                            <<info.id_patient
+                            <<info.filename;
+                        //add file datas
+                        while ((size = ::fread(buf, 1, BUFSIZ,f)) > 0)
+                            client->request_sock.write(buf,size);
+
+                        client->request_sock.sendCl();
+                        if(client->request_sock.receive() > 0)
+                        {
+                            utils::sys::file::rm(info.path);
+                            //\todo RM dir
+                        }
+                        delete client;
+                        ::flock(::fileno(f),LOCK_UN);
+                    });
+                    thread.detach();
+                }
+            }
         }
-        else
-            std::cout<<"Connect to "<<info.ip<<":"<<info.port<<" fail"<<std::endl;
-        delete client;
+
+        if(res == false)
+            delete client;
         return res;
     }
 

@@ -30,7 +30,7 @@ namespace test
     /**
      *
      */
-    void moveForSave(int id_medecin,int id_patient,const std::string& filename,std::vector<std::string>& file_to_signal);
+    void moveForSave(int id_medecin,int id_patient,const std::string& filename,std::vector<std::string>& file_to_signal,const std::string& to);
 }
 
 #endif

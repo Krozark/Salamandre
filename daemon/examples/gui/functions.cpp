@@ -25,9 +25,7 @@ namespace test
     void createFile(int id_medecin,int id_patient,const std::string& filename,std::vector<std::string>& file_paths)
     {
         //compute the path
-        std::string path_origin = utils::string::join("/",std::vector<std::string>({ROOT_DIR,
-                                                         std::to_string(id_medecin),
-                                                         std::to_string(id_patient)}));
+        std::string path_origin = utils::string::join("/",ROOT_DIR,id_medecin,id_patient);
         //create new dir if not exist
         utils::sys::dir::create(path_origin);
 
@@ -46,16 +44,11 @@ namespace test
         file_paths.push_back(filename);
     }
 
-    void moveForSave(int id_medecin,int id_patient,const std::string& filename,std::vector<std::string>& file_to_signal)
+    void moveForSave(int id_medecin,int id_patient,const std::string& filename,std::vector<std::string>& file_to_signal,const std::string& to)
     {
-        std::string path_origin = utils::string::join("/",std::vector<std::string>({ROOT_DIR,
-                                                         std::to_string(id_medecin),
-                                                         std::to_string(id_patient),
-                                                         filename}));
+        std::string path_origin = utils::string::join("/",ROOT_DIR,id_medecin,id_patient,filename);
 
-        std::string path_dest = utils::string::join("/",std::vector<std::string>({"datas/tosave",
-                                                         std::to_string(id_medecin),
-                                                         std::to_string(id_patient)}));
+        std::string path_dest = utils::string::join("/",to,id_medecin,id_patient);
         utils::sys::dir::create(path_dest);
         path_dest+="/"+filename;
 
@@ -67,11 +60,11 @@ namespace test
         {
             file_to_signal.push_back(filename);
             //rm datas/tosave
-            std::string path = utils::string::join("/",std::vector<std::string>({"datas/tosave",std::to_string(id_medecin)}));
+            std::string path = utils::string::join("/",to,id_medecin);
             utils::sys::dir::rm_if_empty(path,true);
 
             //rm gui/save
-            path = utils::string::join("/",std::vector<std::string>({ROOT_DIR,std::to_string(id_medecin)}));
+            path = utils::string::join("/",ROOT_DIR,id_medecin);
             utils::sys::dir::rm_if_empty(path,true);
         }
     }

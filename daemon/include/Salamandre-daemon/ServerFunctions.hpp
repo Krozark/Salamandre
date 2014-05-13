@@ -32,7 +32,8 @@ namespace srv
 
         //connected
         thisIsMyFiles,///< send a filename list
-        sendThisFile, ///< recv files to save
+        saveThisFile, ///< recv files to save
+        sendThisFile,  ///< send a file
     };
 
     /***
@@ -52,7 +53,6 @@ namespace srv
     void funcILostMyData_BroadcastRecv(int id_medecin,int id_patient,const std::string& filename,unsigned int port,const std::string& ip);
 
     void funcThisIsMyFiles_Recv(ntw::SocketSerialized& request,int port,std::list<FileInfo>);
-
 
     void askForFile(int id_medecin,int id_patient,const std::string& filename);
 

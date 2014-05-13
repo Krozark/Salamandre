@@ -112,6 +112,15 @@ namespace gui
      */
     void funcFileIsRecv(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename);
 
+    /**
+     * \brief Sent to the gui information about the end of sync
+     * \param sock the socket
+     * \param id_medecin the medecin id
+     * \param id_patient the patient id
+     * \param filepath the filename
+     */
+    void funcEndOfSync(ntw::SocketSerialized& sock,int id_medecin,int id_patient,std::string filename);
+
 }
 }
 #include <Salamandre-daemon/GuiFunctions.tpl>
