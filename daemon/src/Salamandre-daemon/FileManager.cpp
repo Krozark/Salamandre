@@ -227,9 +227,85 @@ namespace salamandre
 
     void FileManager::_start_thread()
     {
+        const std::chrono::seconds duration(timeout);
+        const std::chrono::milliseconds step(500);
+
+        std::chrono::milliseconds elapsed_time(0);
+
         while(run)
         {
+            if (elapsed_time > duration)
+            {
+                build_list_to_send();
+                const auto end = files_to_send.end();
+                for(auto current = files_to_send.begin(); current!= end;)
+                {
+                    if(send_file(*current))
+                    {
+                        current = files_to_send.erase(current);
+                    }
+                    else
+                        ++current;
+                }
+                elapsed_time -= duration;
+            }
+            std::this_thread::sleep_for(step);
+            elapsed_time += step;
         }
+    }
+
+    void FileManager::build_list_to_send()
+    {
+        const std::list<std::string> dest_l = utils::sys::dir::list_dirs(network_file_dir_path);
+        for(const std::string& dest : dest_l)
+        {
+            const std::string dest_path = utils::string::join("/",network_file_dir_path,dest);
+            const std::list<std::string> medecin_l = utils::sys::dir::list_dirs(dest_path);
+
+            std::vector<std::string> ip_port = utils::string::split(dest,":");
+
+            if(ip_port.size() != 2)
+                continue;
+
+            const int port = ::atoi(ip_port[1].c_str());
+
+            for(const std::string& medecin : medecin_l)
+            {
+                const std::string medecin_path = utils::string::join("/",dest_path,medecin);
+                const std::list<std::string> patient_l = utils::sys::dir::list_dirs(medecin_path);
+
+                int id_medecin = ::atoi(medecin.c_str());
+
+                for(const std::string& patient : patient_l)
+                {
+                    const std::string patient_path = utils::string::join("/",medecin_path,patient);
+                    const std::list<std::string> file_l = utils::sys::dir::list_dirs(patient_path);
+
+                    int id_patient = ::atoi(patient.c_str());
+
+                    for(const std::string& file : file_l)
+                    {
+                        const std::string file_path = utils::string::join("/",patient_path,file);
+
+                        FileInfoFromPath tmp;
+                        tmp.id_medecin = id_medecin;
+                        tmp.id_patient = id_patient;
+                        tmp.filename = file;
+                        tmp.path = file_path;
+                        tmp.port = port;
+                        tmp.ip = ip_port[0];
+
+                        files_to_send.insert(tmp);
+                    }
+                }
+            }
+        }
+    }
+
+    bool FileManager::send_file(const salamandre::FileInfoFromPath& fileinfo)
+    {
+        bool res = false;
+        return res;
     }
 
 }

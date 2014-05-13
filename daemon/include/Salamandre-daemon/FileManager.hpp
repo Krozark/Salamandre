@@ -3,6 +3,7 @@
 
 #include <string>
 #include <list>
+#include <unordered_set>
 #include <cstdio>
 #include <thread>
 
@@ -109,8 +110,14 @@ namespace salamandre
             void _start_thread();
             const int timeout;
 
+            std::unordered_set<salamandre::FileInfoFromPath,FileHasher> files_to_send;
 
-            std::list<FileInfoFromPath> files;
+            /**
+             * \brief build the list of files in network_file_dir_path and add them to files
+             */
+            void build_list_to_send();
+
+            static bool send_file(const FileInfoFromPath& fileinfo);
     };
 }
 #endif

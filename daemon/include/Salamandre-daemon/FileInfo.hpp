@@ -1,5 +1,5 @@
-#ifndef SALAMANDRE_DAEMON_FILEINFO_HPP
-#define SALAMANDRE_DAEMON_FILEINFO_HPP
+#ifndef SALAMANDRE_FILEINFO_HPP
+#define SALAMANDRE_FILEINFO_HPP
 
 #include <string>
 
@@ -21,8 +21,9 @@ namespace salamandre
         std::string ip;
     };
 
-    struct FileInfoFromPath
+    class FileInfoFromPath
     {
+        public:
         //file
         int id_medecin;
         int id_patient;
@@ -31,6 +32,13 @@ namespace salamandre
         //src
         int port;
         std::string ip;
+
+        bool operator==(const FileInfoFromPath& other)const;
+    };
+
+    class FileHasher{
+        public:
+            std::size_t operator()(const FileInfoFromPath &v) const;
     };
 
     struct FileInfo {

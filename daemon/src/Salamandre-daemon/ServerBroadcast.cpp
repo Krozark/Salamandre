@@ -120,7 +120,8 @@ namespace salamandre
             sock_listen>>id;
             utils::log::info("ServerBroadcast::listener", "Recv func id:", id, "with status", sock_listen.getStatus());
 
-            if(sock_listen.getStatus() == ntw::Status::stop) {
+            if(sock_listen.getStatus() == ntw::Status::stop)
+            {
                 utils::log::warning("ServerBroadcast::listener","Shutdown received!");
                 continue;
             }
@@ -161,7 +162,7 @@ namespace salamandre
             if (elapsed_time > duration)
             {
                 sendThisIsMyInfo();
-                elapsed_time = std::chrono::milliseconds(0);
+                elapsed_time -= duration;
             }
             std::this_thread::sleep_for(step);
             elapsed_time += step;
@@ -182,7 +183,8 @@ namespace salamandre
         in_addr_t remote_addr = ::inet_addr(remote_ip.c_str());
 
         // We don't add messages from ourselves
-        if (this->my_ips.find(remote_addr) == this->my_ips.end() || port != this->server_port) {
+        if (this->my_ips.find(remote_addr) == this->my_ips.end() || port != this->server_port)
+        {
             utils::log::info("ServerBroadcast::funcThisIsMyInfos", "Adding", remote_ip, "port", port, "to the known nodes.");
             stats::Stats::add_node(remote_ip, port);
         }
