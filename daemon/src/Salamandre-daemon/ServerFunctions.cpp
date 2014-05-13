@@ -6,6 +6,7 @@
 #include <Socket/Status.hpp>
 
 #include <utils/string.hpp>
+#include <utils/log.hpp>
 
 #include <iostream>
 #include <sys/file.h>
@@ -18,7 +19,7 @@ namespace srv
     int dispatch(int id,ntw::SocketSerialized& request)
     {
         int res= ntw::Status::wrong_id;
-        std::cout<<"[srv::dispatch] id:"<<id<<std::endl<<std::flush;
+        utils::log::info("srv::dispatch","id:",id);
 
         switch(id)
         {

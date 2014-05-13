@@ -7,6 +7,7 @@
 
 #include <utils/sys.hpp>
 #include <utils/string.hpp>
+#include <utils/log.hpp>
 
 #include <unistd.h>
 #include <iostream>
@@ -19,7 +20,7 @@ namespace gui
     int dispatch(int id,ntw::SocketSerialized& request)
     {
         int res= ntw::Status::wrong_id;
-        std::cout<<"[gui::dispatch] id:"<<id<<std::endl<<std::flush;
+        utils::log::info("gui::dispatch","id",id);
 
         switch(id)
         {
@@ -27,6 +28,7 @@ namespace gui
             {
                 res = ntw::FuncWrapper::srv::exec(funcNewFile,request);
                 //\todo TODO
+                utils::log::info("Notifier","Send fake info with fileIsRecv");
                 daemon->gui_client_notif_sender.call<void>(salamandre::gui::func::fileIsRecv,-1,-1,"test");
             }break;
             case func::sync :
@@ -55,7 +57,7 @@ namespace gui
             }
             default:
             {
-                std::cout<<"[dispatch] Function id not found"<<std::endl;                
+                utils::log::error("gui::dispatch","Function of id",id,"not found");
             }break;
         }
         return res;
@@ -117,8 +119,11 @@ namespace gui
 
     void funcSetGuiNotificationPort(ntw::SocketSerialized& sock,unsigned int port)
     {
+        utils::log::info("gui::funcSetGuiNotificationPort","Get qui notifier port:",port);
         daemon->gui_client_notif_sender.disconnect();
-        daemon->gui_client_notif_sender.connect("127.0.0.1",port);
+        if(daemon->gui_client_notif_sender.connect("127.0.0.1",port) != ntw::Status::connexion)
+            utils::log::error("gui::funcSetGuiNotificationPort","Unable to connect to client notifier");
+
     }
 }   
 }

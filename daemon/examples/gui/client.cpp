@@ -397,9 +397,7 @@ int check_status(ntw::cli::Client& client)
     {
         case ntw::Status::stop :
         {
-            std::cerr<<"[ERROR] The server is probably down."<<std::endl;
-            std::cout<<"[Recv] Stop"<<std::endl
-                <<"The programme will now stop"<<std::endl;
+            utils::log::error("Stop","The server is probably down.","The programme will now stop");
             return -1;
         }break;
         case ntw::Status::ok :
@@ -418,7 +416,7 @@ int check_status(ntw::cli::Client& client)
 int notification_dispatch(int id,ntw::SocketSerialized& request)
 {
         int res= ntw::Status::wrong_id;
-        std::cout<<"[notification_dispatch] id:"<<id<<std::endl<<std::flush;
+        utils::log::info("notification_dispatch","id:",id);
         switch(id)
         {
             case salamandre::gui::func::fileIsSend :
@@ -431,7 +429,7 @@ int notification_dispatch(int id,ntw::SocketSerialized& request)
             }break;
             default:
             {
-                std::cout<<"[notification_dispatch] Function id not found"<<std::endl;                
+                utils::log::error("notification_dispatch","Function of id",id,"not found");
             }break;
         }
         return res;

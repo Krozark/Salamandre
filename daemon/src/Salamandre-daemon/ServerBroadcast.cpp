@@ -4,6 +4,8 @@
 
 #include <Salamandre-stats/stats.hpp>
 
+#include <utils/log.hpp>
+
 #include <chrono>
 
 namespace salamandre
@@ -12,8 +14,8 @@ namespace salamandre
         port(port),
         server_port(server_port),
         run(false),
-        sock_listen(ntw::Socket::Dommaine::IP,ntw::Socket::Type::UDP, IPPROTO_UDP),
-        sock_send(ntw::Socket::Dommaine::IP,ntw::Socket::Type::UDP, IPPROTO_UDP)
+        sock_listen(ntw::Socket::Domain::IP,ntw::Socket::Type::UDP, IPPROTO_UDP),
+        sock_send(ntw::Socket::Domain::IP,ntw::Socket::Type::UDP, IPPROTO_UDP)
     {
         sock_listen.connect(port);
         sock_listen.setReusable(true);
@@ -68,7 +70,6 @@ namespace salamandre
             <<id_patient
             <<filename
             <<server_port;
-        std::cout<<"Send:"<<sock_send<<std::endl;
         sock_send.send();
         sock_send.clear();
     }
@@ -78,16 +79,16 @@ namespace salamandre
         while(this->run)
         {
             sock_listen.clear();
-            ntw::SocketSerialized from(ntw::Socket::Dommaine::IP,ntw::Socket::Type::UDP);
+            ntw::SocketSerialized from(ntw::Socket::Domain::IP,ntw::Socket::Type::UDP);
             from.connect(port);
             sock_listen.receive(from);
             int id;
             sock_listen>>id;
-            std::cout<<"Recv id "<<id << "with status" << sock_listen.getStatus() <<std::endl;
+            utils::log::info("ServerBroadcast::listen","Recv id ",id,"with status",sock_listen.getStatus());
 
             if(sock_listen.getStatus() == ntw::Status::stop) {
-                // Whether we received shutdown
-                break;
+                utils::log::warnning("ServerBroadcast::listen","Whether we received shutdown");
+                continue;
             }
 
             switch(id)
@@ -141,14 +142,14 @@ namespace salamandre
 
     void ServerBroadcast::funcThisIsMyInfos(ntw::SocketSerialized& from,int port)
     {
-        std::cout<<"Recv info from:"<<from.getIp()<<", Port"<<port<<std::endl;
+        utils::log::info("ServerBroadcast::funcThisIsMyInfos","Recv info from",from.getIp(),", Port",port);
         ///\todo TODO check if this is me
         stats::Stats::add_node(from.getIp(),port);
     }
 
     void ServerBroadcast::funcILostMyData(ntw::SocketSerialized& from,int id_medecin,int id_patient,std::string filename,int port)
     {
-        std::cout<<"funcILostMyData from:"<<from.getIp()<<" id_medecin:"<<id_medecin<<" id_patient:"<<id_patient<<" filename:"<<filename<<" port:"<<port<<std::endl;
+        utils::log::info("ServerBroadcast::funcILostMyData","Recv from:",from.getIp()," id_medecin:",id_medecin," id_patient:",id_patient," filename:",filename," port:",port);
         std::thread t(salamandre::srv::funcILostMyData_BroadcastRecv,id_medecin,id_patient,filename,port,from.getIp());
         t.detach();
     }

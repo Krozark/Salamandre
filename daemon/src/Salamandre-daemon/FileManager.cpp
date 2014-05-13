@@ -7,6 +7,7 @@
 
 #include <utils/string.hpp>
 #include <utils/sys.hpp>
+#include <utils/log.hpp>
 
 constexpr int HEADER_SIZE = ntw::Serializer::Size<long int>::value;
 
@@ -62,7 +63,7 @@ namespace salamandre
         FILE* source = ::fopen(path_origin.c_str(), "rb");
         if(source != nullptr)
         {
-            std::cout<<"Save file "<<path_origin<<std::endl;
+            utils::log::info("FileManager::prepareForUpload","Save file ",path_origin);
             //lock it
             if(flock(::fileno(source),LOCK_EX) == 0)
             {
@@ -81,7 +82,7 @@ namespace salamandre
             }
             else
             {
-                std::cerr<<"Unable to lock file "<<path_origin<<std::endl;
+                utils::log::error("FileManager::prepareForUpload","Unable to lock file.",path_origin);
             }
             ::fclose(source);
         }
@@ -227,7 +228,7 @@ namespace salamandre
         }
         else
             res = false;
-        std::cout<<"copy file to "<<path_dest<<" ["<<res<<"]"<<std::endl;
+        utils::log::info("FileManager::cpForUpload","copy file to ",path_dest,". ok?",res);
         return res;
     }
 

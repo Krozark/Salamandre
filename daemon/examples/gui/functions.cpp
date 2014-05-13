@@ -7,6 +7,7 @@
 
 #include <utils/string.hpp>
 #include <utils/sys.hpp>
+#include <utils/log.hpp>
 
 #include <sstream>
 #include <ctime>
@@ -61,7 +62,7 @@ namespace test
         std::cout<<"Save file "<<path_origin<<" to "<<path_dest<<std::endl;
 
         if(::rename(path_origin.c_str(),path_dest.c_str()) != 0)
-            std::cerr<<"[Error] on move "<<path_origin<<" to "<<path_dest<<std::endl;
+            utils::log::error("Move",path_origin,"to",path_dest);
         else
         {
             file_to_signal.push_back(filename);
