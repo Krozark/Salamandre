@@ -10,8 +10,10 @@ updateFileDialog::updateFileDialog(QWidget *parent) :
     this->ui->setupUi(this);
     this->ui->buttonBox->setVisible(false);
     this->setModal(true);
+    this->isSync = true;
 
-    this->connect(&(sockReceiver::sock), SIGNAL(fileIsRecv(getFile*)), this, SLOT(fileRcv(getFile*)));
+    this->connect(&(sockReceiver::sock), SIGNAL(syncIsFinish(getFile*)), this, SLOT(syncFinished(getFile*)));
+    this->connect(&(sockReceiver::sock), SIGNAL(syncIsFinish(getFile*)), this, SLOT(fileRcv(getFile*)));
 }
 
 updateFileDialog::~updateFileDialog()
@@ -22,6 +24,12 @@ updateFileDialog::~updateFileDialog()
     }
 
     delete this->ui;
+}
+
+void updateFileDialog::closeEvent(QCloseEvent *event)
+{
+    if(this->isSync)
+        event->ignore();
 }
 
 void updateFileDialog::askFile(int idDoctor, int idPatient, std::string filename)
@@ -48,7 +56,7 @@ void updateFileDialog::askFile(int idDoctor, int idPatient, std::string filename
     qDebug() << "file has been ask";
 }
 
-void updateFileDialog::fileRcv(getFile *fileRecv)
+void updateFileDialog::syncFinished(getFile *fileRecv)
 {
     getFile *file = nullptr;
     bool found = false;
@@ -67,6 +75,14 @@ void updateFileDialog::fileRcv(getFile *fileRecv)
     if(!found)
         return;
 
+    if(this->dataList.size() == 0){
+        this->isSync = false;
+        this->ui->buttonBox->setVisible(true);
+    }
+}
+
+void updateFileDialog::fileRcv(getFile *fileRecv)
+{
     std::string filename = fileRecv->filename;
     int idDoctor = fileRecv->idDoctor;
     int idPatient = fileRecv->idPatient;
@@ -82,10 +98,6 @@ void updateFileDialog::fileRcv(getFile *fileRecv)
     }
 
     this->ui->textEdit_progressGetFile->insertPlainText("\n");
-
-    if(this->dataList.size() == 0){
-        this->ui->buttonBox->setVisible(true);
-    }
 }
 void updateFileDialog::on_buttonBox_clicked(QAbstractButton *button)
 {

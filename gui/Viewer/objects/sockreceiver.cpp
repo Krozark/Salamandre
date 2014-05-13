@@ -20,8 +20,6 @@ sockReceiver sockReceiver::sock;
 
 sockReceiver::sockReceiver()
 {
-    sock.srvPort = DEFAULT_NOTIF_SERVER_PORT;
-    sock.srvIpAddress = DEFAULT_NOTIF_IP;
 }
 
 sockReceiver::~sockReceiver()
@@ -29,8 +27,12 @@ sockReceiver::~sockReceiver()
     delete sock.server;
 }
 
-void sockReceiver::init(){
+void sockReceiver::init(int srvPort, std::string ipAdress){
+    sock.srvIpAddress = ipAdress;
+    sock.srvPort = srvPort;
     sock.server = new ntw::srv::Server(sock.srvPort, sock.srvIpAddress, notification_dispatch, 1, 1);
+
+    std::cout << "sockReceiver init on IP : " << sock.srvIpAddress << ":" << std::to_string(sock.srvPort) << std::endl;
     sock.server->start();
 }
 
@@ -50,67 +52,6 @@ void sockReceiver::askFile(getFile *file){
     std::cout << "asking to get file " << file->filename << " for patient " << std::to_string(file->idPatient) << " of doctor " << std::to_string(file->idDoctor) << std::endl;
 
     sockSender::getFile(file->idDoctor, file->idPatient, file->filename);
-
-    /* TODO remove next line then daemon will send notification, now its just to test ...
-    emit sock.fileIsRecv(file);
-
-    QStringList fileFilter = QStringList() << QString::fromStdString(salamandre::ConfidentialRecord::getFileName())
-                                           << QString::fromStdString(salamandre::MedicalRecord::getFileName())
-                                           << QString::fromStdString(salamandre::DigitalRecord::getFileName())
-                                           << QString::fromStdString(salamandre::RegistryRecord::getFileName());
-
-    std::string backupPath = sockSender::getBackupPath()+"/"+std::to_string(file->idDoctor);
-
-    if(file->idPatient == -1){
-        QDir dirBackup(QString::fromStdString(backupPath));
-        QFileInfoList listInfo = dirBackup.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot, QDir::Time);
-        int nbSubDir = listInfo.size();
-        QFileInfo dInfo;
-
-        for(int i = 0; i < nbSubDir; ++i){
-            dInfo = listInfo.at(i);
-            QDir dirApps = QCoreApplication::applicationDirPath()+"/save/"+QString::number(file->idDoctor)+"/"+dInfo.fileName();
-            dirApps.mkpath(dirApps.path());
-
-            QString pathFiles = QString::fromStdString(backupPath)+"/"+dInfo.fileName();
-            QDir dirBackupFiles(pathFiles);
-
-            QFileInfoList listFileInfo = dirBackupFiles.entryInfoList(fileFilter, QDir::Files | QDir::NoDotAndDotDot);
-            int nbSubFile = listFileInfo.size();
-            QFileInfo fInfo;
-
-            for(int j = 0; j < nbSubFile; ++j){
-                fInfo = listFileInfo.at(j);
-
-                QFile f(pathFiles+"/"+fInfo.fileName());
-                f.rename(dirApps.path()+"/"+fInfo.fileName());
-            }
-        }
-    }
-    else if(file->filename == ""){
-        QDir dirApps = QCoreApplication::applicationDirPath()+"/save/"+QString::number(file->idDoctor)+"/"+QString::number(file->idPatient);
-        dirApps.mkpath(dirApps.path());
-
-        QString pathFiles = QString::fromStdString(backupPath)+"/"+QString::number(file->idPatient);
-        QDir dirBackupFiles(pathFiles);
-        QFileInfoList listFileInfo = dirBackupFiles.entryInfoList(fileFilter, QDir::Files | QDir::NoDotAndDotDot);
-        int nbSubFile = listFileInfo.size();
-        QFileInfo fInfo;
-
-        for(int i = 0; i < nbSubFile; ++i){
-            fInfo = listFileInfo.at(i);
-
-            QFile f(pathFiles+"/"+fInfo.fileName());
-            f.rename(dirApps.path()+"/"+fInfo.fileName());
-        }
-    }
-    else{
-        QDir dirApps = QCoreApplication::applicationDirPath()+"/save/"+QString::number(file->idDoctor)+"/"+QString::number(file->idPatient);
-        QString pathFiles = QString::fromStdString(backupPath)+"/"+QString::number(file->idPatient)+"/"+QString::fromStdString(file->filename);
-        QFile f(pathFiles);
-        f.rename(dirApps.path()+"/"+QString::fromStdString(file->filename));
-    }
-    TODO end remove */
 }
 
 void sockReceiver::funcFileIsSend(ntw::SocketSerialized& socket,int idDoctor, int idPatient, std::string filename)
@@ -124,6 +65,20 @@ void sockReceiver::funcFileIsRecv(ntw::SocketSerialized& socket,int idDoctor, in
     (void) socket;
     std::cout<<"File recv:"<<idDoctor<<"/"<<idPatient<<"/"<<filename<<std::endl;
 
+    QStringList fileFilter = QStringList() << QString::fromStdString(salamandre::ConfidentialRecord::getFileName())
+                                           << QString::fromStdString(salamandre::MedicalRecord::getFileName())
+                                           << QString::fromStdString(salamandre::DigitalRecord::getFileName())
+                                           << QString::fromStdString(salamandre::RegistryRecord::getFileName());
+
+    if(fileFilter.contains(QString::fromStdString(filename)) && !idDoctor < 0){
+        getFile *fileRecv = new getFile(idDoctor, idPatient, filename);
+        emit sock.fileIsRecv(fileRecv);
+    }
+}
+
+void sockReceiver::funcSyncIsFinished(ntw::SocketSerialized& socket,int idDoctor, int idPatient, std::string filename)
+{
+    (void) socket;
     if(idDoctor < 0)
         return;
 
@@ -198,7 +153,7 @@ void sockReceiver::funcFileIsRecv(ntw::SocketSerialized& socket,int idDoctor, in
     }
 
     delete fileRecv;
-    emit sock.fileIsRecv(file);
+    emit sock.syncIsFinish(file);
 }
 
 int sockReceiver::notification_dispatch(int id,ntw::SocketSerialized& request)
@@ -207,18 +162,22 @@ int sockReceiver::notification_dispatch(int id,ntw::SocketSerialized& request)
         std::cout<<"[notification_dispatch] id:"<<id<<std::endl<<std::flush;
         switch(id)
         {
-            case salamandre::gui::func::fileIsSend:{
-                res = ntw::FuncWrapper::srv::exec(funcFileIsSend,request);
-            }
-            break;
-            case salamandre::gui::func::fileIsRecv:{
-                res = ntw::FuncWrapper::srv::exec(funcFileIsRecv,request);
-            }
-            break;
-            default:{
-                std::cout<<"[notification_dispatch] Function id not found"<<std::endl;
-            }
-            break;
+        case salamandre::gui::func::fileIsSend:{
+            res = ntw::FuncWrapper::srv::exec(funcFileIsSend,request);
+        }
+        break;
+        case salamandre::gui::func::fileIsRecv:{
+            res = ntw::FuncWrapper::srv::exec(funcFileIsRecv,request);
+        }
+        break;
+        case salamandre::gui::func::endOfSync:{
+            res = ntw::FuncWrapper::srv::exec(funcSyncIsFinished, request);
+        }
+        break;
+        default:{
+            std::cout<<"[notification_dispatch] Function id not found"<<std::endl;
+        }
+        break;
         }
         return res;
 }
