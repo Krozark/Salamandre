@@ -67,6 +67,11 @@ int main(int argc, char *argv[])
         return -3;
     }
 
+    if(!sockSender::checkPaths()){
+        QMessageBox::critical(nullptr, "Erreur fatale", "Les dossiers du serveur de synchronisation sont corrompus, merci de relancer le serveur.");
+        return -4;
+    }
+
     sockReceiver::init(guiNotifPort, guiNotifIp);
     sockReceiver::connectToDaemon();
 
@@ -101,6 +106,14 @@ int main(int argc, char *argv[])
                     restart = true;
                 }
                 else{
+                    QVariant pos = settings::getMainwindowSettingValue("pos");
+                    QVariant size = settings::getMainwindowSettingValue("size");
+
+                    if(pos != QVariant())
+                        w.move(pos.toPoint());
+                    if(size != QVariant())
+                        w.resize(size.toSize());
+
                     w.show();
                     returnError = a.exec();
                     restart = w.restartApps();
@@ -108,6 +121,10 @@ int main(int argc, char *argv[])
 
                 if(w.isBadPass()){ // on revérifie isBadPass, car le résultat peut changer après a.exec()
                     QMessageBox::critical(nullptr, "Erreur critique", "Mot de passe incorrect, vous aller être redirigé vers l'interface de connexion.");
+                }
+                else{
+                    settings::setMainwindowSettingValue("pos", w.pos());
+                    settings::setMainwindowSettingValue("size", w.size());
                 }
             }
 

@@ -2,7 +2,12 @@
 
 #include <objects/socksender.hpp>
 #include <objects/settings.hpp>
+
 #include <record/Record.hpp>
+#include <record/ConfidentialRecord.hpp>
+#include <record/DigitalRecord.hpp>
+#include <record/MedicalRecord.hpp>
+#include <record/RegistryRecord.hpp>
 
 #include <Salamandre-daemon/GuiFunctions.hpp>
 
@@ -94,6 +99,14 @@ void sockSender::initConnectionToDaemon()
     settings::setDaemonSettingValue("pathBin", QString::fromStdString(sock.daemonBinPath));
 }
 
+bool sockSender::checkPaths()
+{
+    QDir dirSave(QString::fromStdString(sock.daemonSavePath));
+    QFile daemonBin(QString::fromStdString(sock.daemonBinPath));
+
+    return dirSave.exists() && daemonBin.exists();
+}
+
 void sockSender::closeConnectionToDaemon()
 {
     client.disconnect();
@@ -136,7 +149,12 @@ void sockSender::sendFile(int idDoctor, int idPatient, std::string filename)
     dirPatient.mkdir(dirPatient.path());
 
     QFileInfo pathInfo(QString::fromStdString(sock.guiPath)+path);
-    QStringList nameFilter = QStringList() << "FMN" << "FMT" << "FEC" << "FCT";
+    QStringList nameFilter = QStringList()
+            << QString::fromStdString(salamandre::ConfidentialRecord::getFileName())
+            << QString::fromStdString(salamandre::DigitalRecord::getFileName())
+            << QString::fromStdString(salamandre::MedicalRecord::getFileName())
+            << QString::fromStdString(salamandre::RegistryRecord::getFileName());
+
     QString dest;
 
     if(pathInfo.isDir()){ // filename is ""
@@ -242,11 +260,16 @@ sockSender::errorConnection sockSender::restartDaemon()
 {
     QFile fileDaemon(QString::fromStdString(sock.daemonBinPath));
 
-    if(fileDaemon.exists())
-        if(QProcess::startDetached(QString::fromStdString(sock.daemonBinPath), QStringList() << "-s" << "20001" << "-g" << "20000", QString::fromStdString(sock.daemonBinPath)))
+    if(fileDaemon.exists()){
+        QString daemonBin = QString::fromStdString(sock.daemonBinPath);
+        QFileInfo fileInfo(daemonBin);
+
+        if(QProcess::startDetached(QString::fromStdString(sock.daemonBinPath), QStringList() << "-s" << QString::number(sock.srvPort-1) << "-g" << QString::number(sock.srvPort), fileInfo.absoluteDir().path()))
             return NO_ERROR;
-        else
+        else{
             return ERROR_TO_START_DAEMON;
+        }
+    }
     else
         return ERROR_WITH_BIN_DAEMON;
 
