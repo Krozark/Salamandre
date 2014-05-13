@@ -27,7 +27,7 @@ int main(int argc,char* argv[])
     int broadcast_port = 5001;
     bool local_only = false;
     try {
-    TCLAP::CmdLine cmd("Salamandre Daemon", ' ', "0.1");
+    TCLAP::CmdLine cmd("Salamandre Daemon", ' ', DAEMON_VERSION);
     TCLAP::ValueArg<int> gui_port_arg("g", "gui-port", "Port for the GUI", false, gui_port, "int", cmd);
     TCLAP::ValueArg<int> server_port_arg("s", "server-port", "Port for the server to listen", false, server_port, "int", cmd);
     TCLAP::SwitchArg local_switch("l", "local", "Whether daemon sould run stricly locally", cmd, false);
