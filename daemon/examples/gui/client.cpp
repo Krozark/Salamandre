@@ -282,7 +282,7 @@ void run(ntw::cli::Client& client)
                         client.request_sock.clear();
                     }
                 }
-
+                c=0;
             }break;
             case '5': ///update en cour
             {
@@ -313,34 +313,34 @@ void run(ntw::cli::Client& client)
                     {
                         case '1'://test1
                         {
-                            up = client.call<bool>(salamandre::gui::func::sync,id_medecin,id_patient,"test1");
+                            up = client.call<bool>(salamandre::gui::func::isInUpdate,id_medecin,id_patient,"test1");
                         }break;
                         case '2'://test2
                         {
-                            up = client.call<bool>(salamandre::gui::func::sync,id_medecin,id_patient,"test2");
+                            up = client.call<bool>(salamandre::gui::func::isInUpdate,id_medecin,id_patient,"test2");
                         }break;
                         case '3'://test3
                         {
-                            up = client.call<bool>(salamandre::gui::func::sync,id_medecin,id_patient,"test3");
+                            up = client.call<bool>(salamandre::gui::func::isInUpdate,id_medecin,id_patient,"test3");
                         }break;
                         case '4'://test4
                         {
-                            up = client.call<bool>(salamandre::gui::func::sync,id_medecin,id_patient,"test4");
+                            up = client.call<bool>(salamandre::gui::func::isInUpdate,id_medecin,id_patient,"test4");
                         }break;
                         case '5'://autre
                         {
                             std::cout<<COLOR_ASK<<"Nom du fichier à créer\n>"<<COLOR_RESET;
                             std::string s;
                             std::cin>>s;
-                            up = client.call<bool>(salamandre::gui::func::sync,id_medecin,id_patient,s);
+                            up = client.call<bool>(salamandre::gui::func::isInUpdate,id_medecin,id_patient,s);
                         }break;
                         case '6': //Tous ceux du patient
                         {
-                            up = client.call<bool>(salamandre::gui::func::sync,id_medecin,id_patient,"");
+                            up = client.call<bool>(salamandre::gui::func::isInUpdate,id_medecin,id_patient,"");
                         }break;
                         case '7':/// Tous ceux du medecin
                         {
-                            up = client.call<bool>(salamandre::gui::func::sync,id_medecin-1,"");
+                            up = client.call<bool>(salamandre::gui::func::isInUpdate,id_medecin-1,"");
                         }break;
                         case 'q'://quitter
                         case 'Q':
@@ -353,7 +353,7 @@ void run(ntw::cli::Client& client)
                         }break;
                     }
 
-                    if(c>=1 and c <=6)
+                    if(c>='1' and c <='7')
                     {
                         if(check_status(client) < 0)
                         {
@@ -364,6 +364,7 @@ void run(ntw::cli::Client& client)
                         client.request_sock.clear();
                     }
                 } 
+                c=0;
             }break;
             case '6': //print file list
             {

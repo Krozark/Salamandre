@@ -132,6 +132,7 @@ namespace gui
         update_list_mutex.lock();
         auto end = update_list.end();
         bool res = false;
+
         if(id_medecin > 0 and id_patient > 0 and filename != "")
         {
             for(auto i=update_list.begin();i!=end;++i)
