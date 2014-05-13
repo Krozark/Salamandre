@@ -62,7 +62,7 @@ namespace srv
         if(client.connect(ip,port) == ntw::Status::ok)
         {
             //std::cout<<"srv::funcILostMyData_BroadcastRecv("<<id_medecin<<","<<id_patient<<","<<filename<<")"<<std::endl;
-            std::list<FileManager::FileInfo> file_list = FileManager::list(id_medecin,id_patient,filename);
+            std::list<FileInfo> file_list = FileManager::list(id_medecin,id_patient,filename);
             client.call<void>(thisIsMyFiles,daemon->file_server.port(),file_list);
 
             /*if(client.request_sock.getStatus() != ntw::Status::stop)
@@ -107,7 +107,7 @@ namespace srv
         }
     }
 
-    void funcThisIsMyFiles_Recv(ntw::SocketSerialized& request,int port,std::list<FileManager::FileInfo> files)
+    void funcThisIsMyFiles_Recv(ntw::SocketSerialized& request,int port,std::list<FileInfo> files)
     {
         utils::log::info("srv::funcThisIsMyFiles_Recv","Recv datas ip:",request.getIp(),"port: ",port);
         file_info_mutex.lock();

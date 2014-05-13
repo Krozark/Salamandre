@@ -2,7 +2,7 @@
 #define SALAMANDRE_SERVERFUNCTIONS_HPP
 
 #include <Socket/SocketSerialized.hpp>
-#include <Salamandre-daemon/FileManager.hpp>
+#include <Salamandre-daemon/FileInfo.hpp>
 #include <list>
 #include <mutex>
 
@@ -51,22 +51,11 @@ namespace srv
      */
     void funcILostMyData_BroadcastRecv(int id_medecin,int id_patient,const std::string& filename,unsigned int port,const std::string& ip);
 
-    void funcThisIsMyFiles_Recv(ntw::SocketSerialized& request,int port,std::list<FileManager::FileInfo>);
+    void funcThisIsMyFiles_Recv(ntw::SocketSerialized& request,int port,std::list<FileInfo>);
 
 
     void askForFile(int id_medecin,int id_patient,const std::string& filename);
 
-    struct FileInfoFrom
-    {
-        //file
-        long int version;
-        int id_medecin;
-        int id_patient;
-        std::string filename;
-        //src
-        int port;
-        std::string ip;
-    };
 
     static std::mutex file_info_mutex;
     static std::list<FileInfoFrom> file_info_from;

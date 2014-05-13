@@ -9,6 +9,8 @@
 #include <utils/sys.hpp>
 #include <utils/log.hpp>
 
+#include <Socket/Serializer.hpp>
+
 constexpr int HEADER_SIZE = ntw::Serializer::Size<long int>::value;
 
 namespace salamandre
@@ -99,9 +101,9 @@ namespace salamandre
         return res;
     }
 
-    std::list<FileManager::FileInfo> FileManager::list(int id_medecin,int id_patient, const std::string& filename)
+    std::list<FileInfo> FileManager::list(int id_medecin,int id_patient, const std::string& filename)
     {
-        std::list<FileManager::FileInfo> res;
+        std::list<FileInfo> res;
         if(id_medecin > 0 and id_patient >0 and filename != "")
         {
             list_append(id_medecin,id_patient,filename,res);
@@ -117,12 +119,7 @@ namespace salamandre
         return res;
     }
 
-    void FileManager::init()
-    {
-        utils::sys::dir::create(new_file_dir_path);
-    }
-
-    void FileManager::list_append(int id_medecin,std::list<FileManager::FileInfo>& l)
+    void FileManager::list_append(int id_medecin,std::list<FileInfo>& l)
     {
         const std::string path_medecin = utils::string::join("/",backup_file_dir_path,id_medecin);
         const std::list<std::string> patients = utils::sys::dir::list_dirs(path_medecin);
@@ -130,7 +127,7 @@ namespace salamandre
             list_append(id_medecin,::atoi(patient.c_str()),l);
     }
 
-    void FileManager::list_append(int id_medecin,int id_patient,std::list<FileManager::FileInfo>& l)
+    void FileManager::list_append(int id_medecin,int id_patient,std::list<FileInfo>& l)
     {
         const std::string path_patient = utils::string::join("/",backup_file_dir_path,id_medecin,id_patient);
 
@@ -139,7 +136,7 @@ namespace salamandre
             list_append(id_medecin,id_patient,file,l);
     }
 
-    void FileManager::list_append(int id_medecin,int id_patient, const std::string& filename,std::list<FileManager::FileInfo>& l)
+    void FileManager::list_append(int id_medecin,int id_patient, const std::string& filename,std::list<FileInfo>& l)
     {
         const std::string path = utils::string::join("/",backup_file_dir_path,id_medecin,id_patient,filename);
         FILE* f = ::fopen(path.c_str(),"rb");
@@ -174,17 +171,6 @@ namespace salamandre
         }
     }
 
-    ntw::Serializer& operator<<(ntw::Serializer& ser,const FileManager::FileInfo& self)
-    {
-        ser<<self.version<<self.id_medecin<<self.id_patient<<self.filename;
-        return ser;
-    }
-
-    ntw::Serializer& operator>>(ntw::Serializer& ser,FileManager::FileInfo& self)
-    {
-        ser>>self.version>>self.id_medecin>>self.id_patient>>self.filename;
-        return ser;
-    }
 
     bool FileManager::cpForUpload(int id_medecin,int id_patient,std::string filename,std::string host, int port,FILE* source)
     {
@@ -212,6 +198,38 @@ namespace salamandre
             res = false;
         utils::log::info("FileManager::cpForUpload","copy file to ",path_dest,". ok?",res);
         return res;
+    }
+
+
+    //////////// NON STATIC //////////////
+    FileManager::FileManager(int t) : timeout(t)
+    {
+    }
+
+    void FileManager::start()
+    {
+        utils::sys::dir::create(new_file_dir_path);
+        utils::sys::dir::create(backup_file_dir_path);
+
+        run = true;
+        thread = std::thread(&FileManager::_start_thread,this);
+    }
+
+    void FileManager::stop()
+    {
+        run = false;
+    }
+
+    void FileManager::wait()
+    {
+        thread.join();
+    }
+
+    void FileManager::_start_thread()
+    {
+        while(run)
+        {
+        }
     }
 
 }

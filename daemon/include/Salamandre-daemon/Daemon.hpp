@@ -60,9 +60,12 @@ namespace salamandre
             ntw::cli::Client gui_client_notif_sender; ///< the socket that send notification to the client.
 
             ntw::srv::Server file_server; ///< the external daemon socket listener
+            
 
             salamandre::ServerBroadcast broadcaster;
             //BroadCast broadcast
+    
+            FileManager file_manager;
 
             //void on_new_file_client(ntw::srv::Server& self,ntw::srv::Client& client);
     };

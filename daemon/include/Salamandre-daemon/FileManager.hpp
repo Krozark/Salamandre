@@ -4,15 +4,16 @@
 #include <string>
 #include <list>
 #include <cstdio>
+#include <thread>
 
-#include <Socket/Serializer.hpp>
+#include <Salamandre-daemon/FileInfo.hpp>
+
 
 namespace salamandre
 {
     class FileManager
     {
         public:
-            FileManager() = delete;
             FileManager(const FileManager&) = delete;
             FileManager& operator=(const FileManager&) = delete;
 
@@ -50,38 +51,46 @@ namespace salamandre
              */
             static std::string makeNewFilePath(int id_medecin,int id_patient = -1,const std::string& filename = "",const std::string& folder=FileManager::new_file_dir_path);
 
-            struct FileInfo {
-                long int version;
-                int id_medecin;
-                int id_patient;
-                std::string filename;
-
-                friend ntw::Serializer& operator<<(ntw::Serializer& ser,const FileManager::FileInfo& self);
-                friend ntw::Serializer& operator>>(ntw::Serializer& ser,FileManager::FileInfo& self);
-            };
 
             /**
              * \brief build a list of files that are avalible on backup dir
              */
-            static std::list<FileManager::FileInfo> list(int id_medecin,int id_patient, const std::string& filename);
+            static std::list<FileInfo> list(int id_medecin,int id_patient, const std::string& filename);
 
-            /**
-             * \brief create dirs
-             */
-            static void init();
 
             static const std::string new_file_dir_path; ///< where the gui store files to saves
             static const std::string network_file_dir_path; ///< where file are stored for the network sender
             static const std::string backup_file_dir_path; ///< where the recv files are stored
+            
+
+            /***
+             * \brief construct an object that look for new files and send them
+             * \param sec_timeout timeout to re look the dir
+             */
+            FileManager(int sec_timeout);
+
+            /**
+             * \brief start in a separate thread
+             */
+            void start();
+
+            /**
+             * \brief stop the separate thread
+             */
+            void stop();
+
+            /**
+             * \brief wait until the end of thread
+             */
+            void wait();
 
         private:
 
 
 
-            static void list_append(int id_medecin,std::list<FileManager::FileInfo>& l);
-            static void list_append(int id_medecin,int id_patient,std::list<FileManager::FileInfo>& l);
-            static void list_append(int id_medecin,int id_patient, const std::string& filename,std::list<FileManager::FileInfo>& l);
-
+            static void list_append(int id_medecin,std::list<FileInfo>& l);
+            static void list_append(int id_medecin,int id_patient,std::list<FileInfo>& l);
+            static void list_append(int id_medecin,int id_patient, const std::string& filename,std::list<FileInfo>& l);
 
             /***
              * \brief copy file for upload
@@ -94,6 +103,14 @@ namespace salamandre
              */
             static bool cpForUpload(int id_medecin,int id_patient,std::string filename,std::string host, int port,FILE* source);
 
+            bool run;///< is running
+            std::thread thread; ///< the thread to use
+
+            void _start_thread();
+            const int timeout;
+
+
+            std::list<FileInfoFromPath> files;
     };
 }
 #endif

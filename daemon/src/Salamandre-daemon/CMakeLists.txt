@@ -7,6 +7,7 @@ configure_file(${INCROOT}/define.hpp.in ${INCROOT}/define.hpp @ONLY)
 set(ROOT_SRC
     ${SRCROOT}/Daemon.cpp
     ${SRCROOT}/FileManager.cpp
+    ${SRCROOT}/FileInfo.cpp
     ${SRCROOT}/GuiFunctions.cpp
     ${SRCROOT}/ServerBroadcast
     ${SRCROOT}/ServerFunctions.cpp
@@ -14,6 +15,7 @@ set(ROOT_SRC
 set(ROOT_HEADER
     ${INCROOT}/Daemon.hpp
     ${INCROOT}/FileManager.hpp
+    ${INCROOT}/FileInfo.hpp
     ${INCROOT}/GuiFunctions.hpp
     ${INCROOT}/GuiFunctions.tpl
     ${INCROOT}/ServerBroadcast.hpp
