@@ -20,13 +20,15 @@ ntw::cli::Client sockSender::client;
 
 sockSender::sockSender()
 {
-    sock.srvPort = DEFAULT_SERVEUR_PORT;
-    sock.srvIpAddress = DEFAULT_IP;
 }
 
-void sockSender::init()
+void sockSender::init(int srvPort, std::string ipAdress)
 {
+    sock.srvPort = srvPort;
+    sock.srvIpAddress = ipAdress;
     sock.daemonBinPath = settings::getDaemonSettingValue("pathBin").toString().toStdString();
+
+    std::cout << "sockSender init on IP : " << sock.srvIpAddress << ":" << std::to_string(sock.srvPort) << std::endl;
 }
 
 sockSender::errorConnection sockSender::connectToDaemon()

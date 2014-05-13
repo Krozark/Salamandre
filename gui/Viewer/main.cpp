@@ -17,6 +17,26 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    QStringList args = a.arguments();
+
+    int srvGuiPort = DEFAULT_SERVEUR_PORT;
+    int guiNotifPort = DEFAULT_NOTIF_SERVER_PORT;
+    std::string srvGuiIp = DEFAULT_IP;
+    std::string guiNotifIp = DEFAULT_NOTIF_IP;
+
+    if(args.size() >= 2){
+        srvGuiPort = args.at(1).toInt();
+    }
+    if(args.size() >= 3){
+        guiNotifPort = args.at(2).toInt();
+    }
+    if(args.size() >= 4){
+        srvGuiIp = args.at(1).toInt();
+    }
+    if(args.size() >= 5){
+        guiNotifIp = args.at(2).toInt();
+    }
+
     settings::loadSettings();
 
     int daemonConnectionRes;
@@ -24,7 +44,7 @@ int main(int argc, char *argv[])
     bool restart = true;
 
     ntw::Socket::init();
-    sockSender::init();
+    sockSender::init(srvGuiPort, srvGuiIp);
     daemonConnectionRes = sockSender::connectToDaemon();
 
     if(daemonConnectionRes == sockSender::ERROR_WITH_BIN_DAEMON || daemonConnectionRes == sockSender::ERROR_TO_START_DAEMON){
@@ -38,8 +58,6 @@ int main(int argc, char *argv[])
         else{
             QFileInfo info(file);
             settings::setDaemonSettingValue("pathBin", info.filePath());
-
-            sockSender::init();
             daemonConnectionRes = sockSender::connectToDaemon();
         }
     }
@@ -49,7 +67,7 @@ int main(int argc, char *argv[])
         return -3;
     }
 
-    sockReceiver::init();
+    sockReceiver::init(guiNotifPort, guiNotifIp);
     sockReceiver::connectToDaemon();
 
     QDir dir(QCoreApplication::applicationDirPath()+"/save");
@@ -88,7 +106,7 @@ int main(int argc, char *argv[])
                     restart = w.restartApps();
                 }
 
-                if(w.isBadPass()){
+                if(w.isBadPass()){ // on revérifie isBadPass, car le résultat peut changer après a.exec()
                     QMessageBox::critical(nullptr, "Erreur critique", "Mot de passe incorrect, vous aller être redirigé vers l'interface de connexion.");
                 }
             }

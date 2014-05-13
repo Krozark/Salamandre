@@ -28,7 +28,7 @@ class sockReceiver : public QObject
 {
     Q_OBJECT
 public:
-    static void init();
+    static void init(int srvPort = DEFAULT_NOTIF_SERVER_PORT, std::string ipAdress = DEFAULT_NOTIF_IP);
     static bool connectToDaemon();
     static void closeConnectionToDaemon();
 
@@ -36,6 +36,7 @@ public:
 
     static void funcFileIsSend(ntw::SocketSerialized& socket,int idDoctor, int idPatient, std::string filename);
     static void funcFileIsRecv(ntw::SocketSerialized& socket, int idDoctor, int idPatient, std::string filename);
+    static void funcSyncIsFinished(ntw::SocketSerialized& socket,int idDoctor, int idPatient, std::string filename);
 
     static int notification_dispatch(int id,ntw::SocketSerialized& request);
 
@@ -54,6 +55,7 @@ private:
 
 signals:
     void fileIsRecv(getFile*);
+    void syncIsFinish(getFile*);
 };
 
 #endif // SOCKRECEIVER_HPP
