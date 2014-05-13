@@ -55,10 +55,7 @@ namespace salamandre
     bool FileManager::prepareForUpload(int id_medecin,int id_patient,std::string filename)
     {
         int res = 0;
-        const std::string path_origin = utils::string::join("/",std::vector<std::string>({new_file_dir_path,
-                                                                                std::to_string(id_medecin),
-                                                                                std::to_string(id_patient),
-                                                                                filename}));
+        const std::string path_origin = utils::string::join("/",new_file_dir_path,id_medecin,id_patient,filename);
         //TODO test if file exist
         FILE* source = ::fopen(path_origin.c_str(), "rb");
         if(source != nullptr)
@@ -93,17 +90,11 @@ namespace salamandre
     {
         std::string res;
         if(id_patient >0 and filename != "")
-            res = utils::string::join("/",std::vector<std::string>({folder,
-                                                         std::to_string(id_medecin),
-                                                         std::to_string(id_patient),
-                                                         filename}));
+            res = utils::string::join("/",folder,id_medecin,id_patient,filename);
         else if(id_patient >0)
-            res = utils::string::join("/",std::vector<std::string>({folder,
-                                                         std::to_string(id_medecin),
-                                                         std::to_string(id_patient)}));
+            res = utils::string::join("/",folder,id_medecin,id_patient);
         else
-            res = utils::string::join("/",std::vector<std::string>({folder,
-                                                         std::to_string(id_medecin)}));
+            res = utils::string::join("/",folder,id_medecin);
 
         return res;
     }
@@ -133,8 +124,7 @@ namespace salamandre
 
     void FileManager::list_append(int id_medecin,std::list<FileManager::FileInfo>& l)
     {
-        const std::string path_medecin = utils::string::join("/",std::vector<std::string>({backup_file_dir_path,
-                                                                                std::to_string(id_medecin)}));
+        const std::string path_medecin = utils::string::join("/",backup_file_dir_path,id_medecin);
         const std::list<std::string> patients = utils::sys::dir::list_dirs(path_medecin);
         for(const std::string& patient : patients)
             list_append(id_medecin,::atoi(patient.c_str()),l);
@@ -142,9 +132,7 @@ namespace salamandre
 
     void FileManager::list_append(int id_medecin,int id_patient,std::list<FileManager::FileInfo>& l)
     {
-        const std::string path_patient = utils::string::join("/",std::vector<std::string>({backup_file_dir_path,
-                                                                                std::to_string(id_medecin),
-                                                                                std::to_string(id_patient)}));
+        const std::string path_patient = utils::string::join("/",backup_file_dir_path,id_medecin,id_patient);
 
         const std::list<std::string> files = utils::sys::dir::list_files(path_patient);
         for(const std::string& file : files)
@@ -153,10 +141,7 @@ namespace salamandre
 
     void FileManager::list_append(int id_medecin,int id_patient, const std::string& filename,std::list<FileManager::FileInfo>& l)
     {
-        const std::string path = utils::string::join("/",std::vector<std::string>({backup_file_dir_path,
-                                                                                std::to_string(id_medecin),
-                                                                                std::to_string(id_patient),
-                                                                                filename}));
+        const std::string path = utils::string::join("/",backup_file_dir_path,id_medecin,id_patient,filename);
         FILE* f = ::fopen(path.c_str(),"rb");
         if(f != NULL)
         {
@@ -205,10 +190,7 @@ namespace salamandre
     {
         bool res = true;
 
-        std::string path_dest = utils::string::join("/",std::vector<std::string>({network_file_dir_path,
-                                                                             host+":"+std::to_string(port),
-                                                                             std::to_string(id_medecin),
-                                                                             std::to_string(id_patient)}));
+        std::string path_dest = utils::string::join("/",network_file_dir_path,host+":"+std::to_string(port),id_medecin,id_patient);
         if(utils::sys::dir::create(path_dest) == 0)
             return false;
         path_dest +="/"+filename;

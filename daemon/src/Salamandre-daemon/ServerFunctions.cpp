@@ -52,9 +52,7 @@ namespace srv
 
                     for(FileManager::FileInfo& file : to_send)
                     {
-                        std::string file_path = utils::string::join("/",std::vector<std::string>({std::to_string(file.id_medecin),
-                                                                                                 std::to_string(file.id_patient),
-                                                                                                 file.filename}));
+                        std::string file_path = utils::string::join("/",file.id_medecin,file.id_patient,file.filename);
                         FILE* source = ::fopen(file_path.c_str(), "rb");
                         if(source != NULL)
                         {

@@ -104,17 +104,17 @@ namespace gui
 
     std::string funcGetMyBinPath(ntw::SocketSerialized& sock)
     {
-        return utils::string::join("/",std::vector<std::string>({utils::sys::dir::pwd(),DAEMON_NAME}));
+        return utils::string::join("/",utils::sys::dir::pwd(),DAEMON_NAME);
     }
 
     std::string funcGetMyBackupPath(ntw::SocketSerialized& sock)
     {
-        return utils::string::join("/",std::vector<std::string>({utils::sys::dir::pwd(),FileManager::backup_file_dir_path}));
+        return utils::string::join("/",utils::sys::dir::pwd(),FileManager::backup_file_dir_path);
     }
 
     std::string funcGetMySavePath(ntw::SocketSerialized& sock)
     {
-        return utils::string::join("/",std::vector<std::string>({utils::sys::dir::pwd(),FileManager::new_file_dir_path}));
+        return utils::string::join("/",utils::sys::dir::pwd(),FileManager::new_file_dir_path);
     }
 
     void funcSetGuiNotificationPort(ntw::SocketSerialized& sock,unsigned int port)
