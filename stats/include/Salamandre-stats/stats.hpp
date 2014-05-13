@@ -18,6 +18,8 @@ namespace salamandre {
 
                 static void add_node(std::string host, int port);
                 static void delete_node(std::string host, int port);
+                // Deletes all nodes
+                static void flush_nodes();
 
                 static void init();
                 static void close();

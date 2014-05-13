@@ -42,6 +42,11 @@ void Stats::delete_node(std::string host, int port)
     node.del();
 }
 
+void Stats::flush_nodes()
+{
+    Node::clear();
+}
+
 std::list<std::shared_ptr<Node>> Stats::get_nodes(unsigned int number)
 {
     std::list<std::shared_ptr<Node>> list;
