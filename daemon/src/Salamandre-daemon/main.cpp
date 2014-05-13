@@ -7,11 +7,6 @@
 #include <csignal>
 #include <tclap/CmdLine.h>
 
-#define GUI_PORT 1
-#define SERVER_PORT 2
-#define LOCAL_ONLY 3
-#define NB_ARGS (LOCAL_ONLY + 1)
-
 namespace salamandre
 {
     Daemon* daemon = nullptr;
