@@ -50,9 +50,11 @@ void Stats::flush_nodes()
 std::list<std::shared_ptr<Node>> Stats::get_nodes(unsigned int number)
 {
     std::list<std::shared_ptr<Node>> list;
+    unsigned int one_day_ago = time(NULL) - 86400;
     Node::query()\
-        //.filter(...)
-        .orderBy("last_seen_time", '-')
+        .filter(one_day_ago, "gte", Node::_last_seen_time)
+        .orderBy("?")
+        //.orderBy("last_seen_time", '-')
         .limit(number)\
         .get(list);
 
