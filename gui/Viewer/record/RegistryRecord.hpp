@@ -17,6 +17,9 @@ l’adresse, . . . , et surtout, un numero d’identification)
             RegistryRecord& operator=(const RegistryRecord&) = delete;
             ~RegistryRecord();
 
+            std::string serialize(std::string key);
+            bool unSerialize(std::string key, std::string string);
+
             friend std::ostream& operator<<(std::ostream& os, const RegistryRecord& registry)
             {
                 ntw::Serializer serializer;

@@ -11,8 +11,6 @@
 #include <Socket/Serializer.hpp>
 #include <zlib.h>
 
-#define PASS_STR_SIZE 96
-
 constexpr int SIZE_HEADER = ntw::Serializer::Size<long int>::value;
 
 namespace salamandre
@@ -33,8 +31,8 @@ namespace salamandre
         static bool encrypt(const std::string pass, const std::string filePath);
         static bool decrypt(const std::string pass, const std::string filePathSrc, std::string filePathTo);
 
-        static const std::string strDecrypt(const std::string pass, std::string *string);
-        static const std::string strEncrypt(const std::string pass, const std::string *string);
+        static const std::string strDecrypt(const std::string pass, std::string string);
+        static const std::string strEncrypt(const std::string pass, const std::string string);
 
         static const std::string strCompress(const std::string& str, int compressionlevel = Z_BEST_COMPRESSION);
         static const std::string strDecompress(const std::string& str);
@@ -44,8 +42,8 @@ namespace salamandre
         std::string getFilePath();
         void setFilePath(std::string filePath);
 
-        std::string serialize(std::string key);
-        bool unSerialize(std::string key, std::string *string);
+        virtual std::string serialize(std::string key) = 0;
+        virtual bool unSerialize(std::string key, std::string string) = 0;
         static std::string getFileName();
 
         void save(std::string key);
@@ -57,18 +55,6 @@ namespace salamandre
 
         void setVersionNumber(long long versionNumber);
         u_int64_t getVersionNumber();
-
-        friend std::ostream& operator<<(std::ostream& os, Record& record)
-        {
-            (void) record;
-            return os;
-        }
-
-        friend std::istream& operator>>(std::istream& is, Record& record)
-        {
-            (void) record;
-            return is;
-        }
 
     private:
         u_int64_t versionNumber;

@@ -63,7 +63,7 @@ void threadSave::run()
         emit setProgressText("<span style=\"color:orange\">Starting to save FMN</span>");
 
         salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
-        record->save();
+        record->save(this->doctor->getPass().toStdString());
         sockSender::sendFile(this->doctor->getId().toInt(), this->patient->getId().toInt(), record->getFileName());
 
         emit setProgressText("<span style=\"color:darkgreen\">FMN has been saved</span>");
