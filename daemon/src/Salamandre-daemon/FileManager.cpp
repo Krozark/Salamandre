@@ -119,6 +119,7 @@ namespace salamandre
         {
             list_append(id_medecin,res);
         }
+
         return res;
     }
 
@@ -126,6 +127,7 @@ namespace salamandre
     {
         const std::string path_medecin = utils::string::join("/",backup_file_dir_path,id_medecin);
         const std::list<std::string> patients = utils::sys::dir::list_dirs(path_medecin);
+
         for(const std::string& patient : patients)
             list_append(id_medecin,::atoi(patient.c_str()),l);
     }
@@ -149,7 +151,8 @@ namespace salamandre
             {
                 char header[HEADER_SIZE];
                 //read header
-                if(fread(header,HEADER_SIZE,1,f) >= HEADER_SIZE)
+                int read = fread(header,1,HEADER_SIZE,f);
+                if(read >= HEADER_SIZE)
                 {
                     //unserialize header
                     long int version;

@@ -53,6 +53,10 @@ namespace srv
                 request.sendCl();
 
             }break;
+            case func::sendThisFile :
+            {
+               res = ntw::FuncWrapper::srv::exec(funcSendThisFile_Recv,request); 
+            }break;
             default :
             {
                 utils::log::error("srv::dispatch","Function of id",id,"not found");
@@ -61,64 +65,16 @@ namespace srv
         return res;
     }
 
-    /*void on_delete_client(ntw::srv::Server& self,ntw::srv::Client& client)
-    {
-        utils::log::todo("on_delete_client","TEST");
-        file_info_mutex.lock();
-        file_info_from.remove_if([&client,&self](const FileInfoFrom& f)->bool{
-            return f.port == self.port() and f.ip == client.sock().getIp();
-        }); 
-
-        file_info_mutex.unlock();
-    }*/
 
     void funcILostMyData_BroadcastRecv(int id_medecin,int id_patient,const std::string& filename,unsigned int port,const std::string& ip)
     {
         ntw::cli::Client client;
         if(client.connect(ip,port) == ntw::Status::ok)
         {
-            //std::cout<<"srv::funcILostMyData_BroadcastRecv("<<id_medecin<<","<<id_patient<<","<<filename<<")"<<std::endl;
             std::list<FileInfo> file_list = FileManager::list(id_medecin,id_patient,filename);
+            
             client.call<void>(thisIsMyFiles,daemon->file_server.port(),file_list);
 
-            /*if(client.request_sock.getStatus() != ntw::Status::stop)
-            {
-                client.request_sock.receive();//sendFile
-                int id;
-                client.request_sock>>id;
-
-                if(id == sendFile)
-                {
-                    std::list<FileManager::FileInfo> to_send;
-                    client.request_sock>>to_send;
-                    client.request_sock.clear();
-
-                    for(FileManager::FileInfo& file : to_send)
-                    {
-                        std::string file_path = utils::string::join("/",file.id_medecin,file.id_patient,file.filename);
-                        FILE* source = ::fopen(file_path.c_str(), "rb");
-                        if(source != NULL)
-                        {
-                            if(flock(::fileno(source),LOCK_EX) == 0)
-                            {
-                                client.request_sock<<sendFile //f id
-                                    <<file;//file info
-                                ::fseek(source,0,SEEK_SET);
-                                char buf[BUFSIZ];
-                                size_t size;
-                                while ((size = ::fread(buf, 1, BUFSIZ, source)) > 0)
-                                    client.request_sock.write(buf,size);
-                                //unlock it
-                                ::flock(::fileno(source), LOCK_UN);
-                                client.request_sock.sendCl();
-                                if(client.request_sock.getStatus() == ntw::Status::stop)
-                                    break;
-                            }
-                            ::fclose(source);
-                        }
-                    }
-                }
-            }*/
             client.disconnect();
         }
     }
@@ -126,6 +82,7 @@ namespace srv
     void funcThisIsMyFiles_Recv(ntw::SocketSerialized& request,int port,std::list<FileInfo> files)
     {
         utils::log::info("srv::funcThisIsMyFiles_Recv","Recv datas ip:",request.getIp(),"port: ",port);
+
         file_info_mutex.lock();
         for(auto& f : files)
         {
@@ -149,10 +106,15 @@ namespace srv
         file_info_mutex.unlock();
     }
 
+    void funcSendThisFile_Recv(ntw::SocketSerialized& request,int id_medecin,int id_patient,std::string filename)
+    {
+        request.setStatus(ntw::Status::todo);
+    }
+
 
     bool askFile(const FileInfoFrom& info)
     {
-        utils::log::info("ServerFunctions::askFile","to ip:",info.ip,"port:",info.port);
+        utils::log::info("ServerFunctions::askFile","to ip:",info.ip,"port:",info.port,"id_medecin:",info.id_medecin,"id_patient",info.id_patient,"filename",info.filename);
         
         ntw::cli::Client* client = new ntw::cli::Client;
         if(client->connect(info.ip,info.port) == ntw::Status::ok)
@@ -160,7 +122,7 @@ namespace srv
             std::thread thread([info,client]()->void{
                 client->call<void>(sendThisFile,info.id_medecin,info.id_patient,info.filename);
                 int st = client->request_sock.getStatus();
-                if(st != ntw::Status::wrong_id)
+                if(st == ntw::Status::ok)
                 {
                     std::string path = utils::string::join("/",FileManager::backup_file_dir_path,info.id_medecin,info.id_patient);
                     if(utils::sys::dir::create(path))
@@ -197,6 +159,8 @@ namespace srv
                         ++current;
                     }
                 }
+                else
+                    ++current;
             }
             else if(m > id_medecin)
                 break;

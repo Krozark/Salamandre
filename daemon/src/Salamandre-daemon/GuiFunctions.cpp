@@ -102,6 +102,7 @@ namespace gui
     void funcSync(ntw::SocketSerialized& sock,int id_medecin, int id_patient, std::string filename)
     {
         std::thread thread([id_medecin,id_patient,filename]()->void {
+
             daemon->broadcaster.sendILostMyData(id_medecin,id_patient,filename);
 
             update_list_mutex.lock();

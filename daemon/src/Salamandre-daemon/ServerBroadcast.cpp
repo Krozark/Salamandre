@@ -119,7 +119,7 @@ namespace salamandre
             sock_listen.receive(from);
             int id;
             sock_listen>>id;
-            utils::log::info("ServerBroadcast::listener", "Recv func id:", id, "with status", sock_listen.getStatus());
+            //utils::log::info("ServerBroadcast::listener", "Recv func id:", id, "with status", sock_listen.getStatus());
 
             if(sock_listen.getStatus() == ntw::Status::stop)
             {
