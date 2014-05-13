@@ -8,6 +8,8 @@
 
 #include <chrono>
 
+#include <ifaddrs.h>
+
 namespace salamandre
 {
     ServerBroadcast::ServerBroadcast(int port,int server_port,bool local):
@@ -27,8 +29,32 @@ namespace salamandre
             sock_send.connect("255.255.255.255", port);
         if(!sock_send.setBroadcast(true))
         {
-            perror("Unable to set enable broadcast: ");
+            ::perror("Unable to set enable broadcast: ");
         }
+
+        this->getaddrs();
+    }
+
+    void ServerBroadcast::getaddrs()
+    {
+        struct ifaddrs *ifaddr, *ifa;
+        sockaddr_in * address;
+        if (::getifaddrs(&ifaddr) != 0) {
+            ::perror("Unable to get interface addrs: ");
+        }
+
+        for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
+            if (ifa->ifa_addr == NULL) {
+                continue;
+            }
+
+            if (ifa->ifa_addr->sa_family == AF_INET) { // We don't support IPv6, yet
+                address = (sockaddr_in*) ifa->ifa_addr;
+                this->my_ips.insert(address->sin_addr.s_addr);
+                utils::log::info("ServerBroadcast::getaddrs","Adding", inet_ntoa(address->sin_addr), "to my known ip addresses.");
+            }
+        }
+        freeifaddrs(ifaddr);
     }
 
     void ServerBroadcast::init()
@@ -142,9 +168,17 @@ namespace salamandre
 
     void ServerBroadcast::funcThisIsMyInfos(ntw::SocketSerialized& from,int port)
     {
-        utils::log::info("ServerBroadcast::funcThisIsMyInfos","Recv info from",from.getIp(),", Port",port);
-        ///\todo TODO check if this is me
-        stats::Stats::add_node(from.getIp(),port);
+        std::string remote_ip = from.getIp();
+        utils::log::info("ServerBroadcast::funcThisIsMyInfos", "Recv info from", remote_ip, " Port",port);
+        in_addr_t remote_addr = ::inet_addr(remote_ip.c_str());
+
+        // We don't add messages from ourselves
+        if (this->my_ips.find(remote_addr) == this->my_ips.end() || port != this->server_port) {
+            utils::log::info("ServerBroadcast::funcThisIsMyInfos", "Adding", remote_ip, "port", port, "to the known nodes.");
+            stats::Stats::add_node(remote_ip, port);
+        } else {
+            utils::log::info("ServerBroadcast::funcThisIsMyInfos", "Not adding", remote_ip, "port", port, ": This is me!");
+        }
     }
 
     void ServerBroadcast::funcILostMyData(ntw::SocketSerialized& from,int id_medecin,int id_patient,std::string filename,int port)

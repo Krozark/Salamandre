@@ -4,6 +4,7 @@
 #include <Socket/SocketSerialized.hpp>
 #include <string>
 #include <thread>
+#include <unordered_set>
 
 namespace salamandre
 {
@@ -31,6 +32,8 @@ namespace salamandre
             void start_listener();
             void start_sender();
 
+            void getaddrs();
+
             std::thread thread[2]; //[0] = listener, [1] = sender for info
 
             const int port;
@@ -38,6 +41,8 @@ namespace salamandre
             bool run;
             ntw::SocketSerialized sock_listen;
             ntw::SocketSerialized sock_send;
+
+            std::unordered_set<in_addr_t> my_ips;
 
             /**
              * \param port port to connect to
