@@ -32,6 +32,7 @@ namespace salamandre
             ::perror("Unable to set enable broadcast: ");
         }
 
+        // Getting local IPs
         this->getaddrs();
     }
 
@@ -42,17 +43,20 @@ namespace salamandre
         if (::getifaddrs(&ifaddr) != 0)
         {
             ::perror("Unable to get interface addrs: ");
+            return;
         }
 
         for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next)
         {
+            // An interface could not have an ip address
             if (ifa->ifa_addr == NULL)
             {
                 continue;
             }
 
+            // We don't support IPv6, yet
             if (ifa->ifa_addr->sa_family == AF_INET)
-            { // We don't support IPv6, yet
+            {
                 address = (sockaddr_in*) ifa->ifa_addr;
                 this->my_ips.insert(address->sin_addr.s_addr);
                 utils::log::info("ServerBroadcast::getaddrs","Adding", inet_ntoa(address->sin_addr), "to my known ip addresses.");
@@ -114,10 +118,10 @@ namespace salamandre
             sock_listen.receive(from);
             int id;
             sock_listen>>id;
-            utils::log::info("ServerBroadcast::listen","Recv id ",id,"with status",sock_listen.getStatus());
+            utils::log::info("ServerBroadcast::listener", "Recv func id:", id, "with status", sock_listen.getStatus());
 
             if(sock_listen.getStatus() == ntw::Status::stop) {
-                utils::log::warning("ServerBroadcast::listen","Whether we received shutdown");
+                utils::log::warning("ServerBroadcast::listener","Shutdown received!");
                 continue;
             }
 
@@ -167,6 +171,7 @@ namespace salamandre
     void ServerBroadcast::stop()
     {
         run = false;
+        // Shutdown the socket in order to interrupt recvfrom
         sock_listen.shutdown();
     }
 
@@ -180,8 +185,6 @@ namespace salamandre
         if (this->my_ips.find(remote_addr) == this->my_ips.end() || port != this->server_port) {
             utils::log::info("ServerBroadcast::funcThisIsMyInfos", "Adding", remote_ip, "port", port, "to the known nodes.");
             stats::Stats::add_node(remote_ip, port);
-        } else {
-            utils::log::info("ServerBroadcast::funcThisIsMyInfos", "Not adding", remote_ip, "port", port, ": This is me!");
         }
     }
 
