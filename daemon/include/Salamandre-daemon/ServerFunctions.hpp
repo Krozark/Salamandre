@@ -6,6 +6,13 @@
 #include <list>
 #include <mutex>
 
+namespace ntw {
+    namespace srv {
+        class Server;
+        class Client;
+    }
+}
+
 namespace salamandre
 {
     class Daemon;
@@ -25,7 +32,7 @@ namespace srv
 
         //connected
         thisIsMyFiles,///< send a filename list
-        sendFile, ///< recv files to save
+        sendThisFile, ///< recv files to save
     };
 
     /***
@@ -33,12 +40,21 @@ namespace srv
      */
     int dispatch(int id,ntw::SocketSerialized& request);
 
+
+    /***
+     * \brief on disconnect
+     */
+    //void on_delete_client(ntw::srv::Server& self,ntw::srv::Client& client);
+
     /**
      * \brief connect to the ip:port and send a file list
      */
     void funcILostMyData_BroadcastRecv(int id_medecin,int id_patient,const std::string& filename,unsigned int port,const std::string& ip);
 
-    void funcThisIsMyFiles_Recv(ntw::SocketSerialized& request,std::list<FileManager::FileInfo>);
+    void funcThisIsMyFiles_Recv(ntw::SocketSerialized& request,int port,std::list<FileManager::FileInfo>);
+
+
+    void askForFile(int id_medecin,int id_patient,const std::string& filename);
 
     struct FileInfoFrom
     {
@@ -48,7 +64,8 @@ namespace srv
         int id_patient;
         std::string filename;
         //src
-        ntw::SocketSerialized* request;
+        int port;
+        std::string ip;
     };
 
     static std::mutex file_info_mutex;

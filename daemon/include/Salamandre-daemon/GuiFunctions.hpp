@@ -31,7 +31,8 @@ namespace gui
 
         ///NOTIFICATIONS, daemon send, gui recv
         fileIsSend, ///< send a notification to the gui with the info of sended file
-        fileIsRecv ///< send a notification to the gui with the info of recv file
+        fileIsRecv, ///< send a notification to the gui with the info of recv file
+        endOfSync ///< send a notification to the gui with the info of sync
     };
 
     /**

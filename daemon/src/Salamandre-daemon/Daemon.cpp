@@ -11,6 +11,7 @@ namespace salamandre
         file_server(listen_port,"",salamandre::srv::dispatch,100),
         broadcaster(broadcast_port,listen_port,local)
     {
+        //file_server.on_delete_client = salamandre::srv::on_delete_client;
     }
 
     void Daemon::start()

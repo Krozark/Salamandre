@@ -1,4 +1,5 @@
 #include <Salamandre-daemon/GuiFunctions.hpp>
+#include <Salamandre-daemon/ServerFunctions.hpp>
 #include <Salamandre-daemon/FileManager.hpp>
 #include <Salamandre-daemon/Daemon.hpp>
 #include <Salamandre-daemon/define.hpp>
@@ -109,7 +110,9 @@ namespace gui
             update_list_mutex.unlock();
             //wait x sec
             std::this_thread::sleep_for(std::chrono::seconds(60));
+
             //askfiles
+            salamandre::srv::askForFile(id_medecin,id_patient,filename);
 
             update_list_mutex.lock();
             auto end = update_list.end();
@@ -123,6 +126,9 @@ namespace gui
                 }
             }
             update_list_mutex.unlock();
+
+            //notify the gui
+            daemon->gui_client_notif_sender.call<void>(endOfSync,id_patient,id_patient,filename);
         });
         thread.detach();
     }
