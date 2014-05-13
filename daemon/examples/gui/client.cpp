@@ -299,6 +299,7 @@ void run(ntw::cli::Client& client)
                         "\t[5] Autre nom\n"
                         "\t[6] Tous ceux du patient\n"
                         "\t[7] Tous ceux du medecin\n"
+                        "\t[8] N'importe lequel\n"
                         "\t[Q/q] Retour\n>"
                         <<COLOR_RESET;
 
@@ -342,6 +343,10 @@ void run(ntw::cli::Client& client)
                         {
                             up = client.call<bool>(salamandre::gui::func::isInUpdate,id_medecin-1,"");
                         }break;
+                        case '8':/// N'imp
+                        {
+                            up = client.call<bool>(salamandre::gui::func::isInUpdate,-1,-1,"");
+                        }break;
                         case 'q'://quitter
                         case 'Q':
                         {
@@ -353,7 +358,7 @@ void run(ntw::cli::Client& client)
                         }break;
                     }
 
-                    if(c>='1' and c <='7')
+                    if(c>='1' and c <='8')
                     {
                         if(check_status(client) < 0)
                         {
