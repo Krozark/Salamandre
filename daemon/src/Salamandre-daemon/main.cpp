@@ -1,5 +1,6 @@
 #include <Salamandre-daemon/Daemon.hpp>
 #include <Salamandre-daemon/ServerBroadcast.hpp>
+#include <Salamandre-daemon/define.hpp>
 
 #include <utils/log.hpp>
 
