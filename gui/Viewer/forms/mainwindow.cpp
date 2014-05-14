@@ -1,6 +1,7 @@
 #include <forms/mainwindow.hpp>
 #include <ui_mainwindow.h>
 #include <forms/choosedialog.hpp>
+#include <forms/patientnamedialog.hpp>
 
 #include <objects/socksender.hpp>
 
@@ -294,7 +295,9 @@ void MainWindow::saveEnd()
     switch(this->currentAction){
     case ACTION_NEW_PATIENT:
     {
-        QString id = QInputDialog::getText(this, QString("Salamandre"), QString("Entrer le numéro du nouveau patient"), QLineEdit::Normal, QString(), nullptr, Qt::Dialog, Qt::ImhDigitsOnly);
+        patientNameDialog dialog;
+        dialog.exec();
+        QString id = dialog.getText();
 
         if(!id.isEmpty()){
             salamandre::Patient *newPatient = new salamandre::Patient(doctor->getDirPath()+"/"+id);
