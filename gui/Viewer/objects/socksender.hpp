@@ -17,7 +17,8 @@ public:
         NO_ERROR = 3
     };
 
-    static void init(int srvPort = DEFAULT_SERVEUR_PORT, std::string ipAdress = DEFAULT_IP);
+    static void init();
+    static void setParamsCo(int srvPort = DEFAULT_SERVEUR_PORT, std::string ipAdress = DEFAULT_IP);
     static errorConnection connectToDaemon();
     static void closeConnectionToDaemon();
     static bool setGuiServerPort(int srvPort);

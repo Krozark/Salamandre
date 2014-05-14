@@ -2,6 +2,7 @@
 #include <ui_updatefiledialog.h>
 
 #include <QDebug>
+#include <QMessageBox>
 
 updateFileDialog::updateFileDialog(QWidget *parent) :
     QDialog(parent),
@@ -13,7 +14,7 @@ updateFileDialog::updateFileDialog(QWidget *parent) :
     this->isSync = true;
 
     this->connect(&(sockReceiver::sock), SIGNAL(syncIsFinish(getFile*)), this, SLOT(syncFinished(getFile*)));
-    this->connect(&(sockReceiver::sock), SIGNAL(syncIsFinish(getFile*)), this, SLOT(fileRcv(getFile*)));
+    this->connect(&(sockReceiver::sock), SIGNAL(fileIsRecv(getFile*)), this, SLOT(fileRcv(getFile*)));
 }
 
 updateFileDialog::~updateFileDialog()
@@ -28,8 +29,11 @@ updateFileDialog::~updateFileDialog()
 
 void updateFileDialog::closeEvent(QCloseEvent *event)
 {
-    if(this->isSync)
-        event->ignore();
+    if(this->isSync){
+        QMessageBox::information(this, "Synchronisation", "La synchronisation va continuer en arrière plan.", QMessageBox::Ok);
+    }
+
+    event->accept();
 }
 
 void updateFileDialog::askFile(int idDoctor, int idPatient, std::string filename)
@@ -38,6 +42,14 @@ void updateFileDialog::askFile(int idDoctor, int idPatient, std::string filename
         this->show();
 
     getFile *file = new getFile(idDoctor, idPatient, filename);
+
+    int dataListSize = this->dataList.size();
+    for(int i = 0; i < dataListSize; ++i){
+        getFile *stockFile = dataList.at(i);
+        if(stockFile->equals(*file)){
+            return;
+        }
+    }
 
     if(filename == "" && idPatient >= 0){
         this->ui->textEdit_progressGetFile->insertHtml("<span style=\"color:orange\"> Récupération des fichiers du patient " + QString::number(idPatient) + " ... </span>");

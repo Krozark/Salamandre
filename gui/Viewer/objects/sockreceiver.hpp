@@ -17,6 +17,10 @@ public:
     getFile(){}
     getFile(int idDoctor, int idPatient = -1, std::string filename = "") : idDoctor(idDoctor), idPatient(idPatient), filename(filename){}
 
+    bool equals(const getFile &gfSecond){
+        return this->idDoctor == gfSecond.idDoctor && this->idPatient == gfSecond.idPatient && this->filename == gfSecond.filename;
+    }
+
     int idDoctor;
     int idPatient;
     std::string filename;
@@ -28,7 +32,8 @@ class sockReceiver : public QObject
 {
     Q_OBJECT
 public:
-    static void init(int srvPort = DEFAULT_NOTIF_SERVER_PORT, std::string ipAdress = DEFAULT_NOTIF_IP);
+    static void init();
+    static void setParamsCo(int srvPort = DEFAULT_NOTIF_SERVER_PORT, std::string ipAdress = DEFAULT_NOTIF_IP);
     static bool connectToDaemon();
     static void closeConnectionToDaemon();
 

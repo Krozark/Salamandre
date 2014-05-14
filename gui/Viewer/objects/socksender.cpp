@@ -25,23 +25,29 @@ ntw::cli::Client sockSender::client;
 
 sockSender::sockSender()
 {
+    sock.srvPort = DEFAULT_SERVEUR_PORT;
+    sock.srvIpAddress = DEFAULT_IP;
 }
 
-void sockSender::init(int srvPort, std::string ipAdress)
+void sockSender::init()
 {
-    sock.srvPort = srvPort;
-    sock.srvIpAddress = ipAdress;
     sock.daemonBinPath = settings::getDaemonSettingValue("pathBin").toString().toStdString();
 
     std::cout << "sockSender init on IP : " << sock.srvIpAddress << ":" << std::to_string(sock.srvPort) << std::endl;
+}
+
+void sockSender::setParamsCo(int srvPort, std::string ipAdress)
+{
+    sock.srvPort = srvPort;
+    sock.srvIpAddress = ipAdress;
 }
 
 sockSender::errorConnection sockSender::connectToDaemon()
 {
     errorConnection res = NO_ERROR;
 
-    if(client.connect(sock.srvIpAddress, sock.srvPort) != ntw::Status::connexion){
-        qDebug() << "Gui is now connect to daemon and ready to send request";
+    if(client.connect(sock.srvIpAddress, sock.srvPort) == ntw::Status::ok){
+        qDebug() << "Gui is now connect to daemon and ready to send request : ";
         sockSender::initConnectionToDaemon();
     }
     else{
@@ -51,7 +57,7 @@ sockSender::errorConnection sockSender::connectToDaemon()
 
             for(int i = 0; i < CONNECTION_TEST_NUMBER; ++i){ // loop for CONNECTION_TEST_NUMBER seconds
                 dialogConnectionToDaemon->increaseNbTest(i+1);
-                if(client.connect(sock.srvIpAddress, sock.srvPort) != ntw::Status::connexion){
+                if(client.connect(sock.srvIpAddress, sock.srvPort) == ntw::Status::ok){
                     resConnectRes = true;
                     break;
                 }

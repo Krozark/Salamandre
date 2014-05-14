@@ -16,8 +16,8 @@ namespace salamandre
         std::string filePathExport;
         std::string key;
         std::string sourcePath;
-        u_int64_t offset;
-        u_int64_t size;
+        uint64_t offset;
+        uint64_t size;
     };
 
     class DigitalRecord : public Record

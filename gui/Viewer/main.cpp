@@ -44,7 +44,9 @@ int main(int argc, char *argv[])
     bool restart = true;
 
     ntw::Socket::init();
-    sockSender::init(srvGuiPort, srvGuiIp);
+    sockSender::init();
+    sockSender::setParamsCo(srvGuiPort, srvGuiIp);
+
     daemonConnectionRes = sockSender::connectToDaemon();
 
     if(daemonConnectionRes == sockSender::ERROR_WITH_BIN_DAEMON || daemonConnectionRes == sockSender::ERROR_TO_START_DAEMON){
@@ -56,6 +58,7 @@ int main(int argc, char *argv[])
             return -3;
         }
         else{
+            sockSender::init();
             QFileInfo info(file);
             settings::setDaemonSettingValue("pathBin", info.filePath());
             daemonConnectionRes = sockSender::connectToDaemon();
@@ -72,7 +75,8 @@ int main(int argc, char *argv[])
         return -4;
     }
 
-    sockReceiver::init(guiNotifPort, guiNotifIp);
+    sockReceiver::init();
+    sockReceiver::setParamsCo(guiNotifPort, guiNotifIp);
     sockReceiver::connectToDaemon();
 
     QDir dir(QCoreApplication::applicationDirPath()+"/save");
@@ -139,6 +143,7 @@ int main(int argc, char *argv[])
 
     sockReceiver::closeConnectionToDaemon();
     sockSender::closeConnectionToDaemon();
+
     ntw::Socket::close();
 
     settings::saveSettings();

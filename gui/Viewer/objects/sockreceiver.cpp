@@ -12,14 +12,12 @@
 #include <QCoreApplication>
 #include <QStringList>
 
-bool operator ==(const getFile &gfFirst, const getFile &gfSecond){
-    return gfFirst.idDoctor == gfSecond.idDoctor && gfFirst.idPatient == gfSecond.idPatient && gfFirst.filename == gfSecond.filename;
-}
-
 sockReceiver sockReceiver::sock;
 
 sockReceiver::sockReceiver()
 {
+    sock.srvIpAddress = DEFAULT_NOTIF_IP;
+    sock.srvPort = DEFAULT_NOTIF_SERVER_PORT;
 }
 
 sockReceiver::~sockReceiver()
@@ -27,13 +25,17 @@ sockReceiver::~sockReceiver()
     delete sock.server;
 }
 
-void sockReceiver::init(int srvPort, std::string ipAdress){
-    sock.srvIpAddress = ipAdress;
-    sock.srvPort = srvPort;
+void sockReceiver::init(){
     sock.server = new ntw::srv::Server(sock.srvPort, sock.srvIpAddress, notification_dispatch, 1, 1);
 
     std::cout << "sockReceiver init on IP : " << sock.srvIpAddress << ":" << std::to_string(sock.srvPort) << std::endl;
     sock.server->start();
+}
+
+void sockReceiver::setParamsCo(int srvPort, std::string ipAdress)
+{
+    sock.srvIpAddress = ipAdress;
+    sock.srvPort = srvPort;
 }
 
 bool sockReceiver::connectToDaemon(){
@@ -42,6 +44,7 @@ bool sockReceiver::connectToDaemon(){
 }
 
 void sockReceiver::closeConnectionToDaemon(){
+    sockSender::setGuiServerPort(sock.srvPort+1);
     sock.server->stop();
     sock.server->wait();
 }
@@ -89,7 +92,7 @@ void sockReceiver::funcSyncIsFinished(ntw::SocketSerialized& socket,int idDoctor
     for(int i = 0; i < nbFileToGet; ++i){
         file = sock.patientDataList.at(i);
 
-        if(*file == *fileRecv){
+        if(file->equals(*fileRecv)){
             sock.patientDataList.remove(i);
             break;
         }

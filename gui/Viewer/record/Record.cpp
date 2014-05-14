@@ -191,11 +191,10 @@ namespace salamandre
         std::string str = this->serialize(key);
         std::ofstream outputFile(this->getFilePath().c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
 
-        ntw::Serializer serializer;
-        long int version = this->getVersionNumber()+1;
-        serializer << version;
+        uint64_t version = this->getVersionNumber()+1;
+
         char buf[SIZE_HEADER];
-        serializer.read(buf, SIZE_HEADER);
+        ntw::Serializer::convert(version, buf);
 
         std::string passStrEncrypt;
         passStrEncrypt = Record::strEncrypt(key, passStr);
@@ -242,10 +241,9 @@ namespace salamandre
             if((readSize = fread(header, SIZE_HEADER, 1, file)) == 0)
                 std::cerr << "attempt to read " << SIZE_HEADER << " but " << readSize << " have been read" << std::endl;
 
-            ntw::Serializer serializer;
-            serializer.write(header, SIZE_HEADER);
-            long int version;
-            serializer >> version;
+            uint64_t version;
+            ntw::Serializer::convert(header, version);
+
             this->setVersionNumber(version);
 
             std::string passStrEncrypt = Record::strEncrypt(key, passStr);
@@ -268,7 +266,7 @@ namespace salamandre
         return res;
     }
 
-    void Record::setVersionNumber(long long versionNumber)
+    void Record::setVersionNumber(uint64_t versionNumber)
     {
         std::cout << "open file : " << this->getFilePath() << " version : " << std::to_string(versionNumber) << std::endl;
         this->versionNumber = versionNumber;

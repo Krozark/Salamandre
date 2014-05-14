@@ -13,19 +13,17 @@ namespace salamandre
 
     DigitalRecord::~DigitalRecord()
     {
-        int sizeFile = this->vFile.size();
+        /*int sizeFile = this->vFile.size();
         for(int i = 0; i < sizeFile; ++i){
             delete this->vFile.at(i);
-        }
+        }*/
     }
 
     void DigitalRecord::save(std::string key)
     {
-        ntw::Serializer serializer;
-        long int version = this->getVersionNumber()+1;
-        serializer << version;
+        uint64_t version = this->getVersionNumber()+1;
         char buf[SIZE_HEADER];
-        serializer.read(buf, SIZE_HEADER);
+        ntw::Serializer::convert(version, buf);
 
         FILE *fmnFile = fopen(this->getFilePath().c_str(), "ab+");
         fclose(fmnFile);
@@ -60,10 +58,8 @@ namespace salamandre
             if((readSize = fread(header, SIZE_HEADER, 1, digitFile)) == 0)
                 std::cerr << "attempt to read " << SIZE_HEADER << " but " << readSize << " have been read" << std::endl;
 
-            ntw::Serializer serializer;
-            serializer.write(header, SIZE_HEADER);
-            long int version;
-            serializer >> version;
+            uint64_t version;
+            ntw::Serializer::convert(header, version);
             this->setVersionNumber(version);
 
             curOffset += SIZE_HEADER;
@@ -104,16 +100,13 @@ namespace salamandre
                 if((readSize = fread(size, 8, 1, digitFile)) == 0)
                     std::cerr << "attempt to read " << 8 << " but " << readSize << " have been read" << std::endl;
 
-                ntw::Serializer serializer;
-                serializer.write(size, 8);
+                uint64_t sizeFile;
+                ntw::Serializer::convert(size, sizeFile);
 
                 curOffset += 8;
 
                 fileContent->offset = curOffset;
                 fileContent->key = key;
-
-                long int sizeFile;
-                serializer >> sizeFile;
                 fileContent->size = sizeFile;
 
                 fseek(digitFile, sizeFile, SEEK_CUR);
@@ -181,11 +174,9 @@ namespace salamandre
             fseek(file, 0, SEEK_END);
             int pos = ftell(file);
             if(pos == 0){
-                ntw::Serializer serializer;
-                long int version = 1;
-                serializer << version;
+                uint64_t version = 1;
                 char buf[SIZE_HEADER];
-                serializer.read(buf, SIZE_HEADER);
+                ntw::Serializer::convert(version, buf);
 
                 std::string passStrEncrypt = Record::strEncrypt(digit->key, passStr);
                 fwrite(buf, SIZE_HEADER, 1, file);
@@ -202,15 +193,11 @@ namespace salamandre
 
             FILE *fileEncrypt = fopen((digit->filePath+".tmp").c_str(), "rb");
             fseek(fileEncrypt, 0, SEEK_END);
-            long int fileSize = ftell(fileEncrypt);
+            uint64_t fileSize = ftell(fileEncrypt);
             fseek(fileEncrypt, 0, SEEK_SET);
 
-            ntw::Serializer serializer;
-            serializer << fileSize;
             char sizeFile[8];
-            serializer.read(sizeFile, 8);
-            serializer.clear();
-
+            ntw::Serializer::convert(fileSize, sizeFile);
             fwrite(sizeFile, 8, 1, fmnFile);
 
             digit->offset = ftell(fmnFile);

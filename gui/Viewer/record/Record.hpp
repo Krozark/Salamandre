@@ -11,7 +11,7 @@
 #include <Socket/Serializer.hpp>
 #include <zlib.h>
 
-constexpr int SIZE_HEADER = ntw::Serializer::Size<long int>::value;
+constexpr int SIZE_HEADER = ntw::Serializer::Size<uint64_t>::value;
 
 namespace salamandre
 {
@@ -50,11 +50,11 @@ namespace salamandre
         bool load(std::string key);
         bool loadHeader(std::string key);
 
-        static u_int64_t getVersion(u_int32_t idMedecin, u_int32_t idPatient, std::string nameRecord);
+        static uint64_t getVersion(uint32_t idMedecin, uint32_t idPatient, std::string nameRecord);
         static std::string passStr;
 
-        void setVersionNumber(long long versionNumber);
-        u_int64_t getVersionNumber();
+        void setVersionNumber(uint64_t versionNumber);
+        uint64_t getVersionNumber();
 
     private:
         u_int64_t versionNumber;
