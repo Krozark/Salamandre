@@ -51,6 +51,8 @@ namespace srv
                 request.clear();
                 request.setStatus(ntw::Status::ok);
                 request.sendCl();
+                
+                daemon->gui_client_notif_sender.call<void>(salamandre::gui::func::fileIsRecv,id_medecin,id_patient,filename);
 
             }break;
             case func::sendThisFile :
