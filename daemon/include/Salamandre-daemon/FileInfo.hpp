@@ -12,7 +12,7 @@ namespace salamandre
     struct FileInfoFrom
     {
         //file
-        long int version;
+        uint64_t version;
         int id_medecin;
         int id_patient;
         std::string filename;
@@ -42,7 +42,7 @@ namespace salamandre
     };
 
     struct FileInfo {
-        long int version;
+        uint64_t version;
         int id_medecin;
         int id_patient;
         std::string filename;

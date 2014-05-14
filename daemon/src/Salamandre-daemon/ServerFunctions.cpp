@@ -1,6 +1,6 @@
 #include <Salamandre-daemon/ServerFunctions.hpp>
+#include <Salamandre-daemon/GuiFunctions.hpp>
 #include <Salamandre-daemon/FileManager.hpp>
-
 #include <Salamandre-daemon/Daemon.hpp>
 
 #include <Socket/FuncWrapper.hpp>
@@ -121,15 +121,20 @@ namespace srv
         ntw::cli::Client* client = new ntw::cli::Client;
         if(client->connect(info.ip,info.port) == ntw::Status::ok)
         {
-            std::thread thread([info,client]()->void{
+            std::thread thread([info,client]()->void {
+                file_info_mutex.lock();
                 client->call<void>(sendThisFile,info.id_medecin,info.id_patient,info.filename);
                 int st = client->request_sock.getStatus();
                 if(st == ntw::Status::ok)
                 {
                     std::string path = utils::string::join("/",FileManager::backup_file_dir_path,info.id_medecin,info.id_patient);
                     if(utils::sys::dir::create(path))
+                    {
+                        daemon->gui_client_notif_sender.call<void>(salamandre::gui::func::fileIsRecv,info.id_medecin,info.id_patient,info.filename);
                         client->request_sock.save(path+"/"+info.filename);
+                    }
                 }
+                file_info_mutex.unlock();
                 delete client;
             });
             thread.detach();
@@ -154,8 +159,9 @@ namespace srv
                 std::string filename = i.filename;
                 if (askFile(i))
                 {
-                    while(p== current->id_patient and filename == current->filename)
+                    while(m == current->id_medecin and p == current->id_patient and filename == current->filename)
                     {
+                        m = current->id_medecin;
                         p = current->id_patient;
                         filename = current->filename;
                         ++current;
@@ -183,9 +189,9 @@ namespace srv
         file_info_mutex.lock();
 
         file_info_from.sort([](const FileInfoFrom& _1,const FileInfoFrom& _2)->bool {
-            if(_1.id_medecin == _2.id_medecin){
-                if(_1.id_patient == _2.id_patient){
-                    if(_1.filename == _2.filename){
+            if(_1.id_medecin == _2.id_medecin) {
+                if(_1.id_patient == _2.id_patient) {
+                    if(_1.filename == _2.filename) {
                         return _1.version < _2.version;
                     }
                     return _1.filename < _2.filename;
