@@ -359,11 +359,7 @@ namespace salamandre
                         ::flock(::fileno(f),LOCK_UN);
                         ::fclose(f);
 
-                        if(daemon->is_connect)
-                        {
-                            daemon->gui_client_notif_sender.call<void>(salamandre::gui::func::fileIsSend,info.id_medecin,info.id_patient,info.filename);
-                            daemon->is_connect = (daemon->gui_client_notif_sender.request_sock.getStatus() == ntw::Status::ok);
-                        }
+                        daemon->notify(salamandre::gui::func::fileIsSend,info.id_medecin,info.id_patient,info.filename);
                     });
                     thread.detach();
                 }

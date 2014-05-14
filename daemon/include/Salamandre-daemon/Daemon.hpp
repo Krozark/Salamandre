@@ -5,6 +5,8 @@
 #include <Socket/client/Client.hpp>
 #include <Salamandre-daemon/ServerBroadcast.hpp>
 #include <Salamandre-daemon/FileManager.hpp>
+#include <Salamandre-daemon/FileInfo.hpp>
+#include <mutex>
 
 /**
  * \brief namespace for the project
@@ -55,19 +57,27 @@ namespace salamandre
              */
             static void close();
 
-        //private:
-            std::string path;
-            ntw::srv::Server gui_server; ///< the gui socket listener
-            ntw::cli::Client gui_client_notif_sender; ///< the socket that send notification to the client.
-
-            ntw::srv::Server file_server; ///< the external daemon socket listener
+            void notify(int type,int id_medecin,int id_patient,const std::string& filename);
+            void setNotifierPort(unsigned int port);
             
+            int getServerPort()const;
 
-            salamandre::ServerBroadcast broadcaster;
-            //BroadCast broadcast
+            std::string path;
+
+            salamandre::ServerBroadcast broadcaster;///<BroadCast broadcast
     
+        private:
+            ntw::srv::Server file_server; ///< the external daemon socket listener
+            ntw::srv::Server gui_server; ///< the gui socket listener
+
             FileManager file_manager;
             bool is_connect;
+
+            std::mutex notifications_mutex; 
+            std::thread notifications_thread;
+            std::list<FileInfo> notifications;
+            ntw::cli::Client gui_client_notif_sender; ///< the socket that send notification to the client.
+
 
             //void on_new_file_client(ntw::srv::Server& self,ntw::srv::Client& client);
     };

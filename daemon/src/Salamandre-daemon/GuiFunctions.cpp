@@ -127,11 +127,7 @@ namespace gui
             update_list_mutex.unlock();
 
             //notify the gui
-            if(daemon->is_connect)
-            {
-                daemon->gui_client_notif_sender.call<void>(endOfSync,id_patient,id_patient,filename);
-                daemon->is_connect = (daemon->gui_client_notif_sender.request_sock.getStatus() == ntw::Status::ok);
-            }
+            daemon->notify(endOfSync,id_patient,id_patient,filename);
         });
         thread.detach();
     }
@@ -210,14 +206,7 @@ namespace gui
     void funcSetGuiNotificationPort(ntw::SocketSerialized& sock,unsigned int port)
     {
         utils::log::info("gui::funcSetGuiNotificationPort","Get qui notifier port:",port);
-        daemon->gui_client_notif_sender.disconnect();
-        daemon->is_connect = false;
-        if(daemon->gui_client_notif_sender.connect("127.0.0.1",port) == ntw::Status::ok)
-        {
-            daemon->is_connect = true;
-            utils::log::error("gui::funcSetGuiNotificationPort","Unable to connect to client notifier");
-        }
-
+        daemon->setNotifierPort(port);
     }
 }   
 }

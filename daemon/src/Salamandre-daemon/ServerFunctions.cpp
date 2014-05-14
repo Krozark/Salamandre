@@ -52,11 +52,7 @@ namespace srv
                 request.setStatus(ntw::Status::ok);
                 request.sendCl();
                 
-                if(daemon->is_connect)
-                {
-                    daemon->gui_client_notif_sender.call<void>(salamandre::gui::func::fileIsRecv,id_medecin,id_patient,filename);
-                    daemon->is_connect = (daemon->gui_client_notif_sender.request_sock.getStatus() == ntw::Status::ok);
-                }
+                daemon->notify(salamandre::gui::func::fileIsRecv,id_medecin,id_patient,filename);
 
             }break;
             case func::sendThisFile :
@@ -79,7 +75,7 @@ namespace srv
         {
             std::list<FileInfo> file_list = FileManager::list(id_medecin,id_patient,filename);
             
-            client.call<void>(thisIsMyFiles,daemon->file_server.port(),file_list);
+            client.call<void>(thisIsMyFiles,daemon->getServerPort(),file_list);
 
             client.disconnect();
         }
@@ -134,11 +130,7 @@ namespace srv
                     std::string path = utils::string::join("/",FileManager::backup_file_dir_path,info.id_medecin,info.id_patient);
                     if(utils::sys::dir::create(path))
                     {
-                        if(daemon->is_connect)
-                        {
-                            daemon->gui_client_notif_sender.call<void>(salamandre::gui::func::fileIsRecv,info.id_medecin,info.id_patient,info.filename);
-                            daemon->is_connect = (daemon->gui_client_notif_sender.request_sock.getStatus() == ntw::Status::ok);
-                        }
+                        daemon->notify(salamandre::gui::func::fileIsRecv,info.id_medecin,info.id_patient,info.filename);
                         client->request_sock.save(path+"/"+info.filename);
                     }
                 }
