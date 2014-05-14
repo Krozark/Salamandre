@@ -1,5 +1,7 @@
 #include <Salamandre-daemon/FileManager.hpp>
 #include <Salamandre-daemon/ServerFunctions.hpp>
+#include <Salamandre-daemon/GuiFunctions.hpp>
+#include <Salamandre-daemon/Daemon.hpp>
 
 #include <Salamandre-stats/stats.hpp>
 
@@ -14,7 +16,7 @@
 #include <Socket/Serializer.hpp>
 #include <Socket/client/Client.hpp>
 
-constexpr int HEADER_SIZE = ntw::Serializer::Size<long int>::value;
+constexpr int HEADER_SIZE = ntw::Serializer::Size<uint64_t>::value;
 
 namespace salamandre
 {
@@ -145,23 +147,24 @@ namespace salamandre
     {
         const std::string path = utils::string::join("/",backup_file_dir_path,id_medecin,id_patient,filename);
         FILE* f = ::fopen(path.c_str(),"rb");
-        if(f != NULL)
+        if(f != nullptr)
         {
             //if(flock(::fileno(f),LOCK_EX) == 0)
             {
                 char header[HEADER_SIZE];
                 //read header
-                int read = fread(header,1,HEADER_SIZE,f);
-                if(read >= HEADER_SIZE)
+                int read = ::fread(header,1,HEADER_SIZE,f);
+
+                if(read == HEADER_SIZE)
                 {
                     //unserialize header
-                    long int version;
+                    uint64_t version;
                     ntw::Serializer::convert(header,version);
 
-                    /*ntw::Serializer serializer;
-                    serializer.write(header,HEADER_SIZE);
-                    //get version
-                    serializer>>version;*/
+                    //ntw::Serializer serializer;
+                    //serializer.write(header,HEADER_SIZE);
+                    ////get version
+                    //serializer>>version;
 
                     FileInfo file = {
                         .version=version,
@@ -170,7 +173,10 @@ namespace salamandre
                         .filename=filename
                     };
                     l.push_back(std::move(file));
+                    
                 }
+                else
+                    utils::log::error("FileInfo::list_append","fread");
                 //::flock(::fileno(f), LOCK_UN);
             }
             ::fclose(f);
@@ -188,7 +194,7 @@ namespace salamandre
         path_dest +="/"+filename;
 
         FILE* dest = ::fopen(path_dest.c_str(), "wb");
-        if(dest)
+        if(dest != nullptr)
         {
             //cp source to dest
             ::fseek(source,0,SEEK_SET);
@@ -324,14 +330,14 @@ namespace salamandre
         if(client->connect(info.ip,info.port) == ntw::Status::ok)
         {
             FILE* f = ::fopen(info.path.c_str(),"rb");
-            if(f != NULL)
+            if(f != nullptr)
             {
                 if(::flock(::fileno(f),LOCK_EX|LOCK_NB) == 0)
                 {
                     utils::log::info("FileManager::send_file","to ip:",info.ip,"port:",info.port,"file:",info.path);
 
                     res = true;
-                    std::thread thread([client,f,info]()->void{
+                    std::thread thread([client,f,info]()->void {
                         ::fseek(f,0,SEEK_SET);
                         char buf[BUFSIZ];
                         size_t size; //file size
@@ -351,9 +357,19 @@ namespace salamandre
                         }
                         delete client;
                         ::flock(::fileno(f),LOCK_UN);
+                        ::fclose(f);
+
+                        if(daemon->is_connect)
+                        {
+                            daemon->gui_client_notif_sender.call<void>(salamandre::gui::func::fileIsSend,info.id_medecin,info.id_patient,info.filename);
+                            daemon->is_connect = (daemon->gui_client_notif_sender.request_sock.getStatus() == ntw::Status::ok);
+                        }
                     });
                     thread.detach();
                 }
+                else
+                    ::fclose(f);
+
             }
         }
 

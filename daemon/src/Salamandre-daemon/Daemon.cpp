@@ -10,7 +10,8 @@ namespace salamandre
         gui_server(listen_gui_port,"127.0.0.1",salamandre::gui::dispatch,1,1),
         file_server(listen_port,"",salamandre::srv::dispatch,100),
         broadcaster(broadcast_port,listen_port,local),
-        file_manager(10)
+        file_manager(10),
+        is_connect(false)
     {
         //file_server.on_delete_client = salamandre::srv::on_delete_client;
     }

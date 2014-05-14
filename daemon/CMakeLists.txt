@@ -37,7 +37,7 @@ set(LIBS ${SOCKET_LIB} ${UTILS_LIB} ${STATS_LIB} ${ORM_LIB} ${SQLITE_LIB})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(DEFINES "")
 set(WARNING "-Wall")
-set(FLAGS "-o3 -std=c++0x")
+set(FLAGS "-og -std=c++0x")
 set(CMAKE_CXX_FLAGS "${DEFINES} ${WARNING} ${FLAGS}")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)

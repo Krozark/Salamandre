@@ -66,6 +66,7 @@ namespace salamandre
             //BroadCast broadcast
     
             FileManager file_manager;
+            bool is_connect;
 
             //void on_new_file_client(ntw::srv::Server& self,ntw::srv::Client& client);
     };
