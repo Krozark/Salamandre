@@ -205,7 +205,7 @@ namespace gui
 
     void funcSetGuiNotificationPort(ntw::SocketSerialized& sock,unsigned int port)
     {
-        utils::log::info("gui::funcSetGuiNotificationPort","Get qui notifier port:",port);
+        utils::log::info("gui::funcSetGuiNotificationPort","Get gui notifier port:",port);
         daemon->setNotifierPort(port);
     }
 }   

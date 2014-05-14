@@ -78,10 +78,9 @@ namespace salamandre
         gui_client_notif_sender.disconnect();
         is_connect = false;
         if(gui_client_notif_sender.connect("127.0.0.1",port) == ntw::Status::ok)
-        {
             daemon->is_connect = true;
+        else
             utils::log::error("Daemon::setNotifierPort","Unable to connect to client notifier");
-        }
     }
 
     int Daemon::getServerPort()const
