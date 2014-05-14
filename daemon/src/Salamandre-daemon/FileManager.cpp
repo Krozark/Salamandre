@@ -325,8 +325,8 @@ namespace salamandre
     bool FileManager::send_file(const salamandre::FileInfoFromPath& info)
     {
         bool res = false;
-
         ntw::cli::Client* client = new ntw::cli::Client;
+
         if(client->connect(info.ip,info.port) == ntw::Status::ok)
         {
             FILE* f = ::fopen(info.path.c_str(),"rb");
@@ -374,7 +374,9 @@ namespace salamandre
         }
 
         if(res == false)
+        {
             delete client;
+        }
         return res;
     }
 

@@ -68,7 +68,7 @@ namespace gui
             case func::getMySavePath :
             {
                 res = ntw::FuncWrapper::srv::exec(funcGetMySavePath,request);
-            }
+            }break;
             default:
             {
                 utils::log::error("gui::dispatch","Function of id",id,"not found");
