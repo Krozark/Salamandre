@@ -10,6 +10,7 @@
 #include <utils/string.hpp>
 #include <utils/log.hpp>
 
+#include <libgen.h>
 #include <unistd.h>
 #include <iostream>
 #include <chrono>
@@ -187,7 +188,13 @@ namespace gui
 
     std::string funcGetMyBinPath(ntw::SocketSerialized& sock)
     {
-        return utils::string::join("/",utils::sys::dir::pwd(),DAEMON_NAME);
+        char my_path[daemon->path.size() + 1];
+        ::strcpy(my_path, daemon->path.c_str());
+        char *resolved_path = ::realpath(::dirname(my_path), nullptr);
+        std::string res =  utils::string::join("/", resolved_path, DAEMON_NAME);
+        free(resolved_path);
+
+        return res;
     }
 
     std::string funcGetMyBackupPath(ntw::SocketSerialized& sock)

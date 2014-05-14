@@ -23,7 +23,7 @@ namespace salamandre
              * \param listen_gui_port the port for the gui
              * \param listen_port the port to listen the others deamon
             */
-            Daemon(int listen_gui_port, int listen_port, int broadcast_port,bool local=false);
+            Daemon(const std::string &path, int listen_gui_port, int listen_port, int broadcast_port, bool local=false);
             Daemon(const Daemon&) = delete;
             Daemon& operator=(const Daemon&) = delete;
 
@@ -56,6 +56,7 @@ namespace salamandre
             static void close();
 
         //private:
+            std::string path;
             ntw::srv::Server gui_server; ///< the gui socket listener
             ntw::cli::Client gui_client_notif_sender; ///< the socket that send notification to the client.
 

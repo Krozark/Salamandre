@@ -27,6 +27,7 @@ int main(int argc,char* argv[])
     int server_port = 3843;
     int broadcast_port = 5001;
     bool local_only = false;
+    std::string path = argv[0];
     try {
 
         TCLAP::CmdLine cmd("Salamandre Daemon", ' ', DAEMON_VERSION);
@@ -43,7 +44,6 @@ int main(int argc,char* argv[])
     } catch(TCLAP::ArgException &e) {
         utils::log::critical(1,"Args ","error",e.error(),"for arg",e.argId());
     }
-
     std::cout<<"Daemon start on:"
         <<"\n\tgui listen on port : "<<gui_port
         <<"\n\tfile server listen on port : "<<server_port
@@ -57,7 +57,7 @@ int main(int argc,char* argv[])
     {
         salamandre::Daemon::init();
 
-        salamandre::daemon = new salamandre::Daemon(gui_port,server_port,broadcast_port,local_only);
+        salamandre::daemon = new salamandre::Daemon(path, gui_port,server_port,broadcast_port,local_only);
         salamandre::daemon->start();
         salamandre::daemon->wait();
 

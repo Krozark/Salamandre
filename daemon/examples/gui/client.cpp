@@ -24,7 +24,6 @@ int check_status(ntw::cli::Client& cli);///< return 0 if ok, -1 if srv down, 1 o
 
 int notification_dispatch(int id,ntw::SocketSerialized& request);///< dispatch function for notifier
 
-
 int main(int argc,char* argv[])
 {
     if(argc < 2)
