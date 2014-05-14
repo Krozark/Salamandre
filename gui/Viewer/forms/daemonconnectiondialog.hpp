@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QMovie>
+#include <QCloseEvent>
 
 #define CONNECTION_TEST_NUMBER 30
 
@@ -23,9 +24,11 @@ public:
 
 private:
     Ui::daemonConnectionDialog *ui;
+    void closeEvent(QCloseEvent *event);
 
     QMovie *movie;
     int maxTest;
+    int nbTest;
 };
 
 #endif // DAEMONCONNECTIONDIALOG_HPP

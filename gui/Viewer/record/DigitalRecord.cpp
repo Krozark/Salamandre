@@ -95,15 +95,16 @@ namespace salamandre
 
                 this->vFile.push_back(fileContent);
 
-                char size[8];
 
-                if((readSize = fread(size, 8, 1, digitFile)) == 0)
-                    std::cerr << "attempt to read " << 8 << " but " << readSize << " have been read" << std::endl;
+                char size[SIZEOF_SIZEFILE];
+
+                if((readSize = fread(size, SIZEOF_SIZEFILE, 1, digitFile)) == 0)
+                    std::cerr << "attempt to read " << SIZEOF_SIZEFILE << " but " << readSize << " have been read" << std::endl;
 
                 uint64_t sizeFile;
                 ntw::Serializer::convert(size, sizeFile);
 
-                curOffset += 8;
+                curOffset += SIZEOF_SIZEFILE;
 
                 fileContent->offset = curOffset;
                 fileContent->key = key;
@@ -196,9 +197,9 @@ namespace salamandre
             uint64_t fileSize = ftell(fileEncrypt);
             fseek(fileEncrypt, 0, SEEK_SET);
 
-            char sizeFile[8];
+            char sizeFile[SIZEOF_SIZEFILE];
             ntw::Serializer::convert(fileSize, sizeFile);
-            fwrite(sizeFile, 8, 1, fmnFile);
+            fwrite(sizeFile, SIZEOF_SIZEFILE, 1, fmnFile);
 
             digit->offset = ftell(fmnFile);
             digit->size = fileSize;

@@ -12,6 +12,7 @@
 #include <zlib.h>
 
 constexpr int SIZE_HEADER = ntw::Serializer::Size<uint64_t>::value;
+constexpr int SIZEOF_SIZEFILE = ntw::Serializer::Size<uint64_t>::value;
 
 namespace salamandre
 {
@@ -19,8 +20,7 @@ namespace salamandre
     {
     public:
         Record(){}
-        Record(const std::string path)
-        {
+        Record(const std::string path){
             this->setFilePath(path);
         }
 

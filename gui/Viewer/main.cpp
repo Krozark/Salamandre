@@ -106,7 +106,9 @@ int main(int argc, char *argv[])
 
                 MainWindow w(doctor, patient, nullptr);
 
-                if(w.isBadPass()){
+                bool badPass = w.isBadPass();
+                if(badPass){
+                    QMessageBox::critical(nullptr, "Erreur critique", "Mot de passe incorrect, vous aller être redirigé vers l'interface de connexion.");
                     restart = true;
                 }
                 else{
@@ -121,14 +123,11 @@ int main(int argc, char *argv[])
                     w.show();
                     returnError = a.exec();
                     restart = w.restartApps();
-                }
 
-                if(w.isBadPass()){ // on revérifie isBadPass, car le résultat peut changer après a.exec()
-                    QMessageBox::critical(nullptr, "Erreur critique", "Mot de passe incorrect, vous aller être redirigé vers l'interface de connexion.");
-                }
-                else{
-                    settings::setMainwindowSettingValue("pos", w.pos());
-                    settings::setMainwindowSettingValue("size", w.size());
+                    if(returnError == 0){
+                        settings::setMainwindowSettingValue("pos", w.pos());
+                        settings::setMainwindowSettingValue("size", w.size());
+                    }
                 }
             }
 

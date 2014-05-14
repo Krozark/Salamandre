@@ -52,7 +52,7 @@ sockSender::errorConnection sockSender::connectToDaemon()
     }
     else{
         if((res = sockSender::restartDaemon()) == NO_ERROR){
-            daemonConnectionDialog *dialogConnectionToDaemon = new daemonConnectionDialog(nullptr);
+            daemonConnectionDialog *dialogConnectionToDaemon = new daemonConnectionDialog();
             bool resConnectRes = false;
 
             for(int i = 0; i < CONNECTION_TEST_NUMBER; ++i){ // loop for CONNECTION_TEST_NUMBER seconds
@@ -62,6 +62,7 @@ sockSender::errorConnection sockSender::connectToDaemon()
                     break;
                 }
 
+                client.disconnect();
                 dialogConnectionToDaemon->show();
                 QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 1000);
 
@@ -272,9 +273,8 @@ sockSender::errorConnection sockSender::restartDaemon()
 
         if(QProcess::startDetached(QString::fromStdString(sock.daemonBinPath), QStringList() << "-s" << QString::number(sock.srvPort-1) << "-g" << QString::number(sock.srvPort), fileInfo.absoluteDir().path()))
             return NO_ERROR;
-        else{
+        else
             return ERROR_TO_START_DAEMON;
-        }
     }
     else
         return ERROR_WITH_BIN_DAEMON;

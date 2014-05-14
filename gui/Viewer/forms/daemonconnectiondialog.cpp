@@ -22,6 +22,14 @@ daemonConnectionDialog::~daemonConnectionDialog()
     delete ui;
 }
 
+void daemonConnectionDialog::closeEvent(QCloseEvent *event)
+{
+    if(this->maxTest == this->nbTest)
+        event->accept();
+    else
+        event->ignore();
+}
+
 void daemonConnectionDialog::setMaxNbTest(int nb)
 {
     this->maxTest = nb;
@@ -29,5 +37,6 @@ void daemonConnectionDialog::setMaxNbTest(int nb)
 
 void daemonConnectionDialog::increaseNbTest(int nb)
 {
+    this->nbTest = nb;
     this->ui->label_nbTest->setText("Tentative "+QString::number(nb)+"/"+QString::number(this->maxTest));
 }
