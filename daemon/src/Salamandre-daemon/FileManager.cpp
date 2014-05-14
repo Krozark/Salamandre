@@ -337,7 +337,7 @@ namespace salamandre
                     utils::log::info("FileManager::send_file","to ip:",info.ip,"port:",info.port,"file:",info.path);
 
                     res = true;
-                    std::thread thread([client,f,info]()->void{
+                    std::thread thread([client,f,info]()->void {
                         ::fseek(f,0,SEEK_SET);
                         char buf[BUFSIZ];
                         size_t size; //file size
@@ -358,7 +358,12 @@ namespace salamandre
                         delete client;
                         ::flock(::fileno(f),LOCK_UN);
                         ::fclose(f);
-                        daemon->gui_client_notif_sender.call<void>(salamandre::gui::func::fileIsSend,info.id_medecin,info.id_patient,info.filename);
+
+                        if(daemon->is_connect)
+                        {
+                            daemon->gui_client_notif_sender.call<void>(salamandre::gui::func::fileIsSend,info.id_medecin,info.id_patient,info.filename);
+                            daemon->is_connect = (daemon->gui_client_notif_sender.request_sock.getStatus() == ntw::Status::ok);
+                        }
                     });
                     thread.detach();
                 }

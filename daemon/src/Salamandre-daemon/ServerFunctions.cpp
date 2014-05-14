@@ -52,7 +52,11 @@ namespace srv
                 request.setStatus(ntw::Status::ok);
                 request.sendCl();
                 
-                daemon->gui_client_notif_sender.call<void>(salamandre::gui::func::fileIsRecv,id_medecin,id_patient,filename);
+                if(daemon->is_connect)
+                {
+                    daemon->gui_client_notif_sender.call<void>(salamandre::gui::func::fileIsRecv,id_medecin,id_patient,filename);
+                    daemon->is_connect = (daemon->gui_client_notif_sender.request_sock.getStatus() == ntw::Status::ok);
+                }
 
             }break;
             case func::sendThisFile :
@@ -130,7 +134,11 @@ namespace srv
                     std::string path = utils::string::join("/",FileManager::backup_file_dir_path,info.id_medecin,info.id_patient);
                     if(utils::sys::dir::create(path))
                     {
-                        daemon->gui_client_notif_sender.call<void>(salamandre::gui::func::fileIsRecv,info.id_medecin,info.id_patient,info.filename);
+                        if(daemon->is_connect)
+                        {
+                            daemon->gui_client_notif_sender.call<void>(salamandre::gui::func::fileIsRecv,info.id_medecin,info.id_patient,info.filename);
+                            daemon->is_connect = (daemon->gui_client_notif_sender.request_sock.getStatus() == ntw::Status::ok);
+                        }
                         client->request_sock.save(path+"/"+info.filename);
                     }
                 }
