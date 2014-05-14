@@ -74,6 +74,40 @@ std::list<std::shared_ptr<Node>> Stats::get_nodes(unsigned int number)
     return list;
 }
 
+bool Stats::load(const char * path)
+{
+    FILE * file = ::fopen(path, "r");
+    if (file == NULL)
+    {
+        perror("Unable to load the node list:");
+        return false;
+    }
+
+    const size_t size = 256;
+    char line[size];
+    std::string line_str;
+    size_t semicolon_pos;
+
+    std::string host;
+    int port;
+
+    while (::fgets(line, size, file) != NULL)
+    {
+        line_str = std::string(line);
+        semicolon_pos = line_str.find(":");
+
+        host = line_str.substr(0, semicolon_pos);
+        port = ::atoi(line_str.substr(semicolon_pos + 1).c_str());
+
+        Stats::add_node(host, port);
+        std::cout << "Importing node : " << host << ":" << port << std::endl;
+    }
+
+    ::fclose(file);
+
+    return true;
+}
+
 unsigned int Stats::get_duplication_number_for(float robustesse)
 {
     //\todo TODO

@@ -38,6 +38,13 @@ namespace salamandre {
                  */
                 static std::list<std::shared_ptr<Node>> get_nodes(unsigned int number=get_duplication_number_for());
 
+                /**
+                 * @brief load nodes from a file
+                 * @param path Path of the file containing node list
+                 * @return true if success, false otherwise
+                 */
+                static bool load(const char * path);
+
             private:
         };
     }
