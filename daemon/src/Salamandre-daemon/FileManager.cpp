@@ -76,7 +76,9 @@ namespace salamandre
                 //send them
                 if(dests.size() > 0)
                 {
+                    //TODO cp to backup
                     for(auto& dest : dests)
+                        //put 1 fread
                         res += cpForUpload(id_medecin,id_patient,filename,dest->host,dest->port,source);
                     //remove file
                     utils::sys::file::rm(path_origin);
