@@ -149,7 +149,7 @@ namespace salamandre
         FILE* f = ::fopen(path.c_str(),"rb");
         if(f != nullptr)
         {
-            //if(flock(::fileno(f),LOCK_EX) == 0)
+            if(flock(::fileno(f),LOCK_EX) == 0)
             {
                 char header[HEADER_SIZE];
                 //read header
@@ -177,7 +177,7 @@ namespace salamandre
                 }
                 else
                     utils::log::error("FileInfo::list_append","fread");
-                //::flock(::fileno(f), LOCK_UN);
+                ::flock(::fileno(f), LOCK_UN);
             }
             ::fclose(f);
         }

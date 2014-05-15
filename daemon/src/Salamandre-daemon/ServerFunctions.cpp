@@ -23,6 +23,8 @@ namespace salamandre
 namespace srv
 {
 
+    static int _ask_for_file_nb = 0;
+
     int dispatch(int id,ntw::SocketSerialized& request)
     {
         int res= ntw::Status::wrong_id;
@@ -137,6 +139,10 @@ namespace srv
         ntw::cli::Client* client = new ntw::cli::Client;
         if(client->connect(info.ip,info.port) == ntw::Status::ok)
         {
+            ask_for_file_mutex.lock();
+            ++_ask_for_file_nb;
+            ask_for_file_mutex.unlock();
+
             std::thread thread([info,client]()->void {
                 client->call<void>(sendThisFile,info.id_medecin,info.id_patient,info.filename);
                 int st = client->request_sock.getStatus();
@@ -158,6 +164,10 @@ namespace srv
                     }
                 }
                 delete client;
+
+                ask_for_file_mutex.lock();
+                --_ask_for_file_nb;
+                ask_for_file_mutex.unlock();
             });
             thread.detach();
             return true;
@@ -234,6 +244,11 @@ namespace srv
             askForFile_helper(id_medecin);
 
         file_info_mutex.unlock();
+    }
+
+    int ask_for_file_nb()
+    {
+        return _ask_for_file_nb;
     }
 }
 }
