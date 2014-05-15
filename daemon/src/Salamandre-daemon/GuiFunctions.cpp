@@ -108,7 +108,7 @@ namespace gui
             update_list.push_back(tmp);
             update_list_mutex.unlock();
             //wait x sec
-            std::this_thread::sleep_for(std::chrono::seconds(30));
+            std::this_thread::sleep_for(std::chrono::seconds(15));
 
             //askfiles
             salamandre::srv::askForFile(id_medecin,id_patient,filename);
@@ -128,8 +128,8 @@ namespace gui
             
             while(true)
             {
-                std::unique_lock<std::mutex> lk(ask_for_file_mutex);
-                if(ask_for_file_nb() == 0)
+                std::unique_lock<std::mutex> lk(srv::ask_for_file_mutex);
+                if(srv::ask_for_file_nb() == 0)
                     break;
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }
@@ -214,6 +214,12 @@ namespace gui
     {
         utils::log::info("gui::funcSetGuiNotificationPort","Get gui notifier port:",port);
         daemon->setNotifierPort(port);
+    }
+
+    void on_delete_client(ntw::srv::Server& self,ntw::srv::Client& client)
+    {
+        utils::log::warning("gui::on_delete_client","The gui has disconnect");
+        daemon->setNotifierPort(0);
     }
 }   
 }

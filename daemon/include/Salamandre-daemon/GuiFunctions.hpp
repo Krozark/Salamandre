@@ -7,6 +7,13 @@
 
 #include <string>
 
+namespace ntw{
+    namespace srv {
+        class Server;
+        class Client;
+    }
+}
+
 namespace salamandre
 {
     class Daemon;
@@ -91,6 +98,8 @@ namespace gui
     std::string funcGetMySavePath(ntw::SocketSerialized& sock);
     std::string funcGetMyBackupPath(ntw::SocketSerialized& sock);
 
+    void on_delete_client(ntw::srv::Server& self,ntw::srv::Client& client);
+
     ///////////// NOTIFICATIONS ///////////////////
     //This fuctions have to be implemented in the gui side
 
@@ -120,6 +129,8 @@ namespace gui
      * \param filepath the filename
      */
     void funcEndOfSync(ntw::SocketSerialized& sock,int id_medecin,int id_patient,std::string filename);
+    
+    
 
 }
 }

@@ -17,7 +17,7 @@ namespace salamandre
         is_connect(false),
         run(false)
     {
-        //file_server.on_delete_client = salamandre::srv::on_delete_client;
+        gui_server.on_delete_client = salamandre::gui::on_delete_client;
     }
 
     void Daemon::start()
@@ -83,14 +83,17 @@ namespace salamandre
     {
         gui_client_notif_sender.disconnect();
         is_connect = false;
-        if(gui_client_notif_sender.connect("127.0.0.1",port) == ntw::Status::ok)
+        if(port != 0)
         {
-            notifications_mutex.lock();
-            daemon->is_connect = true;
-            notifications_mutex.unlock();
+            if(gui_client_notif_sender.connect("127.0.0.1",port) == ntw::Status::ok)
+            {
+                notifications_mutex.lock();
+                daemon->is_connect = true;
+                notifications_mutex.unlock();
+            }
+            else
+                utils::log::error("Daemon::setNotifierPort","Unable to connect to client notifier");
         }
-        else
-            utils::log::error("Daemon::setNotifierPort","Unable to connect to client notifier");
     }
 
     int Daemon::getServerPort()const

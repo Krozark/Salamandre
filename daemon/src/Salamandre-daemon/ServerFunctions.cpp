@@ -157,9 +157,31 @@ namespace srv
                         if(utils::sys::dir::create(path))
                         {
                             //TODO lock file
-                            client->request_sock.save(path+"/"+info.filename);
+                            path = utils::string::join("/",path,info.filename);
+                            FILE* f = ::fopen(path.c_str(),"wb");
+                            if(f != nullptr)
+                            {
+                                if(::flock(::fileno(f),LOCK_EX) == 0)
+                                {
+                                    char buf[BUFSIZ];
+                                    auto size_to_read = client->request_sock.size();
+                                    while(size_to_read >= BUFSIZ)
+                                    {
+                                        client->request_sock.read(buf,BUFSIZ);
+                                        size_to_read-=BUFSIZ;
+                                        ::fwrite(buf,1,BUFSIZ,f);
+                                    }
 
-                            daemon->notify(salamandre::gui::func::fileIsRecv,info.id_medecin,info.id_patient,info.filename);
+                                    if(size_to_read > 0)
+                                    {
+                                        client->request_sock.read(buf,size_to_read);
+                                        ::fwrite(buf,1,size_to_read,f);
+                                    }
+                                    ::flock(::fileno(f),LOCK_UN);
+                                    daemon->notify(salamandre::gui::func::fileIsRecv,info.id_medecin,info.id_patient,info.filename);
+                                }
+                                ::fclose(f);
+                            }
                         }
                     }
                 }

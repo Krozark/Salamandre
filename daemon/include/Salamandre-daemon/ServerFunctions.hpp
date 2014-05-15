@@ -57,7 +57,7 @@ namespace srv
     static std::list<FileInfoFrom> file_info_from;
 
     static std::mutex ask_for_file_mutex;
-    void int ask_for_file_nb();
+    int ask_for_file_nb();
 }
 }
 #endif
