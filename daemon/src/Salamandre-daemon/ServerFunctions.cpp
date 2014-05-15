@@ -139,11 +139,11 @@ namespace srv
         ntw::cli::Client* client = new ntw::cli::Client;
         if(client->connect(info.ip,info.port) == ntw::Status::ok)
         {
-            ask_for_file_mutex.lock();
-            ++_ask_for_file_nb;
-            ask_for_file_mutex.unlock();
-
             std::thread thread([info,client]()->void {
+                ask_for_file_mutex.lock();
+                ++_ask_for_file_nb;
+                ask_for_file_mutex.unlock();
+
                 client->call<void>(sendThisFile,info.id_medecin,info.id_patient,info.filename);
                 int st = client->request_sock.getStatus();
 

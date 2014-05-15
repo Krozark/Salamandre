@@ -81,15 +81,14 @@ namespace salamandre
 
     void Daemon::setNotifierPort(unsigned int port)
     {
+        std::unique_lock<std::mutex> lk(notifications_mutex);
         gui_client_notif_sender.disconnect();
         is_connect = false;
         if(port != 0)
         {
             if(gui_client_notif_sender.connect("127.0.0.1",port) == ntw::Status::ok)
             {
-                notifications_mutex.lock();
                 daemon->is_connect = true;
-                notifications_mutex.unlock();
             }
             else
                 utils::log::error("Daemon::setNotifierPort","Unable to connect to client notifier");
@@ -113,13 +112,14 @@ namespace salamandre
                {
                    FileInfo tmp = notifications.front();
                    notifications.pop_front();
-
                    notifications_mutex.unlock();
+
                    gui_client_notif_sender.call<void>(tmp.version,tmp.id_medecin,tmp.id_patient,tmp.filename);
 
                    notifications_mutex.lock();
                    daemon->is_connect = (gui_client_notif_sender.request_sock.getStatus() != ntw::Status::stop);
                    notifications_mutex.unlock();
+
                    continue;
                }
                else

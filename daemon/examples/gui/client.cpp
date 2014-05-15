@@ -461,7 +461,7 @@ namespace gui {
 
     void funcEndOfSync(ntw::SocketSerialized& sock,int id_medecin,int id_patient,std::string filename)
     {
-        utils::log::info("gui::funcEndOfSync","medecin:",id_medecin,"patient:",id_medecin,"filename:",filename);
+        utils::log::info("gui::funcEndOfSync","medecin:",id_medecin,"patient:",id_patient,"filename:",filename);
     }
 }
 }
