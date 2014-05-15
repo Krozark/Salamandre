@@ -79,7 +79,7 @@ void sockReceiver::funcFileIsRecv(ntw::SocketSerialized& socket,int idDoctor, in
     }
 }
 
-void sockReceiver::funcSyncIsFinished(ntw::SocketSerialized& socket,int idDoctor, int idPatient, std::string filename)
+void sockReceiver::funcEndOfSync(ntw::SocketSerialized& socket,int idDoctor, int idPatient, std::string filename)
 {
     (void) socket;
     if(idDoctor < 0)
@@ -174,7 +174,7 @@ int sockReceiver::notification_dispatch(int id,ntw::SocketSerialized& request)
         }
         break;
         case salamandre::gui::func::endOfSync:{
-            res = ntw::FuncWrapper::srv::exec(funcSyncIsFinished, request);
+            res = ntw::FuncWrapper::srv::exec(funcEndOfSync, request);
         }
         break;
         default:{
