@@ -8,7 +8,7 @@
 #include <QVector>
 #include <QObject>
 
-#define DEFAULT_NOTIF_SERVER_PORT 20005
+#define DEFAULT_NOTIF_SERVER_PORT 2003
 #define DEFAULT_NOTIF_IP std::string("127.0.0.1")
 
 class getFile{

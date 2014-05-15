@@ -40,11 +40,11 @@ void sockReceiver::setParamsCo(int srvPort, std::string ipAdress)
 
 bool sockReceiver::connectToDaemon(){
     std::cout << "inform server port to daemon " << std::to_string(sock.srvPort) << std::endl;
-    return sockSender::setGuiServerPort(sock.srvPort);
+    return sockSender::setGuiServerPort();
 }
 
 void sockReceiver::closeConnectionToDaemon(){
-    sockSender::setGuiServerPort(sock.srvPort+1);
+    sockSender::setGuiServerPort();
     sock.server->stop();
     sock.server->wait();
 }

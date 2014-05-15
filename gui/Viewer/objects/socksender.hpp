@@ -3,8 +3,8 @@
 
 #include <Socket/client/Client.hpp>
 
-#define DEFAULT_SERVEUR_PORT 20001
-#define DEFAULT_DAEMON_SERVEUR_PORT 20000
+#define DEFAULT_SERVEUR_PORT 2001
+#define DEFAULT_DAEMON_SERVEUR_PORT 2000
 #define DEFAULT_IP std::string("127.0.0.1")
 
 class sockSender
@@ -21,7 +21,7 @@ public:
     static void setParamsCo(int srvPort = DEFAULT_SERVEUR_PORT, std::string ipAdress = DEFAULT_IP);
     static errorConnection connectToDaemon();
     static void closeConnectionToDaemon();
-    static bool setGuiServerPort(int srvPort);
+    static bool setGuiServerPort();
 
     static void sendFile(int idDoctor, int idPatient, std::string filename = "");
     static bool getFile(int idDoctor, int idPatient = -1, std::string filename = "");

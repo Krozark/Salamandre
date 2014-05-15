@@ -261,21 +261,20 @@ int sockSender::checkStatus()
     switch(status)
     {
     case ntw::Status::stop :{
-            std::cerr<<"[ERROR] The server is probably down."<<std::endl;
-            std::cout<<"[Recv] Trying to restart the server"<<std::endl;
-            sock.closeConnectionToDaemon();
-            sockSender::connectToDaemon();
-        }
-        break;
+        std::cerr<<"[ERROR] The server is probably down."<<std::endl;
+        std::cout<<"[Recv] Trying to restart the server"<<std::endl;
+        sock.closeConnectionToDaemon();
+        sockSender::connectToDaemon();
+    }
+    break;
     case ntw::Status::ok :{
-            return 0;
-        }
-        default :
-        {
-            std::cout<<"[ERROR] Recv server code <"<<status<<"> whene sending file : "<<salamandre::gui::statusToString(status)<<std::endl;
-            /// server error???
-            return 1;
-        }
+        return 0;
+    }
+    default :{
+        std::cout<<"[ERROR] Recv server code <"<<status<<"> whene sending file : "<<salamandre::gui::statusToString(status)<<std::endl;
+        /// server error???
+        return 1;
+    }
     }
 
     return status;
@@ -290,7 +289,7 @@ sockSender::errorConnection sockSender::restartDaemon()
         QFileInfo fileInfo(daemonBin);
 
         if(QProcess::startDetached(QString::fromStdString(sock.daemonBinPath), QStringList() << "-s" << QString::number(sock.srvPort-1) << "-g" << QString::number(sock.srvPort), fileInfo.absoluteDir().path())){
-            qDebug() << "daemon have been started successfully";
+            qDebug() << "daemon has been started successfully";
             return NO_ERROR;
         }
         else
@@ -302,11 +301,10 @@ sockSender::errorConnection sockSender::restartDaemon()
     return NO_ERROR;
 }
 
-bool sockSender::setGuiServerPort(int srvPort)
+bool sockSender::setGuiServerPort()
 {
-    client.call<void>(salamandre::gui::func::setGuiNotificationPort, srvPort);
-    if(checkStatus() < 0)
-    {
+    client.call<void>(salamandre::gui::func::setGuiNotificationPort, sock.srvPort+1);
+    if(checkStatus() < 0){
         std::cerr << "Error on init notification server" << std::endl;
         return false;
     }
