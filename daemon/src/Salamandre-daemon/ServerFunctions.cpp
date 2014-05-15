@@ -74,7 +74,7 @@ namespace srv
         if(client.connect(ip,port) == ntw::Status::ok)
         {
             std::list<FileInfo> file_list = FileManager::list(id_medecin,id_patient,filename);
-            
+
             client.call<void>(thisIsMyFiles,daemon->getServerPort(),file_list);
 
             client.disconnect();
@@ -98,19 +98,35 @@ namespace srv
             };
 
             file_info_from.push_back(std::move(tmp));
-
-            std::cout<<"version: "<<f.version
-                <<" id_medecin: "<<f.id_medecin
-                <<" id_patient: "<<f.id_patient
-                <<" filename: "<<f.filename
-                <<std::endl;
         }
         file_info_mutex.unlock();
     }
 
     void funcSendThisFile_Recv(ntw::SocketSerialized& request,int id_medecin,int id_patient,std::string filename)
     {
-        request.setStatus(ntw::Status::todo);
+        std::string path = utils::string::join("/",FileManager::backup_file_dir_path,id_medecin,id_patient,filename);
+        FILE* f = ::fopen(path.c_str(),"rb");
+        if(f != nullptr)
+        {
+            if(::flock(::fileno(f),LOCK_EX) == 0)
+            {
+                utils::log::info("ServerFunctions::funcSendThisFile_Recv",path);
+                ::fseek(f,0,SEEK_SET);
+                char buf[BUFSIZ];
+                size_t size; //file size
+                request<<salamandre::srv::saveThisFile;
+                //add file datas
+                while ((size = ::fread(buf, 1, BUFSIZ,f)) > 0)
+                    request.write(buf,size);
+
+                ::flock(::fileno(f),LOCK_UN);
+            }
+            else
+                request.setStatus(gui::ENABLE_TO_SEND_FILE);
+            ::fclose(f);
+        }
+        else
+            request.setStatus(gui::ENABLE_TO_SEND_FILE);
     }
 
 
@@ -122,19 +138,25 @@ namespace srv
         if(client->connect(info.ip,info.port) == ntw::Status::ok)
         {
             std::thread thread([info,client]()->void {
-                file_info_mutex.lock();
                 client->call<void>(sendThisFile,info.id_medecin,info.id_patient,info.filename);
                 int st = client->request_sock.getStatus();
+
                 if(st == ntw::Status::ok)
                 {
-                    std::string path = utils::string::join("/",FileManager::backup_file_dir_path,info.id_medecin,info.id_patient);
-                    if(utils::sys::dir::create(path))
+                    int f;
+                    client->request_sock>>f;
+                    if(f == func::saveThisFile)
                     {
-                        daemon->notify(salamandre::gui::func::fileIsRecv,info.id_medecin,info.id_patient,info.filename);
-                        client->request_sock.save(path+"/"+info.filename);
+                        std::string path = utils::string::join("/",FileManager::backup_file_dir_path,info.id_medecin,info.id_patient);
+                        if(utils::sys::dir::create(path))
+                        {
+                            //TODO lock file
+                            client->request_sock.save(path+"/"+info.filename);
+
+                            daemon->notify(salamandre::gui::func::fileIsRecv,info.id_medecin,info.id_patient,info.filename);
+                        }
                     }
                 }
-                file_info_mutex.unlock();
                 delete client;
             });
             thread.detach();
@@ -147,32 +169,26 @@ namespace srv
 
     void askForFile_helper(int id_medecin)
     {
+        std::cout<<"askForFile_helper(int)"<<std::endl;
         const auto end = file_info_from.end();
         auto current = file_info_from.begin();
         while(current != end)
         {
-            FileInfoFrom& i = *current;
-            int m = i.id_medecin;
-            if(m == id_medecin)
+            FileInfoFrom& f = *current;
+            std::cout<<"version: "<<f.version
+                <<" id_medecin: "<<f.id_medecin
+                <<" id_patient: "<<f.id_patient
+                <<" filename: "<<f.filename
+                <<" ip:port: "<<f.ip<<":"<<f.port
+                <<std::endl;
+            if(f.id_medecin == id_medecin)
             {
-                int p = i.id_patient;
-                std::string filename = i.filename;
-                if (askFile(i))
-                {
-                    while(m == current->id_medecin and p == current->id_patient and filename == current->filename)
-                    {
-                        m = current->id_medecin;
-                        p = current->id_patient;
-                        filename = current->filename;
-                        ++current;
-                    }
-                }
-                else
-                    ++current;
+                askFile(f);
             }
-            else if(m > id_medecin)
-                break;
+
             ++current;
+            if(current->id_medecin > id_medecin)
+                break;
         }
     }
 
@@ -200,6 +216,15 @@ namespace srv
             }
             return _1.id_medecin < _2.id_medecin;
         });
+
+        std::cout<<"askForFile sorted list:"<<id_medecin<<" "<<id_patient<<" "<<filename<<std::endl;
+        for(auto& f : file_info_from)
+            std::cout<<"version: "<<f.version
+                <<" id_medecin: "<<f.id_medecin
+                <<" id_patient: "<<f.id_patient
+                <<" filename: "<<f.filename
+                <<" ip:port: "<<f.ip<<":"<<f.port
+                <<std::endl;
         
         if(id_medecin > 0 and id_patient > 0 and filename != "")
             askForFile_helper(id_medecin,id_patient,filename);

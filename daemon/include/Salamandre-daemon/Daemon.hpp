@@ -7,6 +7,7 @@
 #include <Salamandre-daemon/FileManager.hpp>
 #include <Salamandre-daemon/FileInfo.hpp>
 #include <mutex>
+#include <thread>
 
 /**
  * \brief namespace for the project
@@ -72,11 +73,14 @@ namespace salamandre
 
             FileManager file_manager;
             bool is_connect;
+            bool run;
 
             std::mutex notifications_mutex; 
             std::thread notifications_thread;
             std::list<FileInfo> notifications;
             ntw::cli::Client gui_client_notif_sender; ///< the socket that send notification to the client.
+
+            void _start_notifier();
 
 
             //void on_new_file_client(ntw::srv::Server& self,ntw::srv::Client& client);

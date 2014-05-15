@@ -117,6 +117,8 @@ namespace salamandre
              */
             void build_list_to_send();
 
+            void build_list_to_prepare();
+
             static bool send_file(const FileInfoFromPath& fileinfo);
     };
 }

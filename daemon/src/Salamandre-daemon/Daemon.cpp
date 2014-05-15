@@ -14,7 +14,8 @@ namespace salamandre
         file_server(listen_port,"",salamandre::srv::dispatch,100),
         gui_server(listen_gui_port,"127.0.0.1",salamandre::gui::dispatch,1,1),
         file_manager(10),
-        is_connect(false)
+        is_connect(false),
+        run(false)
     {
         //file_server.on_delete_client = salamandre::srv::on_delete_client;
     }
@@ -25,6 +26,8 @@ namespace salamandre
         gui_server.start();
         file_server.start();
         broadcaster.start();
+        run = true;
+        notifications_thread = std::thread(&Daemon::_start_notifier,this);
     }
 
     void Daemon::wait()
@@ -33,6 +36,7 @@ namespace salamandre
         gui_server.wait();
         file_server.wait();
         broadcaster.wait();
+        notifications_thread.join();
     }
 
     void Daemon::stop()
@@ -41,6 +45,8 @@ namespace salamandre
         gui_server.stop();
         file_server.stop();
         broadcaster.stop();
+        run = false;
+        gui_client_notif_sender.disconnect();
     }
 
     void Daemon::init()
@@ -78,7 +84,11 @@ namespace salamandre
         gui_client_notif_sender.disconnect();
         is_connect = false;
         if(gui_client_notif_sender.connect("127.0.0.1",port) == ntw::Status::ok)
+        {
+            notifications_mutex.lock();
             daemon->is_connect = true;
+            notifications_mutex.unlock();
+        }
         else
             utils::log::error("Daemon::setNotifierPort","Unable to connect to client notifier");
     }
@@ -86,5 +96,33 @@ namespace salamandre
     int Daemon::getServerPort()const
     {
         return file_server.port();
+    }
+
+
+    void Daemon::_start_notifier()
+    {
+       while(run)
+       {
+           if(is_connect)
+           {
+               notifications_mutex.lock();
+               if(notifications.size()>0)
+               {
+                   FileInfo tmp = notifications.front();
+                   notifications.pop_front();
+
+                   notifications_mutex.unlock();
+                   gui_client_notif_sender.call<void>(tmp.version,tmp.id_medecin,tmp.id_patient,tmp.filename);
+
+                   notifications_mutex.lock();
+                   daemon->is_connect = (gui_client_notif_sender.request_sock.getStatus() != ntw::Status::stop);
+                   notifications_mutex.unlock();
+                   continue;
+               }
+               else
+                notifications_mutex.unlock();
+           }
+           std::this_thread::sleep_for(std::chrono::seconds(1));
+       } 
     }
 }

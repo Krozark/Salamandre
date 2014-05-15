@@ -244,12 +244,14 @@ namespace salamandre
 
         std::chrono::milliseconds elapsed_time(0);
 
+        build_list_to_prepare();
         build_list_to_send();
 
         while(run)
         {
             if (elapsed_time > duration)
             {
+                build_list_to_prepare();
                 build_list_to_send();
                 const auto end = files_to_send.end();
                 for(auto current = files_to_send.begin(); current!= end;)
@@ -322,6 +324,34 @@ namespace salamandre
         }
     }
 
+    void FileManager::build_list_to_prepare()
+    {
+        const std::list<std::string> medecin_l = utils::sys::dir::list_dirs(new_file_dir_path);
+        for(const std::string& medecin : medecin_l)
+        {
+            const std::string medecin_path = utils::string::join("/",new_file_dir_path,medecin);
+            const std::list<std::string> patient_l = utils::sys::dir::list_dirs(medecin_path);
+
+            int id_medecin = ::atoi(medecin.c_str());
+
+            for(const std::string& patient : patient_l)
+            {
+                const std::string patient_path = utils::string::join("/",medecin_path,patient);
+                const std::list<std::string> file_l = utils::sys::dir::list_files(patient_path);
+
+                int id_patient = ::atoi(patient.c_str());
+
+                for(const std::string& file : file_l)
+                {
+                    prepareForUpload(id_medecin,id_patient,file);
+                }
+                utils::sys::dir::rm_if_empty(patient_path);
+            }
+            utils::sys::dir::rm_if_empty(medecin_path);
+        }
+
+    }
+
     bool FileManager::send_file(const salamandre::FileInfoFromPath& info)
     {
         bool res = false;
@@ -353,7 +383,12 @@ namespace salamandre
                         if(client->request_sock.receive() > 0)
                         {
                             utils::sys::file::rm(info.path);
-                            //\todo RM dir
+                            std::string dest_path = utils::string::join("/",network_file_dir_path,info.ip+":"+std::to_string(info.port));
+                            /*str::string medecin_path = utils::string::join("/",dest_path,id_medecin);
+                            std::string patient_path = utils::string::join("/",medecin_path,id_patient);
+                            utils::sys::dir::rm_if_empty(medecin_path);
+                            utils::sys::dir::rm_if_empty(patient_path);*/
+                            utils::sys::dir::rm_if_empty(dest_path,true);
                         }
                         delete client;
                         ::flock(::fileno(f),LOCK_UN);

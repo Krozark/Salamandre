@@ -108,7 +108,7 @@ namespace gui
             update_list.push_back(tmp);
             update_list_mutex.unlock();
             //wait x sec
-            std::this_thread::sleep_for(std::chrono::seconds(60));
+            std::this_thread::sleep_for(std::chrono::seconds(5));
 
             //askfiles
             salamandre::srv::askForFile(id_medecin,id_patient,filename);
@@ -127,7 +127,7 @@ namespace gui
             update_list_mutex.unlock();
 
             //notify the gui
-            daemon->notify(endOfSync,id_patient,id_patient,filename);
+            daemon->notify(endOfSync,id_medecin,id_patient,filename);
         });
         thread.detach();
     }
