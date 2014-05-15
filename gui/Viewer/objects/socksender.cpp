@@ -45,36 +45,26 @@ void sockSender::setParamsCo(int srvPort, std::string ipAdress)
 sockSender::errorConnection sockSender::connectToDaemon()
 {
     errorConnection res = NO_ERROR;
+    ntw::Status statusConnection = client.connect(sock.srvIpAddress, sock.srvPort);
+    qDebug() << "connect to daemon, status of connection : " << statusConnection.code;
 
-    if(client.connect(sock.srvIpAddress, sock.srvPort) == ntw::Status::ok){
+    if(statusConnection.code == ntw::Status::ok){
         qDebug() << "Gui is now connect to daemon and ready to send request : ";
         sockSender::initConnectionToDaemon();
     }
-    else{
-        if((res = sockSender::restartDaemon()) == NO_ERROR){
-            daemonConnectionDialog *dialogConnectionToDaemon = new daemonConnectionDialog();
-            bool resConnectRes = false;
+    else if(statusConnection.code == ntw::Status::request_add){
+        bool resConnectRes = sockSender::loopConnection();
+        if(resConnectRes){
+            res = NO_ERROR;
+            sockSender::initConnectionToDaemon();
+        }
+        else
+            res = ERROR_TO_CONNECT_DAEMON;
+    }
+    else if(statusConnection.code == ntw::Status::connexion){
+        if((res = sockSender::restartDaemon()) = NO_ERROR){
 
-            for(int i = 0; i < CONNECTION_TEST_NUMBER; ++i){ // loop for CONNECTION_TEST_NUMBER seconds
-                dialogConnectionToDaemon->increaseNbTest(i+1);
-                if(client.connect(sock.srvIpAddress, sock.srvPort) == ntw::Status::ok){
-                    resConnectRes = true;
-                    break;
-                }
-
-                client.disconnect();
-                dialogConnectionToDaemon->show();
-                QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 1000);
-
-                sleep(1);
-            }
-
-            if(dialogConnectionToDaemon->isVisible())
-                dialogConnectionToDaemon->close();
-
-            delete dialogConnectionToDaemon;
-            QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 1000);
-
+            bool resConnectRes = sockSender::loopConnection();
             if(resConnectRes){
                 res = NO_ERROR;
                 sockSender::initConnectionToDaemon();
@@ -87,6 +77,34 @@ sockSender::errorConnection sockSender::connectToDaemon()
     }
 
     return res;
+}
+
+bool sockSender::loopConnection()
+{
+    daemonConnectionDialog *dialogConnectionToDaemon = new daemonConnectionDialog();
+    bool resConnectRes = false;
+
+    for(int i = 0; i < CONNECTION_TEST_NUMBER; ++i){ // loop for CONNECTION_TEST_NUMBER seconds
+        dialogConnectionToDaemon->increaseNbTest(i+1);
+        if(client.connect(sock.srvIpAddress, sock.srvPort) == ntw::Status::ok){
+            resConnectRes = true;
+            break;
+        }
+
+        client.disconnect();
+        dialogConnectionToDaemon->show();
+        QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 1000);
+
+        sleep(1);
+    }
+
+    if(dialogConnectionToDaemon->isVisible())
+        dialogConnectionToDaemon->close();
+
+    delete dialogConnectionToDaemon;
+    QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 1000);
+
+    return resConnectRes;
 }
 
 void sockSender::initConnectionToDaemon()
@@ -271,8 +289,10 @@ sockSender::errorConnection sockSender::restartDaemon()
         QString daemonBin = QString::fromStdString(sock.daemonBinPath);
         QFileInfo fileInfo(daemonBin);
 
-        if(QProcess::startDetached(QString::fromStdString(sock.daemonBinPath), QStringList() << "-s" << QString::number(sock.srvPort-1) << "-g" << QString::number(sock.srvPort), fileInfo.absoluteDir().path()))
+        if(QProcess::startDetached(QString::fromStdString(sock.daemonBinPath), QStringList() << "-s" << QString::number(sock.srvPort-1) << "-g" << QString::number(sock.srvPort), fileInfo.absoluteDir().path())){
+            qDebug() << "daemon have been started successfully";
             return NO_ERROR;
+        }
         else
             return ERROR_TO_START_DAEMON;
     }

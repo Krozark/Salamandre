@@ -41,7 +41,7 @@ public:
 
     static void funcFileIsSend(ntw::SocketSerialized& socket,int idDoctor, int idPatient, std::string filename);
     static void funcFileIsRecv(ntw::SocketSerialized& socket, int idDoctor, int idPatient, std::string filename);
-    static void funcSyncIsFinished(ntw::SocketSerialized& socket,int idDoctor, int idPatient, std::string filename);
+    static void funcEndOfSync(ntw::SocketSerialized& socket,int idDoctor, int idPatient, std::string filename);
 
     static int notification_dispatch(int id,ntw::SocketSerialized& request);
 

@@ -41,6 +41,8 @@ private:
     static std::string getDaemonSavePath();
     static std::string getDaemonBinPath();
 
+    static bool loopConnection();
+
     static sockSender sock;
     static ntw::cli::Client client;
 

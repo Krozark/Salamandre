@@ -17,8 +17,10 @@ include("./record/record.pri")
 
 INCLUDEPATH += ../../daemon/include/
 
-QMAKE_CXXFLAGS_DEBUG += -pg
-QMAKE_CXXFLAGS += -std=c++11 -O3
+QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS_RELEASE += -O3
+QMAKE_CXXFLAGS_DEBUG += -pg -Og
+
 
 LIBS += -lcryptopp -lz -lsocket
 
