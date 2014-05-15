@@ -1,3 +1,4 @@
+#include <Salamandre-stats/stats.hpp>
 #include <Salamandre-daemon/Daemon.hpp>
 #include <Salamandre-daemon/ServerBroadcast.hpp>
 #include <Salamandre-daemon/define.hpp>
@@ -26,6 +27,7 @@ int main(int argc,char* argv[])
     int gui_port = 3842;
     int server_port = 3843;
     int broadcast_port = 5001;
+    std::string node_file_path;
     bool local_only = false;
     std::string path = argv[0];
     try {
@@ -33,6 +35,7 @@ int main(int argc,char* argv[])
         TCLAP::CmdLine cmd("Salamandre Daemon", ' ', DAEMON_VERSION);
         TCLAP::ValueArg<int> gui_port_arg("g", "gui-port", "Port for the GUI", false, gui_port, "int", cmd);
         TCLAP::ValueArg<int> server_port_arg("s", "server-port", "Port for the server to listen", false, server_port, "int", cmd);
+        TCLAP::ValueArg<std::string> nodes_file_arg("f", "nodes-file", "File containing node list", false, "", "string", cmd);
         TCLAP::SwitchArg local_switch("l", "local", "Whether daemon sould run stricly locally", cmd, false);
 
         cmd.parse(argc, argv);
@@ -40,6 +43,7 @@ int main(int argc,char* argv[])
         local_only = local_switch.getValue();
         gui_port = gui_port_arg.getValue();
         server_port = server_port_arg.getValue();
+        node_file_path = nodes_file_arg.getValue();
 
     } catch(TCLAP::ArgException &e) {
         utils::log::critical(1,"Args ","error",e.error(),"for arg",e.argId());
@@ -52,13 +56,18 @@ int main(int argc,char* argv[])
         <<"\nPress ^C to exit"
         <<std::endl<<std::endl;
     std::signal(SIGINT, stop_server_handler);
-
     try
     {
         salamandre::Daemon::init();
 
+        if (!node_file_path.empty())
+        {
+            salamandre::stats::Stats::load(node_file_path.c_str());
+        }
+
         salamandre::daemon = new salamandre::Daemon(path, gui_port,server_port,broadcast_port,local_only);
         salamandre::daemon->start();
+
         salamandre::daemon->wait();
 
         delete salamandre::daemon;
