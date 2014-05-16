@@ -44,7 +44,7 @@ bool sockReceiver::connectToDaemon(){
 }
 
 void sockReceiver::closeConnectionToDaemon(){
-    sockSender::setGuiServerPort();
+    //sockSender::setGuiServerPort();
     sock.server->stop();
     sock.server->wait();
 }
@@ -82,6 +82,8 @@ void sockReceiver::funcFileIsRecv(ntw::SocketSerialized& socket,int idDoctor, in
 void sockReceiver::funcEndOfSync(ntw::SocketSerialized& socket,int idDoctor, int idPatient, std::string filename)
 {
     (void) socket;
+    std::cout<<"End of sync :"<<idDoctor<<"/"<<idPatient<<"/"<<filename<<std::endl;
+
     if(idDoctor < 0)
         return;
 
