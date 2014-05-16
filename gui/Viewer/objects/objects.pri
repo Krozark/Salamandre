@@ -6,7 +6,8 @@ SOURCES += objects/doctor.cpp \
     objects/socksender.cpp \
     objects/sockreceiver.cpp \
     objects/settings.cpp \
-    objects/threadsave.cpp
+    objects/threadsave.cpp \
+    objects/systemtray.cpp
 
 HEADERS += objects/doctor.hpp \
     objects/patient.hpp \
@@ -16,4 +17,5 @@ HEADERS += objects/doctor.hpp \
     objects/socksender.hpp \
     objects/sockreceiver.hpp \
     objects/settings.hpp \
-    objects/threadsave.hpp
+    objects/threadsave.hpp \
+    objects/systemtray.hpp

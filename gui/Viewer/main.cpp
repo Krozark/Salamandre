@@ -5,6 +5,7 @@
 #include <objects/socksender.hpp>
 #include <objects/settings.hpp>
 #include <objects/sockreceiver.hpp>
+#include <objects/systemtray.hpp>
 
 #include <QApplication>
 #include <QFileDialog>
@@ -20,7 +21,7 @@ int main(int argc, char *argv[])
     QStringList args = a.arguments();
 
     int srvGuiPort = DEFAULT_SERVEUR_PORT;
-    int guiNotifPort = DEFAULT_NOTIF_SERVER_PORT;
+    int guiNotifPort = srvGuiPort+1;
     std::string srvGuiIp = DEFAULT_IP;
     std::string guiNotifIp = DEFAULT_NOTIF_IP;
 
@@ -38,6 +39,7 @@ int main(int argc, char *argv[])
     }
 
     settings::loadSettings();
+    systemTray::init();
 
     int daemonConnectionRes;
     int returnError = 0;
@@ -75,8 +77,8 @@ int main(int argc, char *argv[])
         return -4;
     }
 
-    sockReceiver::init();
     sockReceiver::setParamsCo(guiNotifPort, guiNotifIp);
+    sockReceiver::init();
     sockReceiver::connectToDaemon();
 
     QDir dir(QCoreApplication::applicationDirPath()+"/save");
