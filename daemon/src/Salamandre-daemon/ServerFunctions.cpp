@@ -201,24 +201,20 @@ namespace srv
 
     void askForFile_helper(int id_medecin)
     {
-        std::cout<<"askForFile_helper(int)"<<std::endl;
         const auto end = file_info_from.end();
         auto current = file_info_from.begin();
         while(current != end)
         {
             FileInfoFrom& f = *current;
-            std::cout<<"version: "<<f.version
-                <<" id_medecin: "<<f.id_medecin
-                <<" id_patient: "<<f.id_patient
-                <<" filename: "<<f.filename
-                <<" ip:port: "<<f.ip<<":"<<f.port
-                <<std::endl;
-            if(f.id_medecin == id_medecin)
-            {
-                askFile(f);
-            }
-
             ++current;
+            if(f.id_medecin == id_medecin)
+                if(askFile(f))
+                    // skip the nex one
+                    while(current != end
+                          and current->id_medecin == id_medecin
+                          and current->id_patient == f.id_patient
+                          and current->filename == f.filename)
+                        ++current;
             if(current->id_medecin > id_medecin)
                 break;
         }
@@ -226,10 +222,44 @@ namespace srv
 
     void askForFile_helper(int id_medecin,int id_patient)
     {
+        const auto end = file_info_from.end();
+        auto current = file_info_from.begin();
+        while(current != end)
+        {
+            FileInfoFrom& f = *current;
+            ++current;
+            if(f.id_medecin == id_medecin and f.id_patient == id_patient)
+                if(askFile(f))
+                    // skip the nex one
+                    while(current != end
+                          and current->id_medecin == id_medecin
+                          and current->id_patient == id_patient
+                          and current->filename == f.filename)
+                        ++current;
+            if(current->id_medecin == id_medecin and current->id_patient > id_patient)
+                break;
+        }
     }
 
     void askForFile_helper(int id_medecin,int id_patient,const std::string& filename)
     {
+        const auto end = file_info_from.end();
+        auto current = file_info_from.begin();
+        while(current != end)
+        {
+            FileInfoFrom& f = *current;
+            ++current;
+            if(f.id_medecin == id_medecin and f.id_patient == id_patient and f.filename == filename)
+                if(askFile(f))
+                    // skip the nex one
+                    while(current != end
+                          and current->id_medecin == id_medecin
+                          and current->id_patient == id_patient
+                          and current->filename == filename)
+                        ++current;
+            if(current->id_medecin == id_medecin and current->id_patient == id_patient and current->filename > filename)
+                break;
+        }
     }
 
     void askForFile(int id_medecin,int id_patient,const std::string& filename)
@@ -265,6 +295,7 @@ namespace srv
         else if (id_medecin > 0)
             askForFile_helper(id_medecin);
 
+        file_info_from.clear();
         file_info_mutex.unlock();
     }
 

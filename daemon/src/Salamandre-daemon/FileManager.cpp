@@ -76,12 +76,14 @@ namespace salamandre
                 //send them
                 if(dests.size() > 0)
                 {
-                    //TODO cp to backup
                     for(auto& dest : dests)
                         //put 1 fread
                         res += cpForUpload(id_medecin,id_patient,filename,dest->host,dest->port,source);
                     //remove file
-                    utils::sys::file::rm(path_origin);
+                    std::string new_path = utils::string::join("/",backup_file_dir_path,id_medecin,id_patient);
+                    utils::sys::dir::create(new_path);
+                    new_path = utils::string::join("/",new_path,filename);
+                    ::rename(path_origin.c_str(),new_path.c_str());
                 }
                 //unlock it
                 ::flock(::fileno(source), LOCK_UN);
