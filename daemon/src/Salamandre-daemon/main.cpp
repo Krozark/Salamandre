@@ -88,7 +88,7 @@ void daemonize(std::string log_path, std::string pid_path)
    ::close(STDOUT_FILENO);
    ::dup(::fileno(log_file));
    ::dup2(STDOUT_FILENO, STDERR_FILENO);
-   ::close(::fileno(log_file));
+   ::fclose(log_file);
 }
 
 int main(int argc,char* argv[])
