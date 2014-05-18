@@ -5,11 +5,7 @@
 
 #include <utils/log.hpp>
 
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <sys/file.h>
-#include <libgen.h>
-#include <fcntl.h>
 #include <unistd.h>
 
 #include <iostream>
@@ -136,6 +132,7 @@ int main(int argc,char* argv[])
     if (daemon)
     {
         daemonize(log_file, pid_file);
+        std::cout << "Daemon started on gui port : " << gui_port << ", server port : " << server_port << ", broadcast port : " << broadcast_port << std::endl;
     }
     try
     {
