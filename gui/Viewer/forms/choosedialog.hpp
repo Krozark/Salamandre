@@ -46,14 +46,17 @@ public:
     ~chooseDialog();
 
     salamandre::Patient* getPatient();
+    void disableForUpdate(bool disable);
+    void showUpdate();
 
     void accept();
     void reject();
     
 private slots:
     void updatePatientAvailable();
-    void updatePatientRecord();
+    void forceUpdatePatientRecord();
     void showContextMenu(QPoint p);
+    void syncFinish(getFile *file);
 
     void on_radioButton_newClientData_clicked();
     void on_radioButton_getDataClient_clicked();
@@ -68,6 +71,7 @@ private slots:
 
 private:
     void updateRecord(patientData *data);
+    void updatePatientRecord(bool force = false);
 
     Ui::chooseDialog *ui;
     updateFileDialog *updfileDialog;

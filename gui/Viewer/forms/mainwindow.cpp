@@ -63,6 +63,7 @@ void MainWindow::init()
     this->connect(this->threadSaveRecord, SIGNAL(setProgress(int)), this->saveRecordDialog, SLOT(setProgress(int)));
     this->connect(this->threadSaveRecord, SIGNAL(saveProgress(int)), this, SLOT(saveProgress(int)));
     this->connect(this->threadSaveRecord, SIGNAL(finished()), this, SLOT(saveEnd()));
+    this->connect(&(sockReceiver::sock), SIGNAL(syncIsFinish(getFile*)), this, SLOT(syncFinish(getFile*)));
 
     this->setWindowTitle(QString(APPS_NAME) + " - Patient n°"+this->patient->getId());
 
@@ -146,12 +147,24 @@ qDebug() << "load : " << noError;
     if(noError)
         noError = this->loadFMN();
 qDebug() << "load : " << noError;
+
+    if(sockSender::isUpdating(this->doctor->getId().toInt(), this->patient->getId().toInt(), "")){
+        this->setTabsEnable(false);
+    }
+
     return noError;
 }
 
 bool MainWindow::loadFEC()
 {
     salamandre::RegistryRecord *record = this->patient->getRegistryRecord();
+
+    bool isUpdating = sockSender::isUpdating(this->doctor->getId().toInt(), this->patient->getId().toInt(), record->getFileName());
+
+    if(isUpdating)
+        this->ui->tabCivilState->setEnabled(false);
+    else
+        this->ui->tabCivilState->setEnabled(true);
 
     if(QFile::exists(QString::fromStdString(record->getFilePath())))
     {
@@ -185,6 +198,13 @@ bool MainWindow::loadFCT()
 {
     salamandre::ConfidentialRecord *record = this->patient->getConfidentialRecord();
 
+    bool isUpdating = sockSender::isUpdating(this->doctor->getId().toInt(), this->patient->getId().toInt(), record->getFileName());
+
+    if(isUpdating)
+        this->ui->tabConfidential->setEnabled(false);
+    else
+        this->ui->tabConfidential->setEnabled(true);
+
     if(QFile::exists(QString::fromStdString(record->getFilePath())))
     {
         if(!record->load(this->doctor->getPass().toStdString())){
@@ -207,6 +227,13 @@ bool MainWindow::loadFMT()
 {
     salamandre::MedicalRecord *record = this->patient->getMedicalRecord();
 
+    bool isUpdating = sockSender::isUpdating(this->doctor->getId().toInt(), this->patient->getId().toInt(), record->getFileName());
+
+    if(isUpdating)
+        this->ui->tabMedicalDatas->setEnabled(false);
+    else
+        this->ui->tabMedicalDatas->setEnabled(true);
+
     if(QFile::exists(QString::fromStdString(record->getFilePath())))
     {
         if(!record->load(this->doctor->getPass().toStdString())){
@@ -228,6 +255,13 @@ bool MainWindow::loadFMT()
 bool MainWindow::loadFMN()
 {
     salamandre::DigitalRecord *record = this->patient->getDigitalRecord();
+
+    bool isUpdating = sockSender::isUpdating(this->doctor->getId().toInt(), this->patient->getId().toInt(), record->getFileName());
+
+    if(isUpdating)
+        this->ui->tabMedicalNumericalDatas->setEnabled(false);
+    else
+        this->ui->tabMedicalNumericalDatas->setEnabled(true);
 
     if(QFile::exists(QString::fromStdString(record->getFilePath()))){
         QFile f(QString::fromStdString(record->getFilePath()));
@@ -322,7 +356,8 @@ void MainWindow::saveEnd()
     }
     case ACTION_CHANGE_PATIENT:
     {
-        chooseDialog *chDialog = new chooseDialog(this->doctor, nullptr);
+        chooseDialog *chDialog = new chooseDialog(this->doctor, this);
+        chDialog->setModal(false);
         int res = chDialog->exec();
 
         if(res  == QDialog::Accepted){
@@ -629,4 +664,56 @@ void MainWindow::restartNeeded()
 {
     this->badPass = true;
     this->on_actionD_connection_triggered();
+}
+
+void MainWindow::syncFinish(getFile *file)
+{
+    if(file->idDoctor >= 0 && file->idPatient >= 0 && file->filename == ""){
+        if(!this->loadRecords()){
+            this->badPass = true;
+        }
+        else{
+            this->setTabsEnable(true);
+        }
+    }
+    else if(file->idDoctor >= 0 && file->idPatient >= 0 && file->filename != ""){
+        if(file->filename == salamandre::ConfidentialRecord::getFileName()){
+            if(!this->loadFCT())
+                this->badPass = true;
+            else
+                this->ui->tabConfidential->setEnabled(true);
+        }
+        else if(file->filename == salamandre::RegistryRecord::getFileName()){
+            if(!this->loadFEC())
+                this->badPass = true;
+            else
+                this->ui->tabCivilState->setEnabled(true);
+        }
+        else if(file->filename == salamandre::DigitalRecord::getFileName()){
+            if(!this->loadFMN())
+                this->badPass = true;
+            else
+                this->ui->tabMedicalNumericalDatas->setEnabled(true);
+        }
+        else if(file->filename == salamandre::MedicalRecord::getFileName()){
+            if(!this->loadFMT())
+                this->badPass = true;
+            else
+                this->ui->tabMedicalDatas->setEnabled(true);
+        }
+    }
+
+    if(!sockSender::isUpdating(this->doctor->getId().toInt(), this->patient->getId().toInt(), "")){
+        this->setTabsEnable(true);
+    }
+
+    if(this->isBadPass())
+        this->close();
+}
+void MainWindow::setTabsEnable(bool enable)
+{
+    this->ui->tabCivilState->setEnabled(enable);
+    this->ui->tabMedicalDatas->setEnabled(enable);
+    this->ui->tabMedicalNumericalDatas->setEnabled(enable);
+    this->ui->tabConfidential->setEnabled(enable);
 }

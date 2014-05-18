@@ -79,6 +79,11 @@ void connectionDeconnectionDialog::deconnectionIsFailed()
 
 void connectionDeconnectionDialog::setConnectionText(int nbConnection, int maxNbConnection)
 {
+    if(nbConnection < 5)
+        this->enableBottom(false);
+    else
+        this->enableBottom(true);
+
     this->ui->label->setText("Connexion (tentative "+QString::number(nbConnection)+" / "+QString::number(maxNbConnection)+") ...");
 }
 

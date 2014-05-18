@@ -8,6 +8,7 @@
 #include <objects/listview.hpp>
 #include <objects/threaduploadfile.hpp>
 #include <objects/threadsave.hpp>
+#include <objects/sockreceiver.hpp>
 
 #include <QMainWindow>
 #include <QLabel>
@@ -83,6 +84,7 @@ private:
     bool checkNeedSaveFMN();
 
     void clearPatient();
+    void setTabsEnable(bool enable);
 
     void closeEvent(QCloseEvent *event);
 
@@ -95,6 +97,7 @@ private slots:
     void saveProgress(int save);
     void saveEnd();
     void restartNeeded();
+    void syncFinish(getFile *file);
 
     void on_actionQuitter_triggered();
     void on_actionNouveau_patient_triggered();
