@@ -135,7 +135,8 @@ namespace srv
     bool askFile(const FileInfoFrom& info)
     {
         utils::log::info("ServerFunctions::askFile","to ip:",info.ip,"port:",info.port,"id_medecin:",info.id_medecin,"id_patient",info.id_patient,"filename",info.filename);
-        
+        if(info.ip == "")
+            return true;
         ntw::cli::Client* client = new ntw::cli::Client;
         if(client->connect(info.ip,info.port) == ntw::Status::ok)
         {
@@ -266,6 +267,23 @@ namespace srv
     {
         file_info_mutex.lock();
 
+        {
+            //ad my files
+            auto tmp_l  = FileManager::list(id_medecin,id_patient,filename);
+            for(auto& f : tmp_l)
+            {
+                FileInfoFrom tmp;
+                tmp.version = f.version;
+                tmp.id_medecin = f.id_medecin;
+                tmp.id_patient = f.id_patient;
+                tmp.filename = f.filename;
+                tmp.ip = "";
+                tmp.port = 0;
+
+                file_info_from.push_back(tmp);
+            }
+        }
+
         file_info_from.sort([](const FileInfoFrom& _1,const FileInfoFrom& _2)->bool {
             if(_1.id_medecin == _2.id_medecin) {
                 if(_1.id_patient == _2.id_patient) {
@@ -279,15 +297,6 @@ namespace srv
             return _1.id_medecin < _2.id_medecin;
         });
 
-        std::cout<<"askForFile sorted list:"<<id_medecin<<" "<<id_patient<<" "<<filename<<std::endl;
-        for(auto& f : file_info_from)
-            std::cout<<"version: "<<f.version
-                <<" id_medecin: "<<f.id_medecin
-                <<" id_patient: "<<f.id_patient
-                <<" filename: "<<f.filename
-                <<" ip:port: "<<f.ip<<":"<<f.port
-                <<std::endl;
-        
         if(id_medecin > 0 and id_patient > 0 and filename != "")
             askForFile_helper(id_medecin,id_patient,filename);
         else if (id_medecin > 0 and id_patient > 0)
