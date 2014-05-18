@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/file.h>
+#include <libgen.h>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -33,24 +34,24 @@ void daemonize(std::string log_path, std::string pid_path)
 {
 
 
-    int pid = fork();
+    int pid = ::fork();
 
     if (pid < 0)
     {
         std::cerr << "Unable to fork, exiting" << std::endl;
-        exit(1);
+        ::exit(1);
     } else if( pid != 0)
     {
         // Parent process, exiting
         std::cout << "Turning into background... PID: " << pid << std::endl;
-        exit(0);
+        ::exit(0);
     }
 
     // Detaching from any controlling terminal
-    if (setsid() == -1)
+    if (::setsid() == -1)
     {
-        perror("Unable to detach from terminal");
-        exit(1);
+        ::perror("Unable to detach from terminal");
+        ::exit(1);
     }
 
     salamandre::fd_pid = ::open(pid_path.c_str(), O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
@@ -61,7 +62,7 @@ void daemonize(std::string log_path, std::string pid_path)
         ::exit(1);
     }
 
-    if (flock(salamandre::fd_pid, LOCK_EX | LOCK_NB) != 0)
+    if (::flock(salamandre::fd_pid, LOCK_EX | LOCK_NB) != 0)
     {
         ::perror("Unable to lock the pid_file, is the daemon already running ?");
         ::close(salamandre::fd_pid);
@@ -129,9 +130,12 @@ int main(int argc,char* argv[])
         <<std::endl<<std::endl;
     std::signal(SIGINT, stop_server_handler);
     std::signal(SIGTERM, stop_server_handler);
+
+    std::string log_file = "salamandre.log";
+    std::string pid_file = "salamandre.pid";
     if (daemon)
     {
-        daemonize("salamandre.log", "salamandre.pid");
+        daemonize(log_file, pid_file);
     }
     try
     {
@@ -162,7 +166,7 @@ int main(int argc,char* argv[])
 
     if (daemon)
     {
-        ::unlink("salamandre.pid");
+        ::unlink(pid_file.c_str());
     }
     return 0;
 }
