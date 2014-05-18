@@ -246,6 +246,20 @@ bool sockSender::getFile(int idDoctor, int idPatient, std::string filename)
     return true;
 }
 
+bool sockSender::isUpdating(int idDoctor, int idPatient, std::string filename)
+{
+    bool isUpdating;
+    isUpdating = sock.client.call<bool>(salamandre::gui::func::isInUpdate, idDoctor, idPatient, filename);
+
+    if(checkStatus() < 0){
+        std::cout << "ERROR on ask to know if there is an update on doctor " << idDoctor << ", patient " << idPatient << " and filename " << filename << std::endl;
+        return false;
+    }
+
+    sock.client.request_sock.clear();
+    return isUpdating;
+}
+
 int sockSender::checkStatus()
 {
     int status = sock.client.request_sock.getStatus();

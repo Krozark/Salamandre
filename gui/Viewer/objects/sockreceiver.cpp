@@ -88,6 +88,7 @@ void sockReceiver::funcEndOfSync(ntw::SocketSerialized& socket,int idDoctor, int
 
     getFile *fileRecv = new getFile(idDoctor, idPatient, filename);
     getFile *file = nullptr;
+    bool found = false;
 
     int nbFileToGet = sock.patientDataList.size();
     for(int i = 0; i < nbFileToGet; ++i){
@@ -95,8 +96,13 @@ void sockReceiver::funcEndOfSync(ntw::SocketSerialized& socket,int idDoctor, int
 
         if(file->equals(*fileRecv)){
             sock.patientDataList.remove(i);
+            found = true;
             break;
         }
+    }
+
+    if(!found){
+        file = new getFile(fileRecv->idDoctor, fileRecv->idPatient, fileRecv->filename);
     }
 
     QStringList fileFilter = QStringList() << QString::fromStdString(salamandre::ConfidentialRecord::getFileName())
@@ -128,7 +134,15 @@ void sockReceiver::funcEndOfSync(ntw::SocketSerialized& socket,int idDoctor, int
                 fInfo = listFileInfo.at(j);
 
                 QFile f(pathFiles+"/"+fInfo.fileName());
-                f.rename(dirApps.path()+"/"+fInfo.fileName());
+                if(f.exists()){
+                    FILE *fSrc = fopen((pathFiles+"/"+fInfo.fileName()).toStdString().c_str(), "rb");
+                    FILE *fDest = fopen((dirApps.path()+"/"+fInfo.fileName()).toStdString().c_str(), "wb+");
+
+                    salamandre::Record::copyFile(fSrc, fDest);
+
+                    fclose(fSrc);
+                    fclose(fDest);
+                }
             }
         }
     }
@@ -146,14 +160,32 @@ void sockReceiver::funcEndOfSync(ntw::SocketSerialized& socket,int idDoctor, int
             fInfo = listFileInfo.at(i);
 
             QFile f(pathFiles+"/"+fInfo.fileName());
-            f.rename(dirApps.path()+"/"+fInfo.fileName());
+            if(f.exists()){
+                FILE *fSrc = fopen((pathFiles+"/"+fInfo.fileName()).toStdString().c_str(), "rb");
+                FILE *fDest = fopen((dirApps.path()+"/"+fInfo.fileName()).toStdString().c_str(), "wb+");
+
+                salamandre::Record::copyFile(fSrc, fDest);
+
+                fclose(fSrc);
+                fclose(fDest);
+            }
         }
     }
     else{
         QDir dirApps = QCoreApplication::applicationDirPath()+"/save/"+QString::number(idDoctor)+"/"+QString::number(idPatient);
         QString pathFiles = QString::fromStdString(backupPath)+"/"+QString::number(idPatient)+"/"+QString::fromStdString(filename);
+
         QFile f(pathFiles);
-        f.rename(dirApps.path()+"/"+QString::fromStdString(filename));
+        if(f.exists()){
+            FILE *fSrc = fopen(pathFiles.toStdString().c_str(), "rb");
+            FILE *fDest = fopen((dirApps.path().toStdString()+"/"+filename).c_str(), "wb+");
+
+            salamandre::Record::copyFile(fSrc, fDest);
+
+            fclose(fSrc);
+            fclose(fDest);
+        }
+
     }
 
     delete fileRecv;

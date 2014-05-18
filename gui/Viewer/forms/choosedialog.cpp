@@ -1,6 +1,8 @@
 #include <forms/choosedialog.hpp>
 #include <ui_choosedialog.h>
 
+#include <objects/sockreceiver.hpp>
+
 #include <QDir>
 #include <QMessageBox>
 #include <QDebug>
@@ -13,6 +15,8 @@ chooseDialog::chooseDialog(salamandre::Doctor *doctor, QWidget *parent) :
 
     this->doctor = doctor;
     this->patient = nullptr;
+
+    this->connect(&(sockReceiver::sock), SIGNAL(syncIsFinish(getFile*)), this, SLOT(syncFinish(getFile*)));
 
     this->model = new QStandardItemModel();
     this->filterModel = new QSortFilterProxyModel();
@@ -27,11 +31,9 @@ chooseDialog::chooseDialog(salamandre::Doctor *doctor, QWidget *parent) :
     this->ui->lineEdit_newMedecinAndClientData->setValidator(this->validator);
     this->ui->lineEdit_researchPatient->setValidator(this->validator);
 
-    this->connect(this->updfileDialog, SIGNAL(accepted()), this, SLOT(updatePatientAvailable()));
-
     this->contextMenu = new QMenu();
     this->actionMaj = new QAction(QPixmap(":/icons/controls/update.png"), "Forcer la mise à jour des fiches de ce patient", nullptr);
-    this->connect(this->actionMaj, SIGNAL(triggered()), this, SLOT(updatePatientRecord()));
+    this->connect(this->actionMaj, SIGNAL(triggered()), this, SLOT(forceUpdatePatientRecord()));
 
     this->contextMenu->addAction(this->actionMaj);
 
@@ -50,6 +52,21 @@ chooseDialog::chooseDialog(salamandre::Doctor *doctor, QWidget *parent) :
     else{
         this->ui->stackedWidget->setCurrentIndex(this->doctor->getType());
     }
+
+    this->disableForUpdate(false);
+}
+
+void chooseDialog::syncFinish(getFile *file)
+{
+    if(file->idDoctor == this->doctor->getId().toInt()){
+        this->disableForUpdate(false);
+        this->updatePatientAvailable();
+    }
+}
+
+void chooseDialog::disableForUpdate(bool disable)
+{
+    this->setEnabled(!disable);
 }
 
 void chooseDialog::updatePatientAvailable()
@@ -205,7 +222,7 @@ void chooseDialog::accept()
 
     if(needUpdate || needFullUpdate){
         this->updatePatientRecord();
-        return;
+        //return;
     }
 
     QDialog::accept();
@@ -223,6 +240,9 @@ void chooseDialog::updateRecord(patientData *data)
         this->updfileDialog->askFile(this->doctor->getId().toInt(), idPatient.toInt(), salamandre::MedicalRecord::getFileName());
     if(data->needUpdateFMN)
         this->updfileDialog->askFile(this->doctor->getId().toInt(), idPatient.toInt(), salamandre::DigitalRecord::getFileName());
+
+    if(data->needUpdateFCT || data->needUpdateFEC || data->needUpdateFMN || data->needUpdateFMT)
+        this->updfileDialog->show();
 }
 
 salamandre::Patient* chooseDialog::getPatient()
@@ -292,7 +312,9 @@ void chooseDialog::on_lineEdit_researchPatient_textChanged(const QString &arg1)
 }
 void chooseDialog::on_pushButton_resfreshPatient_clicked()
 {
+    this->disableForUpdate(true);
     this->updfileDialog->askFile(this->doctor->getId().toInt());
+    this->updfileDialog->show();
 }
 
 void chooseDialog::on_listView_availablePatient_doubleClicked(const QModelIndex &index)
@@ -301,7 +323,12 @@ void chooseDialog::on_listView_availablePatient_doubleClicked(const QModelIndex 
     this->accept();
 }
 
-void chooseDialog::updatePatientRecord()
+void chooseDialog::forceUpdatePatientRecord()
+{
+    this->updatePatientRecord(true);
+}
+
+void chooseDialog::updatePatientRecord(bool force)
 {
     qDebug() << "update patient record";
     QString idPatient;
@@ -318,6 +345,11 @@ void chooseDialog::updatePatientRecord()
             bool needUpdate = data->needUpdate;
             needFullUpdate = false;
 
+            if(force){
+                needUpdate = false;
+                needFullUpdate = true;
+            }
+
             if(needUpdate){
                 if(data->needUpdateFCT && data->needUpdateFEC && data->needUpdateFMN && data->needUpdateFMT)
                     needFullUpdate = true;
@@ -333,11 +365,18 @@ void chooseDialog::updatePatientRecord()
         needFullUpdate = true;
     }
 
-    if(needFullUpdate)
+    if(needFullUpdate){
         this->updfileDialog->askFile(this->doctor->getId().toInt(), idPatient.toInt());
+        this->updfileDialog->show();
+    }
 }
 
 void chooseDialog::showContextMenu(QPoint p)
 {
     this->contextMenu->exec(this->mapToGlobal(p));
+}
+
+void chooseDialog::showUpdate()
+{
+    this->updfileDialog->show();
 }

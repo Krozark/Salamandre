@@ -45,8 +45,16 @@ int main(int argc, char *argv[])
 
         if(res == QDialog::Accepted){
             salamandre::Doctor *doctor = coDialog->getDoctor();
+            bool isDoctorUpdating = sockSender::isUpdating(doctor->getId().toInt());
 
             chooseDialog *chDialog = new chooseDialog(doctor, nullptr);
+
+            if(isDoctorUpdating){
+                QMessageBox::warning(nullptr, APPS_NAME, "Les fichiers du médecin sont en cours de récupération, l'accès sera débloqué dés que l'opération aura aboutie");
+
+                chDialog->disableForUpdate(true);
+                chDialog->showUpdate();
+            }
             res = chDialog->exec();
 
             if(res  == QDialog::Rejected){
@@ -80,6 +88,12 @@ int main(int argc, char *argv[])
                     if(returnError == 0){
                         settings::setMainwindowSettingValue("pos", w.pos());
                         settings::setMainwindowSettingValue("size", w.size());
+                    }
+
+                    badPass = w.isBadPass();
+                    if(badPass){
+                        QMessageBox::critical(nullptr, "Erreur critique", "Mot de passe incorrect, vous aller être redirigé vers l'interface de connexion.");
+                        restart = true;
                     }
                 }
             }

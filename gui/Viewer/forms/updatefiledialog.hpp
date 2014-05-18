@@ -23,6 +23,7 @@ public:
 private:
     Ui::updateFileDialog *ui;
     QVector<getFile*> dataList;
+    QVector<getFile*> recvFile;
     bool isSync;
 
     void closeEvent(QCloseEvent *event);
