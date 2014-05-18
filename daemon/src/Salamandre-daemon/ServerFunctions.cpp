@@ -268,7 +268,7 @@ namespace srv
         file_info_mutex.lock();
 
         {
-            //ad my files
+            //list local files
             auto tmp_l  = FileManager::list(id_medecin,id_patient,filename);
             for(auto& f : tmp_l)
             {
