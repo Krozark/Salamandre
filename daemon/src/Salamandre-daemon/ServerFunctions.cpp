@@ -288,6 +288,9 @@ namespace srv
             if(_1.id_medecin == _2.id_medecin) {
                 if(_1.id_patient == _2.id_patient) {
                     if(_1.filename == _2.filename) {
+                        if(_1.version == _2.version){
+                            return _1.ip != "";
+                        }
                         return _1.version < _2.version;
                     }
                     return _1.filename < _2.filename;
