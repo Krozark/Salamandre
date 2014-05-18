@@ -30,7 +30,7 @@ chooseDialog::chooseDialog(salamandre::Doctor *doctor, QWidget *parent) :
     this->connect(this->updfileDialog, SIGNAL(accepted()), this, SLOT(updatePatientAvailable()));
 
     this->contextMenu = new QMenu();
-    this->actionMaj = new QAction(QPixmap(":/icons/controls/update.png"), "Mettre à jour les fiches de ce patient", nullptr);
+    this->actionMaj = new QAction(QPixmap(":/icons/controls/update.png"), "Forcer la mise à jour des fiches de ce patient", nullptr);
     this->connect(this->actionMaj, SIGNAL(triggered()), this, SLOT(updatePatientRecord()));
 
     this->contextMenu->addAction(this->actionMaj);
@@ -106,13 +106,15 @@ void chooseDialog::updatePatientAvailable()
                      data->needUpdateFMN = false;
             }
 
-            item->setIcon(QPixmap(":/icons/controls/update.png"));
+            item->setIcon(QPixmap(":/icons/controls/update.png").scaled(QSize(20,20), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
             if(nbSubFile == 3)
                 item->setToolTip("Une fiche est manquante, elle sera récupérée.");
             else
                 item->setToolTip("Certaines fiches sont manquantes, elles seront récupérées.");
         }
+        else
+            item->setIcon(QPixmap(":/icons/controls/good.png").scaled(QSize(20,20), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
         this->model->appendRow(item);
     }

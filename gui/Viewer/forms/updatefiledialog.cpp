@@ -1,8 +1,6 @@
 #include <forms/updatefiledialog.hpp>
 #include <ui_updatefiledialog.h>
 
-#include <objects/systemtray.hpp>
-
 #include <QDebug>
 #include <QMessageBox>
 
@@ -93,12 +91,13 @@ void updateFileDialog::syncFinished(getFile *fileRecv)
         this->isSync = false;
         this->ui->buttonBox->setVisible(true);
 
-        systemTray::showNotification("Salamandre", "La synchronisation du médecin " + QString::number(fileRecv->idDoctor) + " est terminée.", QSystemTrayIcon::Information, 4000);
+        this->raise();
     }
 }
 
 void updateFileDialog::fileRcv(getFile *fileRecv)
 {
+    qDebug() << "test";
     std::string filename = fileRecv->filename;
     int idDoctor = fileRecv->idDoctor;
     int idPatient = fileRecv->idPatient;

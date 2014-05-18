@@ -4,6 +4,7 @@
 #include <forms/patientnamedialog.hpp>
 
 #include <objects/socksender.hpp>
+#include <objects/settings.hpp>
 
 #include <QDir>
 #include <QMessageBox>
@@ -63,7 +64,7 @@ void MainWindow::init()
     this->connect(this->threadSaveRecord, SIGNAL(saveProgress(int)), this, SLOT(saveProgress(int)));
     this->connect(this->threadSaveRecord, SIGNAL(finished()), this, SLOT(saveEnd()));
 
-    this->setWindowTitle(QString("Salamandre") + " - Patient n°"+this->patient->getId());
+    this->setWindowTitle(QString(APPS_NAME) + " - Patient n°"+this->patient->getId());
 
     this->ui->verticalLayout_listView->addWidget(this->listViewDigitalFiles);
 
@@ -289,7 +290,8 @@ void MainWindow::saveEnd()
 {
     if(this->saveRecordDialog->isVisible()){
         this->saveRecordDialog->close();
-        QCoreApplication::processEvents();
+        delete this->saveRecordDialog;
+        this->saveRecordDialog = new saveDialog(this);
     }
 
     switch(this->currentAction){
@@ -312,7 +314,7 @@ void MainWindow::saveEnd()
             }
             else{
                 delete newPatient;
-                QMessageBox::warning(nullptr, "Salamandre", "Ce patient existe déjà dans votre répertoire.");
+                QMessageBox::warning(nullptr, APPS_NAME, "Ce patient existe déjà dans votre répertoire.");
             }
         }
 

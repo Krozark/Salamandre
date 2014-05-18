@@ -21,7 +21,6 @@
 #include <sys/stat.h>
 
 sockSender sockSender::sock;
-ntw::cli::Client sockSender::client;
 
 sockSender::sockSender()
 {
@@ -45,7 +44,7 @@ void sockSender::setParamsCo(int srvPort, std::string ipAdress)
 sockSender::errorConnection sockSender::connectToDaemon()
 {
     errorConnection res = NO_ERROR;
-    ntw::Status statusConnection = client.connect(sock.srvIpAddress, sock.srvPort);
+    ntw::Status statusConnection = sock.client.connect(sock.srvIpAddress, sock.srvPort);
     qDebug() << "connect to daemon, status of connection : " << statusConnection.code;
 
     if(statusConnection.code == ntw::Status::ok){
@@ -81,28 +80,20 @@ sockSender::errorConnection sockSender::connectToDaemon()
 
 bool sockSender::loopConnection()
 {
-    daemonConnectionDialog *dialogConnectionToDaemon = new daemonConnectionDialog();
     bool resConnectRes = false;
 
     for(int i = 0; i < CONNECTION_TEST_NUMBER; ++i){ // loop for CONNECTION_TEST_NUMBER seconds
-        dialogConnectionToDaemon->increaseNbTest(i+1);
-        if(client.connect(sock.srvIpAddress, sock.srvPort) == ntw::Status::ok){
+        emit sock.reconnect(i, CONNECTION_TEST_NUMBER);
+        if(sock.client.connect(sock.srvIpAddress, sock.srvPort) == ntw::Status::ok){
             resConnectRes = true;
             break;
         }
 
-        client.disconnect();
-        dialogConnectionToDaemon->show();
+        sock.client.disconnect();
         QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 1000);
 
         sleep(1);
     }
-
-    if(dialogConnectionToDaemon->isVisible())
-        dialogConnectionToDaemon->close();
-
-    delete dialogConnectionToDaemon;
-    QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 1000);
 
     return resConnectRes;
 }
@@ -134,24 +125,24 @@ bool sockSender::checkPaths()
 
 void sockSender::closeConnectionToDaemon()
 {
-    client.disconnect();
+    sock.client.disconnect();
 }
 
 std::string sockSender::getDaemonBinPath()
 {
-    std::string binPath = client.call<std::string>(salamandre::gui::func::getMyBinPath);
+    std::string binPath = sock.client.call<std::string>(salamandre::gui::func::getMyBinPath);
     sockSender::checkStatus();
     return binPath;
 }
 
 std::string sockSender::getDaemonSavePath()
 {
-    return client.call<std::string>(salamandre::gui::func::getMySavePath);
+    return sock.client.call<std::string>(salamandre::gui::func::getMySavePath);
 }
 
 std::string sockSender::getDaemonBackupPath()
 {
-    return client.call<std::string>(salamandre::gui::func::getMyBackupPath);
+    return sock.client.call<std::string>(salamandre::gui::func::getMyBackupPath);
 }
 
 std::string sockSender::getBackupPath()
@@ -231,33 +222,33 @@ void sockSender::sendFile(int idDoctor, int idPatient, std::string filename)
 
 bool sockSender::informNewFile(int idDoctor, int idPatient, std::string filename)
 {
-    client.call<void>(salamandre::gui::func::newFile, idDoctor, idPatient, filename);
+    sock.client.call<void>(salamandre::gui::func::newFile, idDoctor, idPatient, filename);
 
     if(checkStatus() < 0){
         std::cout << "ERROR on send new file info(" << filename << ")" << std::endl;
         return false;
     }
 
-    client.request_sock.clear();
+    sock.client.request_sock.clear();
     return true;
 }
 
 bool sockSender::getFile(int idDoctor, int idPatient, std::string filename)
 {
-    client.call<void>(salamandre::gui::func::sync, idDoctor, idPatient, filename);
+    sock.client.call<void>(salamandre::gui::func::sync, idDoctor, idPatient, filename);
 
     if(checkStatus() < 0){
         std::cout << "ERROR on ask for an sync on all file of the patient (" << idPatient << ")" << std::endl;
         return false;
     }
 
-    client.request_sock.clear();
+    sock.client.request_sock.clear();
     return true;
 }
 
 int sockSender::checkStatus()
 {
-    int status = client.request_sock.getStatus();
+    int status = sock.client.request_sock.getStatus();
     switch(status)
     {
     case ntw::Status::stop :{
@@ -303,7 +294,7 @@ sockSender::errorConnection sockSender::restartDaemon()
 
 bool sockSender::setGuiServerPort()
 {
-    client.call<void>(salamandre::gui::func::setGuiNotificationPort, sock.srvPort+1);
+    sock.client.call<void>(salamandre::gui::func::setGuiNotificationPort, sock.srvPort+1);
     if(checkStatus() < 0){
         std::cerr << "Error on init notification server" << std::endl;
         return false;

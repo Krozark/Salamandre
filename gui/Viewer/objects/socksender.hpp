@@ -3,12 +3,15 @@
 
 #include <Socket/client/Client.hpp>
 
+#include <QObject>
+
 #define DEFAULT_SERVEUR_PORT 20001
 #define DEFAULT_DAEMON_SERVEUR_PORT 20000
 #define DEFAULT_IP std::string("127.0.0.1")
 
-class sockSender
+class sockSender : public QObject
 {
+    Q_OBJECT
 public:
     enum errorConnection{
         ERROR_WITH_BIN_DAEMON = 0,
@@ -28,6 +31,8 @@ public:
     static bool checkPaths();
 
     static std::string getBackupPath();
+
+    static sockSender sock;
 private:
     sockSender();
     sockSender(sockSender const&) = delete;
@@ -43,8 +48,7 @@ private:
 
     static bool loopConnection();
 
-    static sockSender sock;
-    static ntw::cli::Client client;
+    ntw::cli::Client client;
 
     static int checkStatus();
 
@@ -55,6 +59,9 @@ private:
     std::string daemonSavePath;
     std::string daemonBackupPath;
     std::string guiPath;
+
+signals:
+    void reconnect(int numberReconnection, int maxNumberReconnection);
 };
 
 #endif // SOCKSENDER_HPP

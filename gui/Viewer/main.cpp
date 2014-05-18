@@ -1,11 +1,11 @@
 #include <forms/mainwindow.hpp>
 #include <forms/connexiondialog.hpp>
 #include <forms/choosedialog.hpp>
+#include <forms/connectiondeconnectiondialog.hpp>
 
 #include <objects/socksender.hpp>
 #include <objects/settings.hpp>
 #include <objects/sockreceiver.hpp>
-#include <objects/systemtray.hpp>
 
 #include <QApplication>
 #include <QFileDialog>
@@ -19,72 +19,23 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     QStringList args = a.arguments();
-
     int srvGuiPort = DEFAULT_SERVEUR_PORT;
-    int guiNotifPort = srvGuiPort+1;
-    std::string srvGuiIp = DEFAULT_IP;
-    std::string guiNotifIp = DEFAULT_NOTIF_IP;
 
-    if(args.size() >= 2){
+    if(args.size() == 2)
         srvGuiPort = args.at(1).toInt();
-    }
-    if(args.size() >= 3){
-        guiNotifPort = args.at(2).toInt();
-    }
-    if(args.size() >= 4){
-        srvGuiIp = args.at(1).toInt();
-    }
-    if(args.size() >= 5){
-        guiNotifIp = args.at(2).toInt();
+
+    connectionDeconnectionDialog *dialogCoDeco = new connectionDeconnectionDialog(nullptr);
+    dialogCoDeco->start(srvGuiPort);
+
+    if(dialogCoDeco->exec() == QDialog::Rejected){
+        return -1;
     }
 
-    settings::loadSettings();
-    systemTray::init();
+    dialogCoDeco->close();
+    delete dialogCoDeco;
 
-    int daemonConnectionRes;
     int returnError = 0;
     bool restart = true;
-
-    ntw::Socket::init();
-    sockSender::init();
-    sockSender::setParamsCo(srvGuiPort, srvGuiIp);
-
-    daemonConnectionRes = sockSender::connectToDaemon();
-
-    if(daemonConnectionRes == sockSender::ERROR_WITH_BIN_DAEMON || daemonConnectionRes == sockSender::ERROR_TO_START_DAEMON){
-        QMessageBox::warning(nullptr, "Serveur introuvable", "Impossible de localiser le serveur de mise à jour des fiches patients, \nmerci d'indiquer le chemin de l'exécutable dans la fenêtre suivante.");
-        QString file = QFileDialog::getOpenFileName(nullptr, "Choix des fichiers", QDir::homePath(), "salamandre-daemon");
-
-        if(file.isNull()){
-            ntw::Socket::close();
-            return -3;
-        }
-        else{
-            sockSender::init();
-            QFileInfo info(file);
-            settings::setDaemonSettingValue("pathBin", info.filePath());
-            daemonConnectionRes = sockSender::connectToDaemon();
-        }
-    }
-
-    if(daemonConnectionRes == sockSender::ERROR_TO_CONNECT_DAEMON){
-        QMessageBox::critical(nullptr, "Erreur fatale", "La connexion au serveur de fichier à échoué, veuillez vérifier que l'application n'a pas déjà été lancée.");
-        return -3;
-    }
-
-    if(!sockSender::checkPaths()){
-        QMessageBox::critical(nullptr, "Erreur fatale", "Les dossiers du serveur de synchronisation sont corrompus, merci de relancer le serveur.");
-        return -4;
-    }
-
-    sockReceiver::setParamsCo(guiNotifPort, guiNotifIp);
-    sockReceiver::init();
-    sockReceiver::connectToDaemon();
-
-    QDir dir(QCoreApplication::applicationDirPath()+"/save");
-    if(!dir.exists()){
-        dir.mkdir(dir.path());
-    }
 
     while(restart && returnError == 0){
         restart = false;
@@ -142,12 +93,11 @@ int main(int argc, char *argv[])
         delete coDialog;
     }
 
-    sockReceiver::closeConnectionToDaemon();
-    sockSender::closeConnectionToDaemon();
+    dialogCoDeco = new connectionDeconnectionDialog(nullptr);
+    dialogCoDeco->stop();
+    dialogCoDeco->exec();
 
-    ntw::Socket::close();
-
-    settings::saveSettings();
+    delete dialogCoDeco;
 
     return returnError;
 }

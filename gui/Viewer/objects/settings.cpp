@@ -18,7 +18,7 @@ void settings::loadSettings()
 
 void settings::loadDaemonSettings()
 {
-    QSettings s(QSettings::IniFormat, QSettings::UserScope, "Salamandre", "Viewer");
+    QSettings s(QSettings::IniFormat, QSettings::UserScope, APPS_NAME, "Viewer");
     s.beginGroup("daemonSrv");
 
     QStringList keys = s.allKeys();
@@ -33,7 +33,7 @@ void settings::loadDaemonSettings()
 
 void settings::loadMainwindowSettings()
 {
-    QSettings s(QSettings::IniFormat, QSettings::UserScope, "Salamandre", "Viewer");
+    QSettings s(QSettings::IniFormat, QSettings::UserScope, APPS_NAME, "Viewer");
     s.beginGroup("mainwStgs");
 
     QStringList keys = s.allKeys();
@@ -55,7 +55,7 @@ void settings::saveSettings()
 
 void settings::saveDaemonSettings()
 {
-    QSettings s(QSettings::IniFormat, QSettings::UserScope, "Salamandre", "Viewer");
+    QSettings s(QSettings::IniFormat, QSettings::UserScope, APPS_NAME, "Viewer");
     s.beginGroup("daemonSrv");
 
     for(auto it = stgs.daemonStgs.begin(); it != stgs.daemonStgs.end(); ++it){
@@ -69,7 +69,7 @@ void settings::saveDaemonSettings()
 
 void settings::saveMainwindowSettings()
 {
-    QSettings s(QSettings::IniFormat, QSettings::UserScope, "Salamandre", "Viewer");
+    QSettings s(QSettings::IniFormat, QSettings::UserScope, APPS_NAME, "Viewer");
     s.beginGroup("mainwStgs");
 
     for(auto it = stgs.mainWStgs.begin(); it != stgs.mainWStgs.end(); ++it){

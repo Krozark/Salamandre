@@ -44,7 +44,6 @@ bool sockReceiver::connectToDaemon(){
 }
 
 void sockReceiver::closeConnectionToDaemon(){
-    //sockSender::setGuiServerPort();
     sock.server->stop();
     sock.server->wait();
 }
@@ -73,7 +72,7 @@ void sockReceiver::funcFileIsRecv(ntw::SocketSerialized& socket,int idDoctor, in
                                            << QString::fromStdString(salamandre::DigitalRecord::getFileName())
                                            << QString::fromStdString(salamandre::RegistryRecord::getFileName());
 
-    if(fileFilter.contains(QString::fromStdString(filename)) && !idDoctor < 0){
+    if(fileFilter.contains(QString::fromStdString(filename)) && idDoctor >= 0){
         getFile *fileRecv = new getFile(idDoctor, idPatient, filename);
         emit sock.fileIsRecv(fileRecv);
     }

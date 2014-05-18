@@ -13,5 +13,7 @@
         <file>icons/controls/open.png</file>
         <file>icons/controls/upload.png</file>
         <file>icons/controls/waiting.gif</file>
+        <file>icons/controls/information.png</file>
+        <file>icons/controls/good.png</file>
     </qresource>
 </RCC>

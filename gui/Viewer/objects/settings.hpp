@@ -3,6 +3,8 @@
 
 #include <QSettings>
 
+#define APPS_NAME "Salamandre"
+
 class settings
 {
 public:

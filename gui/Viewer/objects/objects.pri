@@ -7,7 +7,7 @@ SOURCES += objects/doctor.cpp \
     objects/sockreceiver.cpp \
     objects/settings.cpp \
     objects/threadsave.cpp \
-    objects/systemtray.cpp
+    objects/threadgestionapps.cpp
 
 HEADERS += objects/doctor.hpp \
     objects/patient.hpp \
@@ -18,4 +18,4 @@ HEADERS += objects/doctor.hpp \
     objects/sockreceiver.hpp \
     objects/settings.hpp \
     objects/threadsave.hpp \
-    objects/systemtray.hpp
+    objects/threadgestionapps.hpp
