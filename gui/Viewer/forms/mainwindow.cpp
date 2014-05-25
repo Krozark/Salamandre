@@ -307,6 +307,8 @@ void MainWindow::saveProgress(int save)
 {
     switch(save){
     case threadSave::SAVE_OF_FCT:
+        this->ui->plainTextEdit_confidentialTextPatientAddText->setPlainText("");
+        this->ui->plainTextEdit_confidentialTextPatient->setPlainText(QString::fromStdString(this->patient->getConfidentialRecord()->getContent()));
         this->saveFCTNeeded = false;
         break;
     case threadSave::SAVE_OF_FEC:
@@ -315,6 +317,8 @@ void MainWindow::saveProgress(int save)
         this->listViewDigitalFiles->needToSave = false;
         break;
     case threadSave::SAVE_OF_FMT:
+        this->ui->plainTextEdit_medicalTextPatientAddText->setPlainText("");
+        this->ui->plainTextEdit_medicalTextPatient->setPlainText(QString::fromStdString(this->patient->getMedicalRecord()->getContent()));
         this->saveFMTNeeded = false;
         break;
     }
@@ -405,7 +409,7 @@ bool MainWindow::saveFCT()
 {
     if(this->checkNeedSaveFCT()){
         salamandre::ConfidentialRecord *record = this->patient->getConfidentialRecord();
-        record->setContent(this->ui->plainTextEdit_confidentialTextPatient->toPlainText().toStdString());
+        record->setContent(this->ui->plainTextEdit_confidentialTextPatient->toPlainText().toStdString()+this->ui->plainTextEdit_confidentialTextPatientAddText->toPlainText().toStdString());
 
         this->threadSaveRecord->saveFCT = true;
     }
@@ -419,7 +423,7 @@ bool MainWindow::saveFMT()
 {
     if(this->checkNeedSaveFMT()){
         salamandre::MedicalRecord *record = this->patient->getMedicalRecord();
-        record->setContent(this->ui->plainTextEdit_medicalTextPatient->toPlainText().toStdString());
+        record->setContent(this->ui->plainTextEdit_medicalTextPatient->toPlainText().toStdString()+this->ui->plainTextEdit_medicalTextPatientAddText->toPlainText().toStdString());
 
         this->threadSaveRecord->saveFMT = true;
     }
@@ -635,16 +639,6 @@ void MainWindow::on_toolButton_numericalImporter_clicked()
     }
 }
 
-void MainWindow::on_plainTextEdit_confidentialTextPatient_textChanged()
-{
-    this->saveFCTNeeded = true;
-}
-
-void MainWindow::on_plainTextEdit_medicalTextPatient_textChanged()
-{
-    this->saveFMTNeeded= true;
-}
-
 void MainWindow::refreshNumberInsertFile(int number)
 {
     this->labelTotalNumber->setText(QString::number(number));
@@ -716,4 +710,14 @@ void MainWindow::setTabsEnable(bool enable)
     this->ui->tabMedicalDatas->setEnabled(enable);
     this->ui->tabMedicalNumericalDatas->setEnabled(enable);
     this->ui->tabConfidential->setEnabled(enable);
+}
+
+void MainWindow::on_plainTextEdit_confidentialTextPatientAddText_textChanged()
+{
+    this->saveFCTNeeded = true;
+}
+
+void MainWindow::on_plainTextEdit_medicalTextPatientAddText_textChanged()
+{
+    this->saveFMTNeeded= true;
 }

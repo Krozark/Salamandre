@@ -107,9 +107,9 @@ private slots:
 
     void on_toolButton_numericalExporter_clicked();
     void on_toolButton_numericalImporter_clicked();
-    void on_plainTextEdit_confidentialTextPatient_textChanged();
-    void on_plainTextEdit_medicalTextPatient_textChanged();
     void on_actionD_connection_triggered();
+    void on_plainTextEdit_confidentialTextPatientAddText_textChanged();
+    void on_plainTextEdit_medicalTextPatientAddText_textChanged();
 };
 
 #endif // MAINWINDOW_HPP
