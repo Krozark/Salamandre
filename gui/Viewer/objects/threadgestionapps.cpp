@@ -19,14 +19,16 @@ threadGestionApps::threadGestionApps(QObject *parent) :
 void threadGestionApps::run()
 {
     switch(this->currentCmd){
-    case cmdApps::START_APPS:
+    case cmdApps::START_APPS:{
+        int res;
         qDebug() << "RUNNING THREAD 1";
-        if(this->_startApps() == 0)
+        if((res = this->_startApps()) == 0)
             emit connectionSuccess();
         else
-            emit connectionFailed();
+            emit connectionFailed(res);
 
         break;
+    }
     case cmdApps::STOP_APPS:{
         this->_stopApps();
         emit deconnectionSuccess();
@@ -56,10 +58,16 @@ int threadGestionApps::_startApps()
     int daemonConnectionRes = sockSender::connectToDaemon();
 
     if(daemonConnectionRes == sockSender::ERROR_WITH_BIN_DAEMON || daemonConnectionRes == sockSender::ERROR_TO_START_DAEMON){
-        QMessageBox::warning(nullptr, "Serveur introuvable", "Impossible de localiser le serveur de mise à jour des fiches patients, \nmerci d'indiquer le chemin de l'exécutable dans la fenêtre suivante.");
-        QString file = QFileDialog::getOpenFileName(nullptr, "Choix des fichiers", QDir::homePath(), "salamandre-daemon");
 
-        if(file.isNull()){
+        if(daemonConnectionRes == sockSender::ERROR_WITH_BIN_DAEMON){
+            emit askFileDaemon();
+            return -5;
+        }
+
+        ntw::Socket::close();
+        return -3;
+
+        /*if(file.isNull()){
             ntw::Socket::close();
             return -3;
         }
@@ -68,7 +76,7 @@ int threadGestionApps::_startApps()
             QFileInfo info(file);
             settings::setDaemonSettingValue("pathBin", info.filePath());
             daemonConnectionRes = sockSender::connectToDaemon();
-        }
+        }*/
     }
 
     if(daemonConnectionRes == sockSender::ERROR_TO_CONNECT_DAEMON){

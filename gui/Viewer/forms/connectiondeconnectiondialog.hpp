@@ -34,16 +34,19 @@ private:
     bool startResult;
     bool endResult;
 
+    int srvGuiPort;
+
     QMovie *movie;
 
     void enableBottom(bool enable);
 
 private slots:
     void connectionIsSuccess();
-    void connectionIsFailed();
+    void connectionIsFailed(int res);
     void deconnectionIsSuccess();
     void deconnectionIsFailed();
     void setConnectionText(int nbConnection, int maxNbConnection);
+    void getFileDaemon();
 };
 
 #endif // CONNECTIONDECONNECTIONDIALOG_HPP

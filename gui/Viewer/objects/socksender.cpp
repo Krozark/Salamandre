@@ -61,8 +61,7 @@ sockSender::errorConnection sockSender::connectToDaemon()
             res = ERROR_TO_CONNECT_DAEMON;
     }
     else if(statusConnection.code == ntw::Status::connexion){
-        if((res = sockSender::restartDaemon()) = NO_ERROR){
-
+        if((res = sockSender::restartDaemon()) == NO_ERROR){
             bool resConnectRes = sockSender::loopConnection();
             if(resConnectRes){
                 res = NO_ERROR;
@@ -76,6 +75,11 @@ sockSender::errorConnection sockSender::connectToDaemon()
     }
 
     return res;
+}
+
+void sockSender::setDaemonBinPath(std::string path)
+{
+    sock.daemonBinPath = path;
 }
 
 bool sockSender::loopConnection()

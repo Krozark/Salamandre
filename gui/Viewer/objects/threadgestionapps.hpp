@@ -26,9 +26,10 @@ private:
     void _stopApps();
 signals:
     void connectionSuccess();
-    void connectionFailed();
+    void connectionFailed(int);
     void deconnectionSuccess();
     void deconnectionFailed();
+    void askFileDaemon();
 
 public slots:
 

@@ -31,6 +31,8 @@ public:
     static bool isUpdating(int idDoctor, int idPatient = -1, std::string filename = "");
     static bool checkPaths();
 
+    static void setDaemonBinPath(std::string path);
+
     static std::string getBackupPath();
 
     static sockSender sock;
