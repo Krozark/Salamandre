@@ -103,7 +103,7 @@ int main(int argc,char* argv[])
         TCLAP::ValueArg<int> gui_port_arg("g", "gui-port", "Port for the GUI", false, gui_port, "int", cmd);
         TCLAP::ValueArg<int> server_port_arg("s", "server-port", "Port for the server to listen", false, server_port, "int", cmd);
         TCLAP::ValueArg<std::string> nodes_file_arg("f", "nodes-file", "File containing node list", false, "", "string", cmd);
-        TCLAP::SwitchArg local_switch("l", "local", "Whether daemon sould run stricly locally", cmd, false);
+        TCLAP::SwitchArg local_switch("l", "local", "Whether daemon should run stricly locally", cmd, false);
         TCLAP::SwitchArg daemon_switch("d", "daemonize", "Start the server in a daemon", cmd, false);
 
         cmd.parse(argc, argv);
