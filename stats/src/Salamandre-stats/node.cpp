@@ -8,7 +8,7 @@ namespace salamandre {
     //REGISTER_AND_CONSTRUCT(Node, "node", host, "host", port, "port", last_seen_time, "last_seen_time");
 
     template<> const std::string orm::SqlObject<Node>::table = "node";
-    template<> orm::Bdd* orm::SqlObject<Node>::default_connection = &orm::Bdd::Default;
+    template<> orm::DB* orm::SqlObject<Node>::default_connection = &orm::DB::Default;
     template<> std::vector<const orm::VAttr*> orm::SqlObject<Node>::column_attrs = std::vector<const orm::VAttr*>();
     template<> std::vector<orm::VFK*> orm::SqlObject<Node>::column_fks = std::vector<orm::VFK*>();
     template<> orm::Register<Node> orm::SqlObject<Node>::_register = orm::Register<salamandre::stats::Node>();
