@@ -409,7 +409,7 @@ bool MainWindow::saveFCT()
 {
     if(this->checkNeedSaveFCT()){
         salamandre::ConfidentialRecord *record = this->patient->getConfidentialRecord();
-        record->setContent(this->ui->plainTextEdit_confidentialTextPatient->toPlainText().toStdString()+this->ui->plainTextEdit_confidentialTextPatientAddText->toPlainText().toStdString());
+        record->setContent(this->ui->plainTextEdit_confidentialTextPatient->toPlainText().toStdString()+"\n"+this->ui->plainTextEdit_confidentialTextPatientAddText->toPlainText().toStdString());
 
         this->threadSaveRecord->saveFCT = true;
     }
@@ -423,7 +423,7 @@ bool MainWindow::saveFMT()
 {
     if(this->checkNeedSaveFMT()){
         salamandre::MedicalRecord *record = this->patient->getMedicalRecord();
-        record->setContent(this->ui->plainTextEdit_medicalTextPatient->toPlainText().toStdString()+this->ui->plainTextEdit_medicalTextPatientAddText->toPlainText().toStdString());
+        record->setContent(this->ui->plainTextEdit_medicalTextPatient->toPlainText().toStdString()+"\n"+this->ui->plainTextEdit_medicalTextPatientAddText->toPlainText().toStdString());
 
         this->threadSaveRecord->saveFMT = true;
     }
