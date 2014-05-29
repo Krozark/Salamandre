@@ -23,7 +23,14 @@ void Stats::add_node(std::string host, int port)
 {
 	orm::Cache<Node>::type_ptr node;
     std::list<orm::Cache<Node>::type_ptr> results;
-    Node::query().filter(host, "exact", Node::_host).filter(port, "exact", Node::_port).get(results);
+    Node::query()
+        .filter(orm::Q<Node>(host, "exact", Node::_host) and orm::Q<Node>(port, "exact", Node::_port))
+        .get(results);
+
+    Node::query()
+        .filter(orm::Q<Node>(host, "exact", Node::_host) and orm::Q<Node>(port, "exact", Node::_port))
+        .__print__();
+
     if (results.size() > 0) {
 		node = results.front();
 	} else {
@@ -38,7 +45,9 @@ void Stats::add_node(std::string host, int port)
 void Stats::delete_node(std::string host, int port)
 {
     Node node;
-    Node::query().filter(host, "exact", Node::_host).filter(port, "exact", Node::_port).get(node);
+    Node::query()
+        .filter(orm::Q<Node>(host, "exact", Node::_host) and orm::Q<Node>(port, "exact", Node::_port))
+        .get(node);
     node.del();
 }
 
@@ -51,11 +60,11 @@ std::list<std::shared_ptr<Node>> Stats::get_nodes(unsigned int number)
 {
     std::list<std::shared_ptr<Node>> list;
     unsigned int one_day_ago = time(NULL) - 86400;
-    Node::query()\
+    Node::query()
         .filter(one_day_ago, "gte", Node::_last_seen_time)
         .orderBy("?")
         //.orderBy("last_seen_time", '-')
-        .limit(number)\
+        .limit(number)
         .get(list);
 
     const unsigned int _size = list.size();

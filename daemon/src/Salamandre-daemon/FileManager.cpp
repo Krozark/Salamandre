@@ -85,6 +85,9 @@ namespace salamandre
                     new_path = utils::string::join("/",new_path,filename);
                     ::rename(path_origin.c_str(),new_path.c_str());
                 }
+                else
+                    utils::log::error("FileManager::prepareForUpload","No node finds");
+
                 //unlock it
                 ::flock(::fileno(source), LOCK_UN);
             }
@@ -320,8 +323,6 @@ namespace salamandre
                         tmp.ip = ip_port[0];
 
                         files_to_send.insert(tmp);
-
-                        std::cout<<"Add path "<<file_path<<" to send"<<std::endl;
                     }
                 }
             }
