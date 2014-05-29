@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 
                 bool badPass = w.isBadPass();
                 if(badPass){
-                    QMessageBox::critical(nullptr, "Erreur critique", "Mot de passe incorrect, vous aller être redirigé vers l'interface de connexion.");
+                    QMessageBox::critical(nullptr, "Erreur critique", "Mot de passe incorrect, vous allez être redirigé vers l'interface de connexion.");
                     restart = true;
                 }
                 else{
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 
                     badPass = w.isBadPass();
                     if(badPass){
-                        QMessageBox::critical(nullptr, "Erreur critique", "Mot de passe incorrect, vous aller être redirigé vers l'interface de connexion.");
+                        QMessageBox::critical(nullptr, "Erreur critique", "Mot de passe incorrect, vous allez être redirigé vers l'interface de connexion.");
                         restart = true;
                     }
                 }
