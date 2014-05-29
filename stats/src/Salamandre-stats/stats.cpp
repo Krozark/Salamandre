@@ -27,10 +27,6 @@ void Stats::add_node(std::string host, int port)
         .filter(orm::Q<Node>(host, "exact", Node::_host) and orm::Q<Node>(port, "exact", Node::_port))
         .get(results);
 
-    Node::query()
-        .filter(orm::Q<Node>(host, "exact", Node::_host) and orm::Q<Node>(port, "exact", Node::_port))
-        .__print__();
-
     if (results.size() > 0) {
 		node = results.front();
 	} else {
