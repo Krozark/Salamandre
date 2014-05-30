@@ -6,7 +6,8 @@ orm::DB& orm::DB::Default = def;
 
 using namespace salamandre::stats;
 
-float Stats::default_robustesse = 99.9f;
+float Stats::default_robustness = 0.999f;
+float Stats::failure_rate = 0.05f;
 
 void Stats::init()
 {
@@ -113,8 +114,23 @@ bool Stats::load(const char * path)
     return true;
 }
 
-unsigned int Stats::get_duplication_number_for(float robustesse)
+unsigned int Stats::get_duplication_number_for(float robustness)
 {
-    //\todo TODO
-    return 4;
+    if (robustness < 0)
+    {
+        return 1;
+    }
+
+    unsigned int n = 1;
+
+    float fail_rate = Stats::failure_rate;
+
+    while (fail_rate > (1.0 - robustness))
+    {
+        fail_rate = fail_rate * fail_rate;
+        n++;
+    }
+
+    return n;
+
 }

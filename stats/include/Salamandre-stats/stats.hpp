@@ -14,7 +14,8 @@ namespace salamandre {
             public:
                 Stats() = delete;
 
-                static float default_robustesse;
+                static float default_robustness;
+                static float failure_rate;
 
                 static void add_node(std::string host, int port);
                 static void delete_node(std::string host, int port);
@@ -31,7 +32,7 @@ namespace salamandre {
                  * \param robustesse the robustess needed (0~100)
                  * \return the number of duplication neded
                  */
-                static unsigned int get_duplication_number_for(float robustesse=default_robustesse);
+                static unsigned int get_duplication_number_for(float robustesse=default_robustness);
 
                 /**
                  * \brief get a number of nodes

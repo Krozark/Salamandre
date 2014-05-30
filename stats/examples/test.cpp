@@ -17,7 +17,8 @@ int main(int argc, char * argv[])
     {
         std::cout << "Loading from " << argv[1] << "..." << std::endl;
         Stats::load(argv[1]);
-        for(auto& u : Stats::get_nodes(Stats::get_duplication_number_for(99.99)))
+
+        for(auto& u : Stats::get_nodes(Stats::get_duplication_number_for(0.999)))
             std::cout<<*u<<std::endl;
 
     } else {
@@ -26,7 +27,8 @@ int main(int argc, char * argv[])
         Stats::add_node(std::string("test3"), 7890);
         Stats::add_node(std::string("test"), 1234);
 
-        for(auto& u : Stats::get_nodes(Stats::get_duplication_number_for(99.99)))
+        std::cout << Stats::get_duplication_number_for(0.999);
+        for(auto& u : Stats::get_nodes(Stats::get_duplication_number_for(0.999)))
             std::cout<<*u<<std::endl;
     }
 
