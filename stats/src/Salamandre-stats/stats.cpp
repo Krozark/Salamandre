@@ -121,9 +121,13 @@ unsigned int Stats::get_duplication_number_for(float robustness)
         return 1;
     }
 
+    unsigned int number_nodes = Node::all().size();
+    if (number_nodes == 0) {
+        number_nodes = 1;
+    }
     unsigned int n = 1;
 
-    float fail_rate = Stats::failure_rate;
+    float fail_rate = Stats::failure_rate + 1.0 / (float)number_nodes;
 
     while (fail_rate > (1.0 - robustness))
     {
